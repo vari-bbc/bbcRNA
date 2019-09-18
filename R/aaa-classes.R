@@ -4,6 +4,7 @@
 #' non-negative values.
 #'
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom SummarizedExperiment assayNames assay
 .BbcSE <- setClass("BbcSE", contains="SummarizedExperiment")
 
 setValidity("BbcSE", function(object) {

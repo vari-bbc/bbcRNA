@@ -1,0 +1,56 @@
+---
+title: "RNA-seq analysis starting from gene counts from STAR aligner"
+output: 
+  BiocStyle::html_document:
+        toc: true
+        toc_depth: 2
+        toc_float: true
+vignette: >
+  %\VignetteIndexEntry{rnaseq_from_star}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+
+)
+```
+
+# Load packages
+
+```{r setup}
+library(bbcRNA)
+```
+
+# Get counts
+
+```{r get_counts}
+tcell <- star_to_mat(dir = "../inst/extdata/tcell/", rgx = "^[^_]+_[^_]+", column = 2)
+
+head(tcell)
+```
+
+# Make BbcRNAData object
+
+```{r make_obj}
+bbc_obj <- BbcRNAData(counts = tcell)
+
+bbc_obj
+```
+
+# Get mapping rates
+
+```{r get_mapping_rates}
+aln_rates <- read_star_map_rates(dir = "../inst/extdata/tcell/", 
+                                 rgx = "^[^_]+_[^_]+")
+
+head(aln_rates)
+```
+
+# Session info
+```{r}
+sessionInfo()
+```
+
+
