@@ -1,0 +1,35 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# bbcRNA
+
+The goal of bbcRNA is to facilitate RNA-seq analysis, starting from counts and 
+ending with differentially expressed gene lists and enerichment analyses.
+
+## Installation
+
+You can install bbcRNA from [GitHub](https://github.com/vari-bbc) with:
+
+``` r
+devtools::install_github("vari-bbc/bbcRNA")
+
+```
+
+## Usage
+
+Below are some examples of how to use bbcRNA.
+
+```{r load_lib}
+library(bbcRNA)
+```
