@@ -15,3 +15,6 @@ NULL
 
 #' @importFrom rlang .data
 NULL
+
+#' @importFrom stats complete.cases
+NULL

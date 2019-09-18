@@ -3,3 +3,4 @@
 export(star_to_mat)
 importFrom(magrittr,"%>%")
 importFrom(rlang,.data)
+importFrom(stats,complete.cases)
