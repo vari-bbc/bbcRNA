@@ -23,7 +23,8 @@ Imports:
     tibble (>= 2.1),
     rlang (>= 0.4),
     tidyr (>= 0.8),
-    stats (>= 3.6)
+    stats (>= 3.6),
+    methods (>= 3.6)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

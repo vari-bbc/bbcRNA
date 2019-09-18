@@ -125,6 +125,8 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
     rownames(count_mat) <- new_gene_ids
   }
 
+  count_mat <- as.matrix(count_mat)
+
   return(count_mat)
 }
 

@@ -18,3 +18,6 @@ NULL
 
 #' @importFrom stats complete.cases
 NULL
+
+#' @importFrom methods new
+NULL

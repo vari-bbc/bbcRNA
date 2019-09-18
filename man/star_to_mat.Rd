@@ -4,7 +4,7 @@
 \alias{star_to_mat}
 \title{Convert STAR read counts to count matrix.}
 \usage{
-star_to_mat(dir, rgx, column)
+star_to_mat(dir, rgx, column, rm_ens_vers = TRUE)
 }
 \arguments{
 \item{dir}{A character scalar indicating the directory containing all the
@@ -16,6 +16,9 @@ sample name from the name of the ReadsPerGene.out.tab file.}
 \item{column}{An integer indicating the column to extract counts from.
 1 = unstranded, 2 = 1st read strand aligned with RNA, 3 = 2nd read
 strand aligned with RNA  with RNA}
+
+\item{rm_ens_vers}{Logical indicating whether version number should be
+removed from gene ID (as indicated by trailing period and integers).}
 }
 \value{
 A matrix where the column names are the sample names and the row
