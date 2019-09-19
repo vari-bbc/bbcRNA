@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(bbcRNA)
+library(SummarizedExperiment)
 ```
 
 # Get counts
@@ -31,10 +32,32 @@ tcell <- star_to_mat(dir = "../inst/extdata/tcell/", rgx = "^[^_]+_[^_]+", colum
 head(tcell)
 ```
 
-# Make BbcRNAData object
+# make GRanges
 
+This step is slow (several minutes to finish). It can be skipped if the genomic 
+intervals of the genes are not of interest.
+
+```{r granges}
+txdb <- GenomicFeatures::makeTxDbFromGFF("~/Desktop/gencode.vM13.annotation.gtf",
+                                         format="gtf")
+granges <- GenomicFeatures::genes(txdb)
+```
+
+
+# Make BbcSE object
+
+The granges parameter for the BbcSE constructor is optional. If not provided,
+dummy GRanges data will be used. SummarizedExperiment can be coerced to 
+RangedSummarizedExperiment without GRanges data, but DEFormat does not work
+with RangedSummarizedExperiment objects with missing data for rowRanges.
+ 
 ```{r make_obj}
-bbc_obj <- BbcSE(counts = tcell)
+bbc_obj <- BbcSE(counts = tcell, granges = granges)
+
+# show more information about the BbcSE class
+getClassDef(class(bbc_obj))
+
+metadata(bbc_obj)[[1]] <- DEFormats::DGEList(bbc_obj)
 
 bbc_obj
 ```
@@ -45,7 +68,11 @@ bbc_obj
 aln_rates <- read_star_map_rates(dir = "../inst/extdata/tcell/", 
                                  rgx = "^[^_]+_[^_]+")
 
-head(aln_rates)
+# store the mapping rates in the BbcSE object
+colData(bbc_obj) <- as(aln_rates, "DataFrame") 
+
+# colData is the name of both the setter and the getter function for column data
+head(colData(bbc_obj))
 ```
 
 # Session info

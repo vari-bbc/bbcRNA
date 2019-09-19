@@ -1,3 +1,5 @@
+###------------------------------------------------------------------------
+
 #' Convert STAR read counts to count matrix.
 #'
 #' \code{star_to_mat} returns a count matrix from STAR ReadsPerGene.out.tab
@@ -130,6 +132,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
   return(count_mat)
 }
 
+###------------------------------------------------------------------------
 
 #' Import STAR Log.final.out files for analyzing mapping rates.
 #'
@@ -197,6 +200,9 @@ read_star_map_rates <- function(dir, rgx){
                              })
 
   aln_metrics_df <- do.call(rbind, aln_metrics_list)
+
+  aln_metrics_df <- aln_metrics_df %>%
+    tibble::column_to_rownames(var="sample")
 
   return(aln_metrics_df)
 }

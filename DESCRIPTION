@@ -26,7 +26,8 @@ Imports:
     stats (>= 3.6),
     methods (>= 3.6),
     BiocStyle (>= 2.12),
-    S4Vectors (>= 0.22)
+    S4Vectors (>= 0.22),
+    GenomicFeatures (>= 1.36)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)
