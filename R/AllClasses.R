@@ -70,7 +70,6 @@ setValidity("BbcSE", function(object) {
 #' @return A BbcSE object (extension of RangedSummarizedExperiment).
 #' @export
 #' @importFrom methods as is
-#' @import GenomicFeatures
 #' @importFrom GenomicRanges GRanges
 #' @importFrom stringr str_remove
 #' @importFrom SummarizedExperiment SummarizedExperiment
