@@ -34,7 +34,7 @@ head(tcell)
 # Make BbcRNAData object
 
 ```{r make_obj}
-bbc_obj <- BbcRNAData(counts = tcell)
+bbc_obj <- BbcSE(counts = tcell)
 
 bbc_obj
 ```

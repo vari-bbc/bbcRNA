@@ -3,8 +3,11 @@
 #' In a \code{BbcSE} object, "counts" must be the first assay and must contain
 #' non-negative values.
 #'
+#' @importFrom S4Vectors metadata
+#' @importFrom  SummarizedExperiment assayNames assay
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom SummarizedExperiment assayNames assay
+#' @importClassesFrom DESeq2 DESeqDataSet
+#' @importClassesFrom edgeR DGEList DGEGLM DGEExact DGELRT
 .BbcSE <- setClass("BbcSE", contains="SummarizedExperiment")
 
 setValidity("BbcSE", function(object) {
@@ -16,6 +19,33 @@ setValidity("BbcSE", function(object) {
 
   if (min(assay(object)) < 0) {
     msg <- c(msg, "negative values in 'counts'")
+  }
+
+  if (length(metadata(object)) > 0){
+    if (class(metadata(object)[[1]]) !=  "list") {
+      msg <- c(msg, "First element in metadata must be a list of edgeR objects")
+    }
+
+    if (length(metadata(object)[[1]]) > 0 &
+        class(metadata(object)[[1]][[1]]) !=  "DGEList") {
+      msg <- c(msg, "metadata(object)[[1]][[1]] must be a DGEList object")
+    }
+
+    if (length(metadata(object)[[1]]) > 1) {
+      for (i in 2:length(metadata(object)[[1]])){
+        if (!class(metadata(object)[[1]][i]) %in%
+            c("DGEGLM", "DGEExact", "DGELRT")) {
+          msg <- c(msg,
+                   "After 'DGEList', metadata(object)[[1]] elements must be
+                 edgeR result objects.")
+        }
+      }
+    }
+
+    if (length(metadata(object)) > 1 &
+        class(metadata(object)[[2]]) !=  "DESeqDataSet") {
+      msg <- c(msg, "Second element in metadata must be a DESeqDataSet object")
+    }
   }
 
   if (is.null(msg)) {
@@ -36,58 +66,4 @@ BbcSE <- function(counts, ...) {
   se <- SummarizedExperiment(list(counts=counts), ...)
   .BbcSE(se)
 }
-
-### ---------------------------------------------------------------------
-
-#' BbcRNAData, an S4 class to represent RNA-seq data in various containers
-#'
-#' @slot summexp A RangedSummarizedExperiment.
-#' @slot edger A list containing DGEList (must be first element) and edgeR
-#'   results objects.
-#' @slot deseq2 A DESeqDataSet object.
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importClassesFrom DESeq2 DESeqDataSet
-#' @importClassesFrom edgeR DGEList DGEGLM DGEExact DGELRT
-.BbcRNAData <- setClass("BbcRNAData",
-                    slots = list(bbcse = "BbcSE",
-                                 edger = "list",
-                                 deseq2 = "DESeqDataSet")
-)
-
-setValidity("BbcRNAData", function(object) {
-  msg <- NULL
-
-  if (length(object@edger) > 0 & object@edger[1] != "DGEList") {
-    msg <- c(msg, "'DGEList' must be first element in 'edger' slot.")
-  }
-
-  if (length(object@edger) > 1) {
-    for (i in 2:length(object@edger)){
-      if (!object@edger[i] %in% c("DGEGLM", "DGEExact", "DGELRT")) {
-        msg <- c(msg,
-                 "After 'DGEList', 'edger' slot must be EdgeR result objects.")
-      }
-    }
-  }
-
-  if (is.null(msg)) {
-    TRUE
-  } else msg
-})
-
-#' Constructor for BbcRNAData
-#'
-#' \code{BbcRNAData} is a constructor for BbcRNAData.
-#'
-#' @param counts A count matrix with sample names as column names and gene names
-#'   as row names.
-#' @param ... Arguments for SummarizedExperiment.
-#' @export
-BbcRNAData <- function(counts, ...) {
-  .BbcRNAData(bbcse = BbcSE(counts, ...))
-}
-
-### ---------------------------------------------------------------------
-
-
 

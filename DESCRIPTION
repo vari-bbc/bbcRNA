@@ -25,7 +25,8 @@ Imports:
     tidyr (>= 0.8),
     stats (>= 3.6),
     methods (>= 3.6),
-    BiocStyle (>= 2.12)
+    BiocStyle (>= 2.12),
+    S4Vectors (>= 0.22)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)
