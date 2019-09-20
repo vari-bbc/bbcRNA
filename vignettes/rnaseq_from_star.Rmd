@@ -22,6 +22,8 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(bbcRNA)
 library(SummarizedExperiment)
+library(org.Mm.eg.db) # load the org.db for your organism
+
 ```
 
 # Get counts
@@ -52,7 +54,8 @@ RangedSummarizedExperiment without GRanges data, but DEFormat does not work
 with RangedSummarizedExperiment objects with missing data for rowRanges.
  
 ```{r make_obj}
-bbc_obj <- BbcSE(counts = tcell, granges = granges)
+# bbc_obj <- BbcSE(counts = tcell, granges = granges)
+bbc_obj <- BbcSE(counts = tcell)
 
 # show more information about the BbcSE class
 getClassDef(class(bbc_obj))
@@ -62,6 +65,17 @@ metadata(bbc_obj)[[1]] <- DEFormats::DGEList(bbc_obj)
 bbc_obj
 ```
 
+# Get sample meta data
+
+```{r sample_meta}
+col_meta <- read_col_meta("../inst/extdata/tcell/meta.txt")
+
+# may implement a function to add column meta data eventually
+colData(bbc_obj) <- cbind(colData(bbc_obj), col_meta[colnames(bbc_obj), ])
+
+colData(bbc_obj)
+```
+
 # Get mapping rates
 
 ```{r get_mapping_rates}
@@ -69,10 +83,25 @@ aln_rates <- read_star_map_rates(dir = "../inst/extdata/tcell/",
                                  rgx = "^[^_]+_[^_]+")
 
 # store the mapping rates in the BbcSE object
-# colData(bbc_obj) <- as(aln_rates, "DataFrame") 
+aln_rates(bbc_obj) <- aln_rates
 
-# colData is the name of both the setter and the getter function for column data
-head(colData(bbc_obj))
+# aln_rates is the name of both the setter and the getter function for aln_rates
+aln_rates(bbc_obj)
+```
+
+# Plot alignment rates
+
+```{r plot_mapping}
+plot_aln_rates(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + theme(legend.position = "none")
+
+plot_aln_rates(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill="genotype") + theme(legend.position = "none")
+```
+
+# Add gene symbols
+```{r add_gene_syms}
+bbc_obj <- ens2sym(bbc_obj, org.Mm.eg.db)
+
+rowData(bbc_obj)
 ```
 
 # Session info

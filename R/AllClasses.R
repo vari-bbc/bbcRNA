@@ -59,6 +59,16 @@ setValidity("BbcSE", function(object) {
     msg <- c(msg, "aln_rates must be a matrix")
   }
 
+  valid_aln_rates_colnames <- c("input_reads",
+                                "uniq_aln_reads",
+                                "mult_aln_reads",
+                                "map_rate",
+                                "uniq_map_rate")
+  if(all(colnames(aln_rates(object, withDimnames=FALSE)) %in%
+         valid_aln_rates_colnames)) {
+
+  }
+
   if (length(aln_rates(object, withDimnames=FALSE) > 0)) {
     if (nrow(aln_rates(object, withDimnames=FALSE)) != NC) {
       msg <- c(
@@ -228,6 +238,7 @@ setReplaceMethod("[", c("BbcSE", "ANY", "ANY", "BbcSE"),
 
 ###-----------------------------------------------------------------------------
 #' Row combining method for BbcSE
+#' @importMethodsFrom SummarizedExperiment rbind
 #' @export
 setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
   args <- list(...)
@@ -252,6 +263,7 @@ setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
 
 ###-----------------------------------------------------------------------------
 #' Column combining method for BbcSE
+#' @importMethodsFrom SummarizedExperiment rbind
 #' @export
 setMethod("cbind", "BbcSE", function(..., deparse.level=1) {
   args <- list(...)

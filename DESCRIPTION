@@ -29,7 +29,8 @@ Imports:
     S4Vectors (>= 0.22),
     GenomicFeatures (>= 1.36),
     GenomicRanges (>= 1.36),
-    DEFormats (>= 1.12)
+    DEFormats (>= 1.12),
+    AnnotationDbi (>= 1.46)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

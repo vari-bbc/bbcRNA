@@ -4,7 +4,7 @@
 \alias{BbcSE}
 \title{Constructor for BbcSE}
 \usage{
-BbcSE(counts, granges, ...)
+BbcSE(counts, granges, aln_rates = matrix(0, 0, 0), ...)
 }
 \arguments{
 \item{counts}{A count matrix with sample names as column names and gene names

@@ -202,8 +202,38 @@ read_star_map_rates <- function(dir, rgx){
   aln_metrics_mat <- do.call(rbind, aln_metrics_list)
 
   aln_metrics_mat <- aln_metrics_mat %>%
-    tibble::column_to_rownames(var="sample") %>%
-    as.matrix()
+    tibble::column_to_rownames(var="sample")
+
+  aln_metrics_mat <- data.matrix(aln_metrics_mat)
 
   return(aln_metrics_mat)
+}
+
+###------------------------------------------------------------------------
+
+#' Read column meta data
+#'
+#' \code{read_col_meta} returns a dataframe for adding to a BbcSE object.
+#'
+#' This function will read in column meta data.
+#'
+#' @param file A tab-delimited column meta data file. Must have a column named
+#'   "sample".
+#' @return A DataFrame with 'sample' column set as row names.
+#' @importFrom readr read_tsv
+#' @importFrom tibble column_to_rownames
+#' @importFrom S4Vectors DataFrame
+#' @export
+read_col_meta <- function(file){
+  df <- readr::read_tsv(file)
+
+  if (!"sample" %in% colnames(df)){
+    stop("Must have a column named 'sample'")
+  }
+
+  df <- df %>% tibble::column_to_rownames("sample")
+
+  df <- DataFrame(df, row.names = rownames(df))
+
+  return(df)
 }

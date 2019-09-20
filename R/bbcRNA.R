@@ -21,3 +21,9 @@ NULL
 
 #' @importFrom methods new
 NULL
+
+#' @import SummarizedExperiment
+NULL
+
+
+
