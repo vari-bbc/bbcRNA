@@ -15,10 +15,33 @@ You can install bbcRNA from [GitHub](https://github.com/vari-bbc) with:
 devtools::install_github("vari-bbc/bbcRNA")
 ```
 
-## Usage
+## The BbcSE class
 
-Below are some examples of how to use bbcRNA.
+The BbcSE class extends SummarizedExperiment. Additional features
+include:
+
+  - An aln\_rates slot to hold alignment metrics for samples.
+  - The first two elements of the metadata slots store:
+    1.  list of edgeR objects
+        1.  DGEList (must be first element)
+        2.  DGEGLM / DGEExact / DGELRT
+    2.  DESeqDataSet
+
+<!-- end list -->
 
 ``` r
+# attach the package
 library(bbcRNA)
+
+# run the BbcSE constructor without any data to show the structure of the object
+BbcSE()
+#> class: BbcSE 
+#> dim: 1 1 
+#> metadata(0):
+#> assays(1): counts
+#> rownames: NULL
+#> rowData names(0):
+#> colnames: NULL
+#> colData names(0):
+#> aln_rates(0):
 ```

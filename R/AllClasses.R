@@ -102,7 +102,7 @@ setValidity("BbcSE", function(object) {
 #' @importFrom GenomicRanges GRanges
 #' @importFrom stringr str_remove
 #' @importFrom SummarizedExperiment SummarizedExperiment
-BbcSE <- function(counts,
+BbcSE <- function(counts = matrix(0, 1, 1),
                   granges,
                   aln_rates = matrix(0, 0, 0),
                   ...)

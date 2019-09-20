@@ -26,10 +26,22 @@ devtools::install_github("vari-bbc/bbcRNA")
 
 ```
 
-## Usage
+## The BbcSE class
 
-Below are some examples of how to use bbcRNA.
+The BbcSE class extends SummarizedExperiment. Additional features include:
 
-```{r load_lib}
+* An aln_rates slot to hold alignment metrics for samples.
+* The first two elements of the metadata slots store: 
+    1. list of edgeR objects
+        1. DGEList (must be first element)
+        2. DGEGLM / DGEExact / DGELRT
+    2. DESeqDataSet
+    
+```{r}
+# attach the package
 library(bbcRNA)
+
+# run the BbcSE constructor without any data to show the structure of the object
+BbcSE()
 ```
+    
