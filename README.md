@@ -25,7 +25,9 @@ include:
     1.  list of edgeR objects
         1.  DGEList (must be first element)
         2.  DGEGLM / DGEExact / DGELRT
-    2.  DESeqDataSet
+    2.  list of DESeq2 objecrs
+        1.  DESeqDataSet (must be first element)
+        2.  DESeqResults
 
 <!-- end list -->
 

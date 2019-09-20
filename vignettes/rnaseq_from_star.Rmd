@@ -40,9 +40,9 @@ This step is slow (several minutes to finish). It can be skipped if the genomic
 intervals of the genes are not of interest.
 
 ```{r granges}
-txdb <- GenomicFeatures::makeTxDbFromGFF("~/Desktop/gencode.vM13.annotation.gtf",
-                                         format="gtf")
-granges <- GenomicFeatures::genes(txdb)
+# txdb <- GenomicFeatures::makeTxDbFromGFF("~/Desktop/gencode.vM13.annotation.gtf",
+#                                         format="gtf")
+# granges <- GenomicFeatures::genes(txdb)
 ```
 
 
@@ -60,7 +60,7 @@ bbc_obj <- BbcSE(counts = tcell)
 # show more information about the BbcSE class
 getClassDef(class(bbc_obj))
 
-metadata(bbc_obj)[[1]] <- DEFormats::DGEList(bbc_obj)
+metadata(bbc_obj)$edger[[1]] <- DEFormats::DGEList(bbc_obj)
 
 bbc_obj
 ```

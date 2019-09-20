@@ -26,34 +26,48 @@ setValidity("BbcSE", function(object) {
     msg <- c(msg, "negative values in 'counts'")
   }
 
-  if (length(metadata(object)) > 0){
-    if (is(metadata(object)[[1]], "list")) {
-      msg <- c(msg, "First element in metadata must be a list of edgeR objects")
-    }
+  if (!identical(names(metadata(object))[1:2], c("edger", "deseq2"))) {
+    msg <- c(msg, "metadata(object)[1:2] names must be 'edger' and 'deseq2'")
+  }
 
-    if (length(metadata(object)[[1]]) > 0 &
-        is(metadata(object)[[1]][[1]], "DGEList")) {
-      msg <- c(msg, "metadata(object)[[1]][[1]] must be a DGEList object")
-    }
+  if (!is(metadata(object)[[1]], "list")) {
+    msg <- c(msg, "First element in metadata must be a list of edgeR objects")
+  }
 
-    if (length(metadata(object)[[1]]) > 1) {
-      for (i in 2:length(metadata(object)[[1]])){
-        curr_meta <- metadata(object)[[1]][i]
-        if (!is(curr_meta, "DGEGLM") &
-            !is(curr_meta, "DGEExact") &
-            !is(curr_meta, "DGELRT")) {
-          msg <- c(msg,
-                   "After 'DGEList', metadata(object)[[1]] elements must be
+  if (length(metadata(object)[[1]]) > 0 &&
+      !is(metadata(object)[[1]][[1]], "DGEList")) {
+    msg <- c(msg, "metadata(object)[[1]][[1]] must be a DGEList object")
+  }
+
+  if (length(metadata(object)[[1]]) > 1) {
+    for (i in 2:length(metadata(object)[[1]])){
+      curr_meta <- metadata(object)[[1]][[i]]
+      if (!is(curr_meta, "DGEGLM") &
+          !is(curr_meta, "DGEExact") &
+          !is(curr_meta, "DGELRT")) {
+        msg <- c(msg,
+                 "After 'DGEList', metadata(object)[[1]] elements must be
                  edgeR result objects.")
-        }
       }
     }
+  }
 
-    if (length(metadata(object)) > 1 &
-        !is(metadata(object)[[2]], "DESeqDataSet")) {
-      msg <- c(msg, "Second element in metadata must be a DESeqDataSet object")
+  if (length(metadata(object)) > 1){
+    if (!is(metadata(object)[[2]], "list")) {
+      msg <- c(msg, "Second element in metadata must be a list of DESeq2 objects")
+    }
+
+    if (length(metadata(object)[[2]]) > 0 &&
+        !is(metadata(object)[[2]][[1]], "DESeqDataSet")) {
+      msg <- c(msg, "metadata(object)[[2]][[1]] must be a DESeqDataSet object")
+    }
+
+    if (length(metadata(object)[[2]]) > 1 &&
+        !is(metadata(object)[[2]][[2]], "DESeqResults")) {
+      msg <- c(msg, "metadata(object)[[2]][[2]] must be a DESeqResults object")
     }
   }
+
 
   if (!is.matrix(aln_rates(object, withDimnames=FALSE))) {
     msg <- c(msg, "aln_rates must be a matrix")
@@ -122,14 +136,16 @@ BbcSE <- function(counts = matrix(0, 1, 1),
     }
 
     se <- SummarizedExperiment(list(counts = counts[common_genes, ]),
-                               rowRanges = granges[common_genes])
+                               rowRanges = granges[common_genes],
+                               metadata = list(edger = list(), deseq2 = list()))
   }
 
   if(missing(granges)){
     # add fake GRanges data. Needed to get DEFormats::DGEList to work
     se <- SummarizedExperiment(list(counts=counts),
                                rep(GRanges(seqnames="foobar", ranges=0:0),
-                                   nrow(counts)))
+                                   nrow(counts)),
+                               metadata = list(edger = list(), deseq2 = list()))
 
     # se <- as(se, "RangedSummarizedExperiment")
   }
