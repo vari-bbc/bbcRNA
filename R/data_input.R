@@ -82,7 +82,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
   samp_lens <- unlist(lapply(counts_list, function(x){
     num_row <- nrow(x)
     num_uniq_genes <- length(unique(x$gene_id))
-    stopifnot(num_row == num_uniq_genes) # check gene names are unique
+    stopifnot(identical(num_row, num_uniq_genes)) # check gene names are unique
 
     return(num_row)
     }))
@@ -105,7 +105,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
   ## check that all genes have same number of samples and that # is equal
   ## to the number of input samples.
   stopifnot(length(split_by_genes_nrows_uniq) == 1 &
-              split_by_genes_nrows_uniq == length(count_files))
+              identical(split_by_genes_nrows_uniq, length(count_files)))
 
   # spread to form count matrix
   count_mat <- tidyr::spread(data = counts_rbind,
@@ -114,14 +114,14 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
     tibble::column_to_rownames(var = "gene_id")
 
   # check # of genes unchanged
-  stopifnot(nrow(count_mat) == samp_lens_uniq)
+  stopifnot(identical(nrow(count_mat), samp_lens_uniq))
 
   # remove version number from gene ids if rm_ens_vers
   if (rm_ens_vers) {
     new_gene_ids <- stringr::str_remove(rownames(count_mat), "\\.\\d+$")
 
     # check that removing the version # does not affect uniqueness.
-    stopifnot(length(unique(new_gene_ids)) == length(rownames(count_mat)))
+    stopifnot(identical(length(unique(new_gene_ids)), length(rownames(count_mat))))
 
     # set new rownames
     rownames(count_mat) <- new_gene_ids
@@ -199,10 +199,11 @@ read_star_map_rates <- function(dir, rgx){
                                return(keep_metrics_df)
                              })
 
-  aln_metrics_df <- do.call(rbind, aln_metrics_list)
+  aln_metrics_mat <- do.call(rbind, aln_metrics_list)
 
-  aln_metrics_df <- aln_metrics_df %>%
-    tibble::column_to_rownames(var="sample")
+  aln_metrics_mat <- aln_metrics_mat %>%
+    tibble::column_to_rownames(var="sample") %>%
+    as.matrix()
 
-  return(aln_metrics_df)
+  return(aln_metrics_mat)
 }
