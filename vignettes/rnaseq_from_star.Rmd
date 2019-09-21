@@ -60,8 +60,6 @@ bbc_obj <- BbcSE(counts = tcell)
 # show more information about the BbcSE class
 getClassDef(class(bbc_obj))
 
-metadata(bbc_obj)$edger[[1]] <- DEFormats::DGEList(bbc_obj)
-
 bbc_obj
 ```
 
@@ -103,6 +101,15 @@ bbc_obj <- ens2sym(bbc_obj, org.Mm.eg.db)
 
 rowData(bbc_obj)
 ```
+
+# edgeR
+```{r make_DGEList}
+# metadata(bbc_obj)$edger[[1]] <- DEFormats::DGEList(bbc_obj)
+bbc_obj <- makeDGEList(bbc_obj, group="genotype")
+
+metadata(bbc_obj)$edger
+```
+
 
 # Session info
 ```{r}
