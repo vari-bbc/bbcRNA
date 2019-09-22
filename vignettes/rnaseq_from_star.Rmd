@@ -107,7 +107,14 @@ rowData(bbc_obj)
 # metadata(bbc_obj)$edger[[1]] <- DEFormats::DGEList(bbc_obj)
 bbc_obj <- makeDGEList(bbc_obj, group="genotype")
 
-metadata(bbc_obj)$edger
+# what's in the edger slot now?
+str(edger(bbc_obj))
+
+# Number of rows in the SE
+nrow(bbc_obj)
+
+# Number of genes in edger[[1]]
+nrow(edger(bbc_obj)[[1]])
 ```
 
 

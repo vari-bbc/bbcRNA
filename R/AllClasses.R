@@ -23,52 +23,52 @@ setValidity("BbcSE", function(object) {
     msg <- c(msg, "'counts' must be first assay")
   }
 
-  if (min(assay(object)) < 0) {
+  if (length(assay(object, "counts")) > 0 && min(assay(object, "counts")) < 0) {
     msg <- c(msg, "negative values in 'counts'")
   }
 
   ###edger slot-----------------------------------------------------------------
-  if (!is.list(edger(object))) {
+  if (class(edger(object))[1] != "list") {
     msg <- c(msg, "edger slot must be a list")
-  }
+  } else{
 
-  if (length(edger(object)) > 0 &&
-      !is(edger(object)[[1]], "DGEList")) {
-    msg <- c(msg, "edger(object)[[1]] must be a DGEList object")
-  }
+    if (length(edger(object)) > 0 &&
+        !is(edger(object)[[1]], "DGEList")) {
+      msg <- c(msg, "edger(object)[[1]] must be a DGEList object")
+    }
 
-  if (length(edger(object)) > 1) {
-    lapply(edger(object)[-1], function(curr_edger){
-      if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
-          !is(curr_edger, "DGELRT")) {
-        msg <- c(msg,
-                 "edger(object)[-1] elements must be edgeR result objects.")
-      }
-    })
+    if (length(edger(object)) > 1) {
+      lapply(edger(object)[-1], function(curr_edger){
+        if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
+            !is(curr_edger, "DGELRT")) {
+          msg <- c(msg,
+                   "edger(object)[-1] elements must be edgeR result objects.")
+        }
+      })
+    }
   }
-
   ###END edger slot-------------------------------------------------------------
 
 
   ###deseq2 slot----------------------------------------------------------------
-  if (!is.list(deseq2(object))) {
+  if (class(deseq2(object))[1] != "list") {
     msg <- c(msg, "deseq2 slot must be a list")
-  }
+  } else{
 
-  if (length(deseq2(object)) > 0 &&
-      !is(deseq2(object)[[1]], "DESeqDataSet")) {
-    msg <- c(msg, "deseq2(object)[[1]] must be a DESeqDataSet object")
-  }
+    if (length(deseq2(object)) > 0 &&
+        !is(deseq2(object)[[1]], "DESeqDataSet")) {
+      msg <- c(msg, "deseq2(object)[[1]] must be a DESeqDataSet object")
+    }
 
-  if (length(deseq2(object)) > 1) {
-    lapply(deseq2(object)[-1], function(curr_deseq2){
-      if (!is(curr_deseq2, "DESeqResults")) {
-        msg <- c(msg,
-                 "deseq2(object)[-1] elements must be a DESeqResults object.")
-      }
-    })
+    if (length(deseq2(object)) > 1) {
+      lapply(deseq2(object)[-1], function(curr_deseq2){
+        if (!is(curr_deseq2, "DESeqResults")) {
+          msg <- c(msg,
+                   "deseq2(object)[-1] elements must be a DESeqResults object.")
+        }
+      })
+    }
   }
-
   ###END deseq2 slot------------------------------------------------------------
 
 
@@ -77,25 +77,26 @@ setValidity("BbcSE", function(object) {
 
   if (!is.matrix(aln_rates(object, withDimnames=FALSE))) {
     msg <- c(msg, "aln_rates must be a matrix")
-  }
+  } else if (length(aln_rates(object, withDimnames=FALSE)) > 0){
 
-  valid_aln_rates_colnames <- c("input_reads",
-                                "uniq_aln_reads",
-                                "mult_aln_reads",
-                                "map_rate",
-                                "uniq_map_rate")
-  if(all(colnames(aln_rates(object, withDimnames=FALSE)) %in%
-         valid_aln_rates_colnames)) {
+    valid_aln_rates_colnames <- c("input_reads",
+                                  "uniq_aln_reads",
+                                  "mult_aln_reads",
+                                  "map_rate",
+                                  "uniq_map_rate")
+    if(all(colnames(aln_rates(object, withDimnames=FALSE)) %in%
+           valid_aln_rates_colnames)) {
 
-  }
-
-  if (length(aln_rates(object, withDimnames=FALSE) > 0)) {
-    if (nrow(aln_rates(object, withDimnames=FALSE)) != NC) {
-      msg <- c(
-        msg, "'nrow(aln_rates)' should be equal to the number of columns"
-      )
     }
 
+    if (length(aln_rates(object, withDimnames=FALSE) > 0)) {
+      if (nrow(aln_rates(object, withDimnames=FALSE)) != NC) {
+        msg <- c(
+          msg, "'nrow(aln_rates)' should be equal to the number of columns"
+        )
+      }
+
+    }
   }
   ###END aln_rates slot---------------------------------------------------------
 
@@ -124,7 +125,7 @@ setValidity("BbcSE", function(object) {
 #' @importFrom GenomicRanges GRanges
 #' @importFrom stringr str_remove
 #' @importFrom SummarizedExperiment SummarizedExperiment
-BbcSE <- function(counts = matrix(0, 1, 1),
+BbcSE <- function(counts = matrix(0, 0, 0),
                   granges = rep(GRanges(seqnames="foobar", ranges=0:0),
                                 nrow(counts)),
                   aln_rates = matrix(0, 0, 0),

@@ -67,17 +67,29 @@ aln_rates <- function(x, withDimnames=TRUE) {
 #' @import ggplot2
 #' @importFrom tibble as_tibble
 #' @importFrom cowplot theme_cowplot
-plot_aln_rates <- function(x, type, fill_by = "sample", facet_by = "") {
+plot_aln_rates <- function(x, type = "uniq_map_rate", fill_by = "sample",
+                           facet_by = "") {
+  if(!is(x, "BbcSE")) stop("x not BbcSE object")
+  validObject(x)
 
   aln_data <- tibble::as_tibble(aln_rates(x),
                                 rownames = "sample")
+
+  sample_meta <- tibble::as_tibble(colData(x),
+                                   rownames = "sample")
 
   if(!type %in% colnames(aln_data)){
     stop(paste0(type, " is not a column in aln_data"))
   }
 
-  sample_meta <- tibble::as_tibble(colData(x),
-                                   rownames = "sample")
+  if(!fill_by %in% c(colnames(aln_data), colnames(sample_meta))){
+    stop(paste0(type, " is not a column in aln_data or colData"))
+  }
+
+  if(!facet_by %in% c(colnames(aln_data), colnames(sample_meta))){
+    stop(paste0(type, " is not a column in aln_data or colData"))
+  }
+
 
   # join with sample meta data
   aln_data <- dplyr::left_join(aln_data, sample_meta, by = "sample")

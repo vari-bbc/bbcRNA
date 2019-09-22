@@ -10,10 +10,16 @@ makeDGEList(x, group = NULL)
 \item{x}{A BbcSE object.}
 
 \item{group}{Name of a column from colData()}
+
+\item{rm_low_genes}{logical indicating whether low count genes should be
+removed. Implements edgeR::filterByExpr.}
 }
 \value{
 A BbcSE object.
 }
 \description{
 Make a DGEList object based on assay(object, "counts").
+}
+\seealso{
+\code{\link[edgeR]{filterByExpr}}
 }
