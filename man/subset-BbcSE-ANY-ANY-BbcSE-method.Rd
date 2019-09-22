@@ -7,6 +7,17 @@
 \usage{
 \S4method{[}{BbcSE,ANY,ANY,BbcSE}(x, i, j, ...) <- value
 }
+\arguments{
+\item{x}{BbcSE object}
+
+\item{i}{row index}
+
+\item{j}{column index}
+
+\item{...}{see ?"[" for S4Vectors}
+
+\item{value}{BbcSE object for replacement}
+}
 \description{
 Assigning subsets method for BbcSE
 }

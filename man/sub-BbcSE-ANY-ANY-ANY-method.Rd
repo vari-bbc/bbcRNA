@@ -7,6 +7,15 @@
 \usage{
 \S4method{[}{BbcSE,ANY,ANY,ANY}(x, i, j, drop = TRUE)
 }
+\arguments{
+\item{x}{BbcSE object}
+
+\item{i}{row index}
+
+\item{j}{column index}
+
+\item{drop}{see help("[")}
+}
 \description{
 Subsetting method for BbcSE
 }

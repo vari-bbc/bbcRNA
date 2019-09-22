@@ -2,7 +2,6 @@
 #'
 #' In a \code{BbcSE} object, "counts" must be the first assay and must contain
 #' non-negative values.
-#' @export
 #' @importFrom S4Vectors metadata
 #' @importFrom  SummarizedExperiment assayNames assay
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
@@ -10,7 +9,9 @@
 #' @importClassesFrom edgeR DGEList DGEGLM DGEExact DGELRT
 .BbcSE <- setClass("BbcSE",
                    slots = representation(
-                     aln_rates = "matrix"),
+                     aln_rates = "matrix",
+                     edger = "list",
+                     deseq2 = "list"),
                    contains="RangedSummarizedExperiment")
 
 setValidity("BbcSE", function(object) {
@@ -26,48 +27,53 @@ setValidity("BbcSE", function(object) {
     msg <- c(msg, "negative values in 'counts'")
   }
 
-  if (!identical(names(metadata(object))[1:2], c("edger", "deseq2"))) {
-    msg <- c(msg, "metadata(object)[1:2] names must be 'edger' and 'deseq2'")
+  ###edger slot-----------------------------------------------------------------
+  if (!is.list(edger(object))) {
+    msg <- c(msg, "edger slot must be a list")
   }
 
-  if (!is(metadata(object)[[1]], "list")) {
-    msg <- c(msg, "First element in metadata must be a list of edgeR objects")
+  if (length(edger(object)) > 0 &&
+      !is(edger(object)[[1]], "DGEList")) {
+    msg <- c(msg, "edger(object)[[1]] must be a DGEList object")
   }
 
-  if (length(metadata(object)[[1]]) > 0 &&
-      !is(metadata(object)[[1]][[1]], "DGEList")) {
-    msg <- c(msg, "metadata(object)[[1]][[1]] must be a DGEList object")
-  }
-
-  if (length(metadata(object)[[1]]) > 1) {
-    for (i in 2:length(metadata(object)[[1]])){
-      curr_meta <- metadata(object)[[1]][[i]]
-      if (!is(curr_meta, "DGEGLM") &
-          !is(curr_meta, "DGEExact") &
-          !is(curr_meta, "DGELRT")) {
+  if (length(edger(object)) > 1) {
+    lapply(edger(object)[-1], function(curr_edger){
+      if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
+          !is(curr_edger, "DGELRT")) {
         msg <- c(msg,
-                 "After 'DGEList', metadata(object)[[1]] elements must be
-                 edgeR result objects.")
+                 "edger(object)[-1] elements must be edgeR result objects.")
       }
-    }
+    })
   }
 
-  if (length(metadata(object)) > 1){
-    if (!is(metadata(object)[[2]], "list")) {
-      msg <- c(msg, "Second element in metadata must be a list of DESeq2 objects")
-    }
+  ###END edger slot-------------------------------------------------------------
 
-    if (length(metadata(object)[[2]]) > 0 &&
-        !is(metadata(object)[[2]][[1]], "DESeqDataSet")) {
-      msg <- c(msg, "metadata(object)[[2]][[1]] must be a DESeqDataSet object")
-    }
 
-    if (length(metadata(object)[[2]]) > 1 &&
-        !is(metadata(object)[[2]][[2]], "DESeqResults")) {
-      msg <- c(msg, "metadata(object)[[2]][[2]] must be a DESeqResults object")
-    }
+  ###deseq2 slot----------------------------------------------------------------
+  if (!is.list(deseq2(object))) {
+    msg <- c(msg, "deseq2 slot must be a list")
   }
 
+  if (length(deseq2(object)) > 0 &&
+      !is(deseq2(object)[[1]], "DESeqDataSet")) {
+    msg <- c(msg, "deseq2(object)[[1]] must be a DESeqDataSet object")
+  }
+
+  if (length(deseq2(object)) > 1) {
+    lapply(deseq2(object)[-1], function(curr_deseq2){
+      if (!is(curr_deseq2, "DESeqResults")) {
+        msg <- c(msg,
+                 "deseq2(object)[-1] elements must be a DESeqResults object.")
+      }
+    })
+  }
+
+  ###END deseq2 slot------------------------------------------------------------
+
+
+
+  ###aln_rates slot-------------------------------------------------------------
 
   if (!is.matrix(aln_rates(object, withDimnames=FALSE))) {
     msg <- c(msg, "aln_rates must be a matrix")
@@ -91,6 +97,7 @@ setValidity("BbcSE", function(object) {
     }
 
   }
+  ###END aln_rates slot---------------------------------------------------------
 
   if (is.null(msg)) {
     TRUE
@@ -109,6 +116,7 @@ setValidity("BbcSE", function(object) {
 #' @param counts A count matrix with sample names as column names and gene names
 #'   as row names.
 #' @param granges GRanges or GRangesList object. Optional.
+#' @param aln_rates Matrix containing alignment metrics. Optional.
 #' @param ... Arguments for SummarizedExperiment.
 #' @return A BbcSE object (extension of RangedSummarizedExperiment).
 #' @export
@@ -117,13 +125,14 @@ setValidity("BbcSE", function(object) {
 #' @importFrom stringr str_remove
 #' @importFrom SummarizedExperiment SummarizedExperiment
 BbcSE <- function(counts = matrix(0, 1, 1),
-                  granges,
+                  granges = rep(GRanges(seqnames="foobar", ranges=0:0),
+                                nrow(counts)),
                   aln_rates = matrix(0, 0, 0),
                   ...)
 {
   stopifnot(is(counts, "matrix"))
 
-  if(!missing(granges)){
+  if(!is.null(names(granges))){
     stopifnot(is(granges, "GRanges"))
     names(granges) <- stringr::str_remove(names(granges), "\\.\\d+$")
     common_genes <- intersect(rownames(counts), names(granges))
@@ -136,19 +145,22 @@ BbcSE <- function(counts = matrix(0, 1, 1),
     }
 
     se <- SummarizedExperiment(list(counts = counts[common_genes, ]),
-                               rowRanges = granges[common_genes],
-                               metadata = list(edger = list(), deseq2 = list()))
+                               rowRanges = granges[common_genes])
+  } else {
+    # default granges is fake GRanges data. Needed to get DEFormats::DGEList to
+    # work
+      se <- SummarizedExperiment(list(counts=counts),
+                                 rowRanges = granges)
   }
 
-  if(missing(granges)){
-    # add fake GRanges data. Needed to get DEFormats::DGEList to work
-    se <- SummarizedExperiment(list(counts=counts),
-                               rep(GRanges(seqnames="foobar", ranges=0:0),
-                                   nrow(counts)),
-                               metadata = list(edger = list(), deseq2 = list()))
-
-    # se <- as(se, "RangedSummarizedExperiment")
-  }
+  # if(missing(granges)){
+  #   # add fake GRanges data. Needed to get DEFormats::DGEList to work
+  #   se <- SummarizedExperiment(list(counts=counts),
+  #                              rep(GRanges(seqnames="foobar", ranges=0:0),
+  #                                  nrow(counts)))
+  #
+  #   # se <- as(se, "RangedSummarizedExperiment")
+  # }
 
   if (length(aln_rates) > 0){
     # check that sample names match
@@ -159,12 +171,20 @@ BbcSE <- function(counts = matrix(0, 1, 1),
     aln_rates <- aln_rates[colnames(counts), ]
   }
 
-  .BbcSE(se, aln_rates = aln_rates)
+  # if (length(edger) > 0){
+  #   message("Don't set edger slot manually. Argument ignored.")
+  # }
+  #
+  # if (length(deseq2) > 0){
+  #   message("Don't set deseq2 slot manually. Argument ignored.")
+  # }
+
+  .BbcSE(se, aln_rates = aln_rates, edger = list(), deseq2 = list())
 }
 
 ###-----------------------------------------------------------------------------
 #' show method for BbcSE
-#'
+#' @param object BbcSE object
 #' @export
 #' @importMethodsFrom SummarizedExperiment show
 setMethod("show", "BbcSE", function(object) {
@@ -181,11 +201,20 @@ setMethod("show", "BbcSE", function(object) {
     "aln_rates(", aln_rates_ncol, "): ", aln_rates_colnames, "\n",
     sep=""
   )
+
+  edger_classes <- sapply(edger(object), class)
+  cat("edger(", length(edger_classes), "): ", edger_classes,"\n")
+
+  deseq2_classes <- sapply(deseq2(object), class)
+  cat("deseq2(", length(deseq2_classes), "): ", deseq2_classes,"\n")
 })
 
 ###-----------------------------------------------------------------------------
 #' Subsetting method for BbcSE
-#'
+#' @param x BbcSE object
+#' @param i row index
+#' @param j column index
+#' @param drop see help("[")
 #' @export
 setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
   aln_rates <- aln_rates(x, withDimnames=FALSE)
@@ -212,11 +241,19 @@ setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
   }
 
   out <- callNextMethod()
-  BiocGenerics:::replaceSlots(out, aln_rates = aln_rates, check = TRUE)
+  BiocGenerics:::replaceSlots(out, aln_rates = aln_rates,
+                              edger = list(),
+                              deseq2 = list(),
+                              check = TRUE)
 })
 
 ###-----------------------------------------------------------------------------
 #' Assigning subsets method for BbcSE
+#' @param x BbcSE object
+#' @param i row index
+#' @param j column index
+#' @param ... see ?"[" for S4Vectors
+#' @param value BbcSE object for replacement
 #' @export
 setReplaceMethod("[", c("BbcSE", "ANY", "ANY", "BbcSE"),
                  function(x, i, j, ..., value) {
@@ -249,11 +286,15 @@ setReplaceMethod("[", c("BbcSE", "ANY", "ANY", "BbcSE"),
                    out <- callNextMethod()
                    BiocGenerics:::replaceSlots(out,
                                                aln_rates=aln_rates,
+                                               edger = list(),
+                                               deseq2 = list(),
                                                check=TRUE)
                  })
 
 ###-----------------------------------------------------------------------------
 #' Row combining method for BbcSE
+#' @param ... BbcSE objects
+#' @param deparse.level see ?`rbind,SummarizedExperiment-method`
 #' @importMethodsFrom SummarizedExperiment rbind
 #' @export
 setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
@@ -274,11 +315,13 @@ setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
   on.exit(S4Vectors:::disableValidity(old.validity))
 
   out <- callNextMethod()
-  BiocGenerics:::replaceSlots(out, check=FALSE)
+  BiocGenerics:::replaceSlots(out, edger = list(), deseq2 = list(), check=FALSE)
 })
 
 ###-----------------------------------------------------------------------------
 #' Column combining method for BbcSE
+#' @param ... BbcSE objects
+#' @param deparse.level See ?base::cbind for a description of this argument.
 #' @importMethodsFrom SummarizedExperiment rbind
 #' @export
 setMethod("cbind", "BbcSE", function(..., deparse.level=1) {
@@ -308,5 +351,7 @@ setMethod("cbind", "BbcSE", function(..., deparse.level=1) {
 
   out <- callNextMethod()
   BiocGenerics:::replaceSlots(out, aln_rates=all.aln_rates,
+                              edger = list(),
+                              deseq2 = list(),
                               check=FALSE)
 })

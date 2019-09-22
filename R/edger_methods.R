@@ -1,22 +1,29 @@
-#' Convert Ensembl IDs to gene symbols.
+#' Getter for edger slot
+#' @name edger
+#' @param x BbcSE object
+#' @export
+edger <- function(x) {
+  if(!is(x, "BbcSE")) stop("Not BbcSE object")
+  out <- x@edger
+  out
+}
+
+#' Make a DGEList object.
 #'
-#' Convert Ensembl IDs to gene symbols.
-#'
-#' Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-#' just those in the BbcSE object.
+#' Make a DGEList object based on assay(object, "counts").
 #'
 #' @name makeDGEList
 #' @param x A BbcSE object.
 #' @param group Name of a column from colData()
+#' @return A BbcSE object.
 #' @importFrom edgeR DGEList
 #' @importFrom SummarizedExperiment assay colData
-#' @return A BbcSE object.
-setMethod("makeDGEList", c(x = "BbcSE"),
-          function(x, group = NULL) {
-            metadata(x)$edger[[1]] <- edgeR::DGEList(
-              counts = assay(x, "counts"),
-              group = colData(x)[[group]])
+#' @export
+makeDGEList <- function(x, group = NULL) {
+  metadata(x)$edger[[1]] <- edgeR::DGEList(
+    counts = assay(x, "counts"),
+    group = colData(x)[[group]])
 
-            return(x)
-          }
-)
+  return(x)
+}
+

@@ -90,9 +90,9 @@ aln_rates(bbc_obj)
 # Plot alignment rates
 
 ```{r plot_mapping}
-plot_aln_rates(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + theme(legend.position = "none")
+plot_aln_rates(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
 
-plot_aln_rates(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill="genotype") + theme(legend.position = "none")
+plot_aln_rates(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
 ```
 
 # Add gene symbols

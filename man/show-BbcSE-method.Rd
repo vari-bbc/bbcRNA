@@ -7,6 +7,9 @@
 \usage{
 \S4method{show}{BbcSE}(object)
 }
+\arguments{
+\item{object}{BbcSE object}
+}
 \description{
 show method for BbcSE
 }

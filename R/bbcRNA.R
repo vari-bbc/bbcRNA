@@ -19,7 +19,7 @@ NULL
 #' @importFrom stats complete.cases
 NULL
 
-#' @importFrom methods new
+#' @importFrom methods new callNextMethod validObject
 NULL
 
 #' @import SummarizedExperiment

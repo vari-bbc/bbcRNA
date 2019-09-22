@@ -7,6 +7,11 @@
 \usage{
 \S4method{cbind}{BbcSE}(..., deparse.level = 1)
 }
+\arguments{
+\item{...}{BbcSE objects}
+
+\item{deparse.level}{See ?base::cbind for a description of this argument.}
+}
 \description{
 Column combining method for BbcSE
 }

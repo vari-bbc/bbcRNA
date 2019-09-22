@@ -4,13 +4,17 @@
 \alias{BbcSE}
 \title{Constructor for BbcSE}
 \usage{
-BbcSE(counts, granges, aln_rates = matrix(0, 0, 0), ...)
+BbcSE(counts = matrix(0, 1, 1), granges = rep(GRanges(seqnames =
+  "foobar", ranges = 0:0), nrow(counts)), aln_rates = matrix(0, 0, 0),
+  ...)
 }
 \arguments{
 \item{counts}{A count matrix with sample names as column names and gene names
 as row names.}
 
 \item{granges}{GRanges or GRangesList object. Optional.}
+
+\item{aln_rates}{Matrix containing alignment metrics. Optional.}
 
 \item{...}{Arguments for SummarizedExperiment.}
 }

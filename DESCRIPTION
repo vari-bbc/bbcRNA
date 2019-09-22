@@ -30,7 +30,10 @@ Imports:
     GenomicFeatures (>= 1.36),
     GenomicRanges (>= 1.36),
     DEFormats (>= 1.12),
-    AnnotationDbi (>= 1.46)
+    AnnotationDbi (>= 1.46),
+    ggplot2 (>= 3.2),
+    cowplot (>= 1.0),
+    org.Mm.eg.db (>= 3.8)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

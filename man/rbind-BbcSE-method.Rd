@@ -7,6 +7,11 @@
 \usage{
 \S4method{rbind}{BbcSE}(..., deparse.level = 1)
 }
+\arguments{
+\item{...}{BbcSE objects}
+
+\item{deparse.level}{see ?`rbind,SummarizedExperiment-method`}
+}
 \description{
 Row combining method for BbcSE
 }
