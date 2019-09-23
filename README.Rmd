@@ -44,6 +44,7 @@ The BbcSE class extends SummarizedExperiment. Additional features include:
 library(bbcRNA)
 
 # run the BbcSE constructor without any data to show the structure of the object
+
 BbcSE()
 ```
     

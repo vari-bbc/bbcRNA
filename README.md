@@ -36,14 +36,17 @@ include:
 library(bbcRNA)
 
 # run the BbcSE constructor without any data to show the structure of the object
+
 BbcSE()
 #> class: BbcSE 
-#> dim: 1 1 
+#> dim: 0 0 
 #> metadata(0):
 #> assays(1): counts
 #> rownames: NULL
 #> rowData names(0):
 #> colnames: NULL
 #> colData names(0):
-#> aln_rates(0):
+#> aln_rates(0): 
+#> edger( 0 ):   
+#> deseq2( 0 ):
 ```

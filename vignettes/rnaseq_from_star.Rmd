@@ -21,6 +21,15 @@ knitr::opts_chunk$set(
 In this vignette, we demonstrate how to use the bbcRNA package to run an RNA-seq
 analysis starting from gene read count files produced by the STAR aligner.
 
+# Install bbcRNA if not installed
+```{r}
+if (!requireNamespace("devtools", quietly = TRUE))
+  install.packages("devtools")
+if (!requireNamespace("bbcRNA", quietly = TRUE))
+  devtools::install_github("vari-bbc/bbcRNA")
+```
+
+
 # Load packages
 
 ```{r setup}
