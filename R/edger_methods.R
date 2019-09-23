@@ -143,3 +143,150 @@ setMethod("normalize_counts", "DGEList", function(x) {
   return(norm_log_cpm)
 })
 
+###-----------------------------------------------------------------------------
+
+#' Function to convert to edgeR-style contrasts
+#'
+#' @param contrasts_list list of chr vectors containing variable name, numerator
+#'     level, denominator level
+#' @param design output of model.matrix
+#' @importFrom stringr str_detect str_replace
+#' @importFrom limma makeContrasts
+#' @export
+lists_to_edger_contrasts <- function(contrasts_list, design){
+  out_names <- sapply(contrasts_list, function(x){
+    stopifnot(length(x) == 3 && is.vector(x, mode="character"))
+    paste0(x[1], "_", x[2], "_-_", x[3])
+  })
+  out_contrasts <- lapply(contrasts_list, function(x){
+    stopifnot(length(x) == 3 && is.vector(x, mode="character"))
+
+    de_var <- x[1]
+
+    num_and_denom <- x[2:3]
+
+    num_and_denom <- sapply(num_and_denom, function(y){
+
+      # splits if numerator was a difference between two levels
+      # (ie. interaction)
+      y <- stringr::str_split(y, "-", simplify = TRUE)[1,]
+
+      prefixed <- sapply(y, function(z) paste0(de_var, z))
+
+      if(length(prefixed) > 1){
+        prefixed <- paste0(prefixed[1], "-", prefixed[2])
+      }
+
+      prefixed
+    })
+
+    paste0("(", num_and_denom[1], ")-(", num_and_denom[2], ")")
+  })
+
+  edger_contrasts <- do.call(function(...){
+    limma::makeContrasts(..., levels = design)
+  }, out_contrasts)
+
+  colnames(edger_contrasts) <- out_names
+
+  return(edger_contrasts)
+}
+
+
+###-----------------------------------------------------------------------------
+#' @describeIn findDEGs Run glmQLFTest or glmTreat. Accepts contrasts in the
+#'   format (a matrix) produced by limma::makeContrasts
+#' @importFrom edgeR glmQLFTest glmTreat glmQLFit estimateDisp
+#' @importFrom limma nonEstimable
+#' @importFrom stats model.matrix as.formula
+#' @importFrom stringr str_detect
+#' @export
+setMethod("findDEGs", "DGEList", function(x, test, design, contrasts,
+                                          sample_meta, lfc = log2(2)) {
+
+  design <- model.matrix(as.formula(design), data = sample_meta)
+
+  # dashes will be confusing when defining 'interaction' contrasts.
+  if(any(stringr::str_detect(colnames(design), "-"))) {
+    stop("No dashes allowed in design colnames")
+  }
+
+  # check if anything in the design is non-estimable:
+  if (!is.null(limma::nonEstimable(design))) stop("Design not estimable.")
+
+  # Format contrasts so that they are readable for edgeR
+  edger_contrasts <- lists_to_edger_contrasts(contrasts_list = contrasts,
+                                              design = design)
+
+  # calculate dispersions
+  x <- edgeR::estimateDisp(x, design, robust = TRUE)
+
+  # calculate fit
+  fit <- edgeR::glmQLFit(x, design, robust = TRUE)
+
+  # either test produces a DGELRT object
+  if(identical(test, "glmQLFTest")){
+
+    test_res <- lapply(colnames(edger_contrasts),
+                       function(contr_name) {
+                         edgeR::glmQLFTest(fit,
+                                           contrast = edger_contrasts[, contr_name]
+                                           )
+                       }
+    )
+
+  } else if (identical(test, "glmTreat")){
+
+    test_res <- lapply(colnames(edger_contrasts),
+                       function(contr_name) {
+                         edgeR::glmTreat(fit,
+                                         contrast = edger_contrasts[, contr_name],
+                                         lfc = lfc
+                         )
+                       }
+    )
+  }
+
+  # set the contrasts as the names for each contrast in test_res
+  names(test_res) <- colnames(edger_contrasts)
+
+  # store the fit in the first element of the results list and the results from
+  # each contrast in the rest of the list
+  edger_res_list <- c(list(DGEGLM = fit), test_res)
+
+  return(list(DGEList=x, results=edger_res_list))
+})
+
+###-----------------------------------------------------------------------------
+#' @describeIn findDEGs Run edgeR or DESeq2 DE testing workflows.
+#' @importFrom edgeR glmQLFTest glmTreat glmQLFit
+#' @export
+setMethod("findDEGs", "BbcSE", function(x, de_pkg = "edger",
+                                        test = "glmQLFTest", design, contrasts,
+                                        lfc = log2(2)) {
+
+  if (identical(de_pkg, "edger")){
+    if("results" %in% names(edger(bbc_obj))) {
+      stop("edger slot already contains results")
+    }
+
+    edger_res_list <- findDEGs(x = edger(x)$DGEList, test = test,
+                               design = design, contrasts = contrasts,
+                               sample_meta = colData(x), lfc = lfc)
+
+    # get the edger slot
+    edger_slot <- edger(x)
+
+    # modify the DGEList and results elements of edger(x)
+    edger_slot$DGEList <- edger_res_list$DGEList
+    edger_slot$results <- edger_res_list$results
+
+    # replace the edger slot with the new edger list containing the results
+    edger(x) <- edger_slot
+  }
+
+  validObject(x)
+
+  return(x)
+})
+

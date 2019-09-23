@@ -33,7 +33,8 @@ Imports:
     AnnotationDbi (>= 1.46),
     ggplot2 (>= 3.2),
     cowplot (>= 1.0),
-    org.Mm.eg.db (>= 3.8)
+    org.Mm.eg.db (>= 3.8),
+    statmod (>= 1.4)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

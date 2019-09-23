@@ -138,6 +138,16 @@ pca_plots[[1]]
 pca_plots[[2]]
 ```
 
+# edgeR DE workflow
+
+```{r find_degs}
+bbc_obj <- findDEGs(bbc_obj, 
+                    de_pkg = "edger",
+                    test = "glmQLFTest", 
+                    design = "~0+genotype",
+                    contrasts = list(c("genotype", "mut", "WT")))
+
+```
 
 
 # Session info

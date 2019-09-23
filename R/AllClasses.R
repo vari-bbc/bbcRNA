@@ -49,15 +49,19 @@ setValidity("BbcSE", function(object) {
 
     if (length(edger(object)) > 1) {
       if ("results" %in% list_names){
-        if(class(edger(object)$results != "list")) {
+        if(class(edger(object)$results) != "list") {
           msg <- c(msg, "edger(object)$results must be a list")
         }
 
-        lapply(edger(object)$results, function(curr_edger){
-          if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
-              !is(curr_edger, "DGELRT")) {
+        if (!is(edger(object)$results[[1]], "DGEGLM") ) {
+          msg <- c(msg,
+                   "edger(object)$results[1] must be a DGEGLM object.")
+        }
+
+        lapply(edger(object)$results[-1], function(curr_edger){
+          if (!is(curr_edger, "DGEExact") && !is(curr_edger, "DGELRT")) {
             msg <- c(msg,
-                     "edger(object)$results must contain only edgeR result objects.")
+                     "edger(object)$results[-1] must contain only edgeR result objects.")
           }
         })
 
