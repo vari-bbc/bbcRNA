@@ -20,14 +20,10 @@ devtools::install_github("vari-bbc/bbcRNA")
 The BbcSE class extends SummarizedExperiment. Additional features
 include:
 
-  - An aln\_rates slot to hold alignment metrics for samples.
-  - The first two elements of the metadata slots store:
-    1.  list of edgeR objects
-        1.  DGEList (must be first element)
-        2.  DGEGLM / DGEExact / DGELRT
-    2.  list of DESeq2 objecrs
-        1.  DESeqDataSet (must be first element)
-        2.  DESeqResults
+  - An aln\_rates slot to hold a matrix containing alignment metrics for
+    samples.
+  - An edger slot for storing DGEList and edgeR result objects
+  - A deseq2 slot for storing DESeqDataSet and DESeqResults
 
 <!-- end list -->
 
