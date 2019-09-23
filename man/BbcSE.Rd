@@ -4,7 +4,7 @@
 \alias{BbcSE}
 \title{Constructor for BbcSE}
 \usage{
-BbcSE(counts = matrix(0, 1, 1), granges = rep(GRanges(seqnames =
+BbcSE(counts = matrix(0, 0, 0), granges = rep(GRanges(seqnames =
   "foobar", ranges = 0:0), nrow(counts)), aln_rates = matrix(0, 0, 0),
   ...)
 }

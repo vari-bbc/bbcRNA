@@ -4,7 +4,7 @@
 \alias{makeDGEList}
 \title{Make a DGEList object.}
 \usage{
-makeDGEList(x, group = NULL)
+makeDGEList(x, group = NULL, rm_low_genes = TRUE, calc_norm = TRUE)
 }
 \arguments{
 \item{x}{A BbcSE object.}
@@ -13,6 +13,10 @@ makeDGEList(x, group = NULL)
 
 \item{rm_low_genes}{logical indicating whether low count genes should be
 removed. Implements edgeR::filterByExpr.}
+
+\item{calc_norm}{logical indicating whether normalization factors should be
+calculated. Implements edgeR::calcNormFactors. Also turns on calculations
+of normalized counts and per-group normalized counts}
 }
 \value{
 A BbcSE object.

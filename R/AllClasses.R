@@ -31,20 +31,49 @@ setValidity("BbcSE", function(object) {
   if (class(edger(object))[1] != "list") {
     msg <- c(msg, "edger slot must be a list")
   } else{
+    list_names <- names(edger(object))
+    if (!is.null(list_names) &&
+        !all(list_names %in% c("DGEList", "results", "norm_cts"))){
+      msg <- c(msg, "names(edger(object)) must be DGEList, results or norm_cts.")
 
-    if (length(edger(object)) > 0 &&
-        !is(edger(object)[[1]], "DGEList")) {
-      msg <- c(msg, "edger(object)[[1]] must be a DGEList object")
+    }
+
+    if (length(edger(object)) > 0) {
+      if(!is(edger(object)[[1]], "DGEList")) {
+        msg <- c(msg, "edger(object)[[1]] must be a DGEList object")
+      }
+      if(!identical(list_names[1], "DGEList")) {
+        msg <- c(msg, "edger(object)[[1]] must be named 'DGEList'")
+      }
     }
 
     if (length(edger(object)) > 1) {
-      lapply(edger(object)[-1], function(curr_edger){
-        if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
-            !is(curr_edger, "DGELRT")) {
-          msg <- c(msg,
-                   "edger(object)[-1] elements must be edgeR result objects.")
+      if ("results" %in% list_names){
+        if(class(edger(object)$results != "list")) {
+          msg <- c(msg, "edger(object)$results must be a list")
         }
-      })
+
+        lapply(edger(object)$results, function(curr_edger){
+          if (!is(curr_edger, "DGEGLM") && !is(curr_edger, "DGEExact") &&
+              !is(curr_edger, "DGELRT")) {
+            msg <- c(msg,
+                     "edger(object)$results must contain only edgeR result objects.")
+          }
+        })
+
+      }
+
+      if ("norm_cts" %in% list_names){
+        if(class(edger(object)$norm_cts) != "SummarizedExperiment") {
+          msg <- c(msg, "edger(object)$norm_cts must be a SummarizedExperiment")
+        }
+        if(!identical(rownames(edger(object)$norm_cts),
+                     rownames(edger(object)$DGEList))) {
+          msg <- c(msg, "edger(object)$norm_cts must have same rows as edger(object)$DGEList")
+        }
+      }
+
+
     }
   }
   ###END edger slot-------------------------------------------------------------

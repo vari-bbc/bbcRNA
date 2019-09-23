@@ -9,7 +9,7 @@ edger(x) <- value
 \arguments{
 \item{x}{BbcSE object}
 
-\item{value}{DGEList object}
+\item{value}{a list of edgeR objects}
 }
 \description{
 Setter for edger slot

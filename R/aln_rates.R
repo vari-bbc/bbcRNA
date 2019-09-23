@@ -10,6 +10,8 @@ aln_rates <- function(x, withDimnames=TRUE) {
   out
 }
 
+###-----------------------------------------------------------------------------
+
 #' Setter for aln_rates slot
 #'
 #' @param x A BbcSE object.
@@ -51,6 +53,7 @@ aln_rates <- function(x, withDimnames=TRUE) {
   x
 }
 
+###-----------------------------------------------------------------------------
 
 #' Plot alignment metrics
 #'
@@ -124,5 +127,7 @@ plot_aln_rates <- function(x, type = "uniq_map_rate", fill_by = "sample",
 
   myplot
 }
+
+###-----------------------------------------------------------------------------
 
 
