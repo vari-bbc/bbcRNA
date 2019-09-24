@@ -3,6 +3,8 @@
 #' @param withDimnames logical indicating whether output should have dim names
 #' @export
 aln_rates <- function(x, withDimnames=TRUE) {
+  if(!is(x, "BbcSE")) stop("x not BbcSE object")
+
   out <- x@aln_rates
   if (withDimnames) {
     rownames(out) <- colnames(x)
@@ -19,6 +21,7 @@ aln_rates <- function(x, withDimnames=TRUE) {
 #' in counts matrix and column names indicating metric type must be set.
 #' @export
 `aln_rates<-` <- function(x, value) {
+  if(!is(x, "BbcSE")) stop("x not BbcSE object")
 
   # check that sample names match
   stopifnot(identical(nrow(value), ncol(x)))

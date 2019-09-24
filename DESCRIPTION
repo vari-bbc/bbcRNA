@@ -34,11 +34,13 @@ Imports:
     ggplot2 (>= 3.2),
     cowplot (>= 1.0),
     org.Mm.eg.db (>= 3.8),
-    statmod (>= 1.4)
+    statmod (>= 1.4),
+    limma (>= 3.4)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    devtools (>= 2.1)
 VignetteBuilder: knitr

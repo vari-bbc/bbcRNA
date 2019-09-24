@@ -43,7 +43,7 @@ edger <- function(x) {
 makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
                         calc_norm = TRUE) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
-  if(length(edger(x)) > 0) stop("edger slot not empty")
+  if(nrow(dgelist(edger(x))) > 0) stop("edger slot not empty")
   if(missing(group)) stop("Please provide group parameter")
   if(!group %in% colnames(colData(x))) stop("Provided group not in colData")
 
@@ -66,7 +66,7 @@ makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
   }
 
   # store DGEList in the BbcSE object
-  edger(x) <- list(DGEList = myDGEList)
+  edger(x) <- BbcEdgeR(dgelist = myDGEList)
 
   # add log normalized counts if norm factors calculated
   if (isTRUE(calc_norm)) {
@@ -80,8 +80,8 @@ makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
 
 ###-----------------------------------------------------------------------------
 #' @describeIn normalize_counts For de_pkg="edger", a SummarizedExperiment
-#'   object is created and stored in an element named "norm_cts" in the edger
-#'   slot. Group average log normalized counts are also calculated and stored as
+#'   object is created and stored in the BbcEdgeR object in the edger slot.
+#'   Group average log normalized counts are also calculated and stored as
 #'   rowData.
 #' @importFrom edgeR cpm
 #' @importFrom SummarizedExperiment assay
@@ -93,15 +93,16 @@ setMethod("normalize_counts", "BbcSE", function(x, de_pkg = "edger") {
   }
 
   if(identical(de_pkg, "edger")){
-    if(length(edger(x)) == 0){
-      stop("No DGEList in edger slot. Run makeDGEList first.")
+    dgelist_obj <- dgelist(edger(x))
+    if(nrow(dgelist_obj) == 0){
+      stop("DGEList in edger slot is empty. Run makeDGEList first.")
     }
 
     # calculate normalized counts. Use normalize_counts,DGEList
-    norm_log_cpm <- normalize_counts(edger(x)$DGEList)
+    norm_log_cpm <- normalize_counts(dgelist_obj)
 
     # calculate by group cpms
-    group_norm_log_cpm <- edgeR::cpmByGroup(edger(x)$DGEList,
+    group_norm_log_cpm <- edgeR::cpmByGroup(dgelist_obj,
                                             normalized.lib.sizes = TRUE,
                                             log=TRUE)
 
@@ -109,8 +110,9 @@ setMethod("normalize_counts", "BbcSE", function(x, de_pkg = "edger") {
     colnames(group_norm_log_cpm) <- paste0(colnames(group_norm_log_cpm),
                                            ".norm_log_cpm")
 
-    ## add group cpms to rowData
-    new_row_data <- cbind(rowData(x)[rownames(edger(x)$DGEList), , drop = FALSE],
+    ## add group cpms to rowData. Keep in mind genes in DGEList may be subset of
+    ## those in the BbcSE object
+    new_row_data <- cbind(rowData(x)[rownames(dgelist_obj), , drop = FALSE],
                           group_norm_log_cpm)
 
     # store normalized counts in a SummarizedExperiment
@@ -122,9 +124,14 @@ setMethod("normalize_counts", "BbcSE", function(x, de_pkg = "edger") {
 
   }
 
-  x@edger$norm_cts <- se
+  # extract the BbcEdgeR object from the edger slot of the BbcSE object
+  bbcedger_obj <- edger(x)
 
-  validObject(x)
+  # store the normalized counts
+  norm_cts(bbcedger_obj) <- se
+
+  # replace the BbcEdgeR object in the edger slot of the BbcSE object
+  edger(x) <- bbcedger_obj
 
   return(x)
 })
@@ -254,7 +261,7 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts,
   # each contrast in the rest of the list
   edger_res_list <- c(list(DGEGLM = fit), test_res)
 
-  return(list(DGEList=x, results=edger_res_list))
+  return(BbcEdgeR(dgelist = x, de_results = edger_res_list))
 })
 
 ###-----------------------------------------------------------------------------
@@ -266,23 +273,19 @@ setMethod("findDEGs", "BbcSE", function(x, de_pkg = "edger",
                                         lfc = log2(2)) {
 
   if (identical(de_pkg, "edger")){
-    if("results" %in% names(edger(bbc_obj))) {
+    if("results" %in% names(edger(x))) {
       stop("edger slot already contains results")
     }
 
-    edger_res_list <- findDEGs(x = edger(x)$DGEList, test = test,
-                               design = design, contrasts = contrasts,
-                               sample_meta = colData(x), lfc = lfc)
+    bbcedger_obj <- findDEGs(x = dgelist(edger(x)), test = test,
+                                       design = design, contrasts = contrasts,
+                                       sample_meta = colData(x), lfc = lfc)
 
-    # get the edger slot
-    edger_slot <- edger(x)
+    # copy norm_cts slot from the old BbcEdgeR object
+    norm_cts(bbcedger_obj) <- norm_cts(edger(x))
 
-    # modify the DGEList and results elements of edger(x)
-    edger_slot$DGEList <- edger_res_list$DGEList
-    edger_slot$results <- edger_res_list$results
-
-    # replace the edger slot with the new edger list containing the results
-    edger(x) <- edger_slot
+    # replace the edger slot with the new BbcEdgeR object containing the results
+    edger(x) <- bbcedger_obj
   }
 
   validObject(x)

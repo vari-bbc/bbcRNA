@@ -129,7 +129,7 @@ str(edger(bbc_obj))
 nrow(bbc_obj)
 
 # Number of genes in edger$DGEList
-nrow(edger(bbc_obj)$DGEList)
+nrow(dgelist(edger(bbc_obj)))
 ```
 # PCA
 ```{r plot_pca}

@@ -18,7 +18,8 @@ plot_PCA <- function(x, norm_cts_type = "edger", color_by, shape_by){
   if (missing(color_by)) stop("Provide color_by parameter")
   if (missing(shape_by)) stop("Provide shape_by parameter")
   if (norm_cts_type == "edger"){
-    pca <- prcomp(t(assay(edger(x)$norm_cts)))
+    norm_counts <- assay(norm_cts(edger(x)))
+    pca <- prcomp(t(norm_counts))
   }
 
   pr_comps <- data.frame(pca$x)

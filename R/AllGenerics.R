@@ -33,11 +33,13 @@ setGeneric("normalize_counts", function(x, ...)
 #' @param design chr value. For example, '~0+group'. Variables in the design
 #'   must be present in colData. For de_pkg="edger", passed to glmQLFit
 #' @param contrasts list of chr vectors containing variable name, numerator
-#'     level, denominator level
+#'   level, denominator level. For nested contrasts, use the format
+#'   'level2-level1' for the numerator and denominator values.
 #' @param test For de_pkg="edger", either "glmQLFTest" or "glmTreat"
 #' @param sample_meta Column meta data as DataFrame or data.frame
 #' @param lfc See edgeR::glmTreat. Only used for test="glmTreat".
-#' @return A BbcSE object or a list of DGElist and edgeR result objects or...
+#' @param ... Not used currently.
+#' @return A BbcSE object or a BbcEdgeR object or...
 #' @seealso \code{\link[edgeR]{glmQLFit} \link[edgeR]{glmQLFTest}
 #'   \link[edgeR]{glmTreat} }
 #' @export

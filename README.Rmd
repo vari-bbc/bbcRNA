@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-# bbcRNA
+# bbcRNA: An R package for facilitating RNA-Seq analysis
 
 The goal of bbcRNA is to facilitate RNA-seq analysis, starting from counts and 
 ending with differentially expressed gene lists and enerichment analyses.
@@ -22,25 +22,41 @@ ending with differentially expressed gene lists and enerichment analyses.
 You can install bbcRNA from [GitHub](https://github.com/vari-bbc) with:
 
 ``` r
+if (!requireNamespace("devtools", quietly = TRUE))
+  install.packages("devtools")
+  
 devtools::install_github("vari-bbc/bbcRNA")
-
 ```
+## New classes defined in the bbcRNA package
 
-## The BbcSE class
+New classes have been defined to enable more convenient storage of different
+parts of a DE analysis.
 
-The BbcSE class extends SummarizedExperiment. Additional features include:
+### The BbcSE class
 
-* An aln_rates slot to hold a matrix containing alignment metrics for samples.
-* An edger slot for storing DGEList and edgeR result objects
-* A deseq2 slot for storing DESeqDataSet and DESeqResults
+The `BbcSE` class extends SummarizedExperiment. Additional slots are:
 
+1. `aln_rates`: a matrix containing alignment metrics for samples.
+2. `edger` : a `BbcEdgeR` object.
+3. `deseq2`: For storing DESeqDataSet and DESeqResults; not implemented yet.
+
+### The BbcEdgeR class
+
+Slots are:
+
+1. `dgelist`: a `DGEList` object.
+2. `de_results`: a list. First element is always a `DGEGLM` object. The others
+are edgeR result objects.
+3. `norm_cts`: a `SummarizedExperiment` object for storing normalized counts.
     
 ```{r}
 # attach the package
 library(bbcRNA)
 
-# run the BbcSE constructor without any data to show the structure of the object
-
+# run the BbcSE constructor without any data to show the structure 
 BbcSE()
+
+# run the BbcEdgeR constructor without any data to show the structure 
+BbcEdgeR()
 ```
     

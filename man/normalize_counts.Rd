@@ -36,8 +36,8 @@ TRUE and log = TRUE}
 \section{Methods (by class)}{
 \itemize{
 \item \code{BbcSE}: For de_pkg="edger", a SummarizedExperiment
-object is created and stored in an element named "norm_cts" in the edger
-slot. Group average log normalized counts are also calculated and stored as
+object is created and stored in the BbcEdgeR object in the edger slot.
+Group average log normalized counts are also calculated and stored as
 rowData.
 
 \item \code{DGEList}: log normalized counts returned as a matrix.
