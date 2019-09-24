@@ -135,6 +135,16 @@ setValidity("BbcSE", function(object) {
   NC <- ncol(object)
   msg <- NULL
 
+  if (!identical(length(colnames(object)),
+                 length(unique(colnames(object))))) {
+    msg <- c(msg, "colnames must be unique")
+  }
+
+  if (!identical(length(rownames(object)),
+                 length(unique(rownames(object))))) {
+    msg <- c(msg, "rownames must be unique")
+  }
+
   if (assayNames(object)[1] != "counts") {
     msg <- c(msg, "'counts' must be first assay")
   }

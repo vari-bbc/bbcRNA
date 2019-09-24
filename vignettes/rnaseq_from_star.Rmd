@@ -101,6 +101,20 @@ aln_rates(bbc_obj) <- aln_rates
 aln_rates(bbc_obj)
 ```
 
+# Change the column (sample) names
+
+```{r change_sample_names}
+# add new column in colData by concatenating two genotype and rep columns
+colData(bbc_obj)$new_sample <- paste0(colData(bbc_obj)$genotype, 
+                                      colData(bbc_obj)$rep)
+
+# store a copy of the original column names
+colData(bbc_obj)$orig_sample <- colnames(bbc_obj)
+
+# change the colnames to new_sample
+colnames(bbc_obj) <- colData(bbc_obj)$new_sample
+```
+
 # Plot alignment rates
 
 ```{r plot_mapping}
