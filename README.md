@@ -42,7 +42,7 @@ Slots are:
 3.  `norm_cts`: a `SummarizedExperiment` object for storing normalized
     counts.
 
-<!-- end list -->
+## Usage
 
 ``` r
 # attach the package

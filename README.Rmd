@@ -48,7 +48,9 @@ Slots are:
 2. `de_results`: a list. First element is always a `DGEGLM` object. The others
 are edgeR result objects.
 3. `norm_cts`: a `SummarizedExperiment` object for storing normalized counts.
-    
+
+## Usage
+
 ```{r}
 # attach the package
 library(bbcRNA)
