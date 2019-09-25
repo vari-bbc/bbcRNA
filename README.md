@@ -7,7 +7,8 @@ The goal of bbcRNA is to facilitate RNA-seq analysis, starting from
 counts and ending with differentially expressed gene lists and
 enerichment analyses. The major feature are classes to store different
 parts of the RNA-Seq analysis and wrapper functions for running popular
-tools such as EdgeR and ClusterProfiler.
+tools such as EdgeR and ClusterProfiler. See [the bbcRNA
+website](https://vari-bbc.github.io/bbcRNA/) for a built vignette.
 
 ## Installation
 
