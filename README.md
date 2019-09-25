@@ -5,7 +5,9 @@
 
 The goal of bbcRNA is to facilitate RNA-seq analysis, starting from
 counts and ending with differentially expressed gene lists and
-enerichment analyses.
+enerichment analyses. The major feature are classes to store different
+parts of the RNA-Seq analysis and wrapper functions for running popular
+tools such as EdgeR and ClusterProfiler.
 
 ## Installation
 

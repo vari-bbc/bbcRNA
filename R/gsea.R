@@ -105,15 +105,16 @@ setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger", ...) {
       filt_dge_table <- dge_table[dge_table$logFC != 0 &
                                     dge_table$PValue != 1, ]
       message(paste0(edger_res_name, ": removed ",
-                     (nrow(filt_dge_table) - rows_b4_filt),
+                     rows_b4_filt - nrow(filt_dge_table),
                      " genes out of ", rows_b4_filt,
                      " due to logFC = 0 or PValue = 1"))
 
       # remove genes with no Entrez match (is.na)
       rows_b4_filt <- nrow(filt_dge_table)
       filt_dge_table <- filt_dge_table[!is.na(filt_dge_table$entrez_ids), ]
+      diff <- rows_b4_filt - nrow(filt_dge_table)
       message(paste0(edger_res_name, ": removed ",
-                     (nrow(filt_dge_table) - rows_b4_filt),
+                     rows_b4_filt - nrow(filt_dge_table),
                      " genes out of ", rows_b4_filt,
                      " due to no Entrez gene match"))
 

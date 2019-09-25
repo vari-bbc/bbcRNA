@@ -33,20 +33,22 @@ Imports:
     AnnotationDbi (>= 1.46),
     ggplot2 (>= 3.2),
     cowplot (>= 1.0),
-    org.Mm.eg.db (>= 3.8),
     statmod (>= 1.4),
     limma (>= 3.4),
     clusterProfiler (>= 3.12),
     DOSE (>= 2.3),
     ReactomePA (>= 1.9),
     msigdbr (>= 7.0),
-    enrichplot (>= 1.4),
-    BiocGenerics (>= 0.3)
+    BiocGenerics (>= 0.3),
+    RColorBrewer (>= 1.1),
+    ComplexHeatmap (>= 2.0)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)
 Suggests: 
     knitr,
     rmarkdown,
-    devtools (>= 2.1)
+    devtools (>= 2.1),
+    enrichplot (>= 1.4),
+    org.Mm.eg.db (>= 3.8)
 VignetteBuilder: knitr

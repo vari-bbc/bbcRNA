@@ -3,6 +3,7 @@ title: "Using the bbcRNA package for RNA-seq analysis"
 author: Kin Lau
 output: 
   html_document:
+        number_sections: true
         toc: true
         toc_depth: 2
         toc_float: true
@@ -177,6 +178,40 @@ bbc_obj <- findDEGs(bbc_obj,
                     contrasts = list(c("genotype", "mut", "WT")))
 
 ```
+
+# plot heatmap
+
+```{r heatmap}
+# get the most DE genes (by adjust pval)
+top_genes <- rownames(edgeR::topTags(
+  de_results(edger(bbc_obj))[[2]],
+  n=20)
+)
+
+# get the sign of the LFC and store in rowData
+## get the de_results slot of the BbcEdgeR object
+bbc_de_res <- de_results(edger(bbc_obj))
+## get contrast results
+de_table <- bbc_de_res$`genotype_mut_-_WT`$table
+## get the LFC sign
+mut_vs_WT_sign <- ifelse(de_table$logFC > 0, "up", "down")
+names(mut_vs_WT_sign) <- rownames(de_table)
+## store LFC sign in rowData. Genes with no matches will be NA.
+rowData(bbc_obj)$mut_vs_WT_sign <- 
+  mut_vs_WT_sign[match(rownames(bbc_obj), names(mut_vs_WT_sign))]
+
+# plot Zscores of normalized log2 cpms
+plot_heatmap(x = bbc_obj, genes = top_genes, zscores=TRUE, 
+             rowdata_annot = "mut_vs_WT_sign", coldata_annot = "rep",
+             rowdata_split = "mut_vs_WT_sign", coldata_split="genotype", 
+             gene_labels = "uniq_syms")
+
+# plot average normalized log2 cpms
+plot_heatmap(x = bbc_obj, genes = top_genes, zscores=FALSE, 
+             rowdata_split = "mut_vs_WT_sign",
+             gene_labels = "uniq_syms", grouped=TRUE)
+```
+
 
 # GSEA -- Hallmark msigdb
 ```{r gsea_H}

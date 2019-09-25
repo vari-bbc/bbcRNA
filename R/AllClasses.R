@@ -106,6 +106,10 @@ setValidity("BbcEdgeR", function(object) {
        !identical(length(dgelist_samples), length(norm_cts_samples))){
       msg <- c(msg, "object@norm_cts and object@dgelist must have same samples")
     }
+
+    if (assayNames(mynorm_cts)[1] != "norm_log_cpm") {
+      msg <- c(msg, "'norm_log_cpm' must be first assay")
+    }
   }
 
   if (is.null(msg)) {
