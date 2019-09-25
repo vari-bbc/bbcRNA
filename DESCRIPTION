@@ -35,7 +35,13 @@ Imports:
     cowplot (>= 1.0),
     org.Mm.eg.db (>= 3.8),
     statmod (>= 1.4),
-    limma (>= 3.4)
+    limma (>= 3.4),
+    clusterProfiler (>= 3.12),
+    DOSE (>= 2.3),
+    ReactomePA (>= 1.9),
+    msigdbr (>= 7.0),
+    enrichplot (>= 1.4),
+    BiocGenerics (>= 0.3)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

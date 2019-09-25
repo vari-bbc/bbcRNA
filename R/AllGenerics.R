@@ -18,8 +18,6 @@ setGeneric("normalize_counts", function(x, ...)
   standardGeneric("normalize_counts")
 )
 ###-----------------------------------------------------------------------------
-
-
 #' Identify DE genes.
 #'
 #' Identify DE genes.
@@ -47,3 +45,31 @@ setGeneric("findDEGs", function(x, ...)
   standardGeneric("findDEGs")
 )
 
+###-----------------------------------------------------------------------------
+
+
+#' Run GSEA
+#'
+#' Run GSEA
+#'
+#'
+#' @param x A BbcSE object or a DGEList or a DESeqDataSet.
+#' @param de_pkg "edger" or "deseq2". Only used if x is a BbcSE
+#' @param gene_set one of "kegg", "reactome", "H", "C1", "C2", "C3", "C4", "C5",
+#'   "C6", "C7"
+#' @param orgDb OrgDB object for your organism
+#' @param organism For compatibility with dowstream tools, the organism is
+#'   specified differently depending on the desired gene set. For KEGG, use the
+#'   three-letter code according to
+#'   http://www.genome.jp/kegg/catalog/org_list.html. For Reactome, possible
+#'   values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘yeast’ and
+#'   ‘zebrafish’. For msigdb, run 'msigdbr::msigdbr_show_species()'.
+#' @param ... Passed to gseKEGG, GSEA or gsePathway. See each function for
+#'   possible arguments.
+#' @return A list of gseaResult objects or one gseaResult object
+#' @seealso \code{\link[clusterProfiler]{gseKEGG} \link[clusterProfiler]{GSEA}
+#' \link[ReactomePA]{gsePathway}}
+#' @export
+setGeneric("run_gsea", function(x, ...)
+  standardGeneric("run_gsea")
+)

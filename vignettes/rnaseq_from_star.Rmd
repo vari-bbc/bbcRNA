@@ -36,7 +36,8 @@ if (!requireNamespace("bbcRNA", quietly = TRUE))
 library(bbcRNA)
 library(SummarizedExperiment)
 library(org.Mm.eg.db) # load the org.db for your organism
-
+library(enrichplot)
+library(ggplot2)
 ```
 
 # Get counts
@@ -113,6 +114,11 @@ colData(bbc_obj)$orig_sample <- colnames(bbc_obj)
 
 # change the colnames to new_sample
 colnames(bbc_obj) <- colData(bbc_obj)$new_sample
+
+# check whether BbcSE object is still valid. colnames() setter does not check
+# for unique names, but valid BbcSE objects are required to have unique row and
+# col names. Could write a BbcSE method that does check for that at some point
+validObject(bbc_obj)
 ```
 
 # Plot alignment rates
@@ -129,6 +135,15 @@ bbc_obj <- ens2sym(bbc_obj, org.Mm.eg.db)
 
 rowData(bbc_obj)
 ```
+
+# Get Entez IDs for gene set analyses after DE genes are identified
+
+```{r ens2entrez}
+bbc_obj <- ens2entrez(bbc_obj, org.Mm.eg.db)
+
+rowData(bbc_obj)
+```
+
 
 # make DGEList object
 ```{r make_DGEList}
@@ -162,6 +177,48 @@ bbc_obj <- findDEGs(bbc_obj,
                     contrasts = list(c("genotype", "mut", "WT")))
 
 ```
+
+# GSEA -- Hallmark msigdb
+```{r gsea_H}
+# set seed to make GSEA deterministic
+set.seed(42)
+
+H_gsea_results_list <- run_gsea(x = bbc_obj,
+                                de_pkg = "edger",
+                                gene_set = "H",
+                                orgDb = org.Mm.eg.db,
+                                organism = "Mus musculus")
+
+names(H_gsea_results_list)
+```
+
+```{r plot_Hgsea}
+enrichplot::dotplot(H_gsea_results_list[[1]], showCategory=10, 
+                    title="Top gene sets", split=".sign") + 
+  facet_grid(.~.sign)
+```
+
+# GSEA -- KEGG
+```{r gsea_kegg}
+kegg_gsea_results_list <- run_gsea(x = bbc_obj,
+                                de_pkg = "edger",
+                                gene_set = "kegg",
+                                orgDb = org.Mm.eg.db,
+                                organism = "mmu",
+                                minGSSize = 30,
+                                use_internal_data = FALSE)
+
+names(kegg_gsea_results_list)
+```
+
+```{r plot_kegggsea}
+enrichplot::dotplot(kegg_gsea_results_list[[1]], showCategory=10, 
+                    title="Top gene sets", split=".sign") + 
+  facet_grid(.~.sign)
+
+#gseaplot(kegg_gsea_results_list[[1]], geneSetID = "mmu05200", by="runningScore")
+```
+
 
 
 # Session info

@@ -47,6 +47,10 @@ Slots are:
 ``` r
 # attach the package
 library(bbcRNA)
+#> 
+#> Registered S3 method overwritten by 'enrichplot':
+#>   method               from
+#>   fortify.enrichResult DOSE
 
 # run the BbcSE constructor without any data to show the structure 
 BbcSE()

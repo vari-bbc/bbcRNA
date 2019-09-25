@@ -60,5 +60,6 @@ BbcSE()
 
 # run the BbcEdgeR constructor without any data to show the structure 
 BbcEdgeR()
+
 ```
     

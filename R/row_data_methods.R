@@ -18,6 +18,8 @@
 #' @export
 #' @importFrom AnnotationDbi keys mapIds
 ens2sym <- function(x, orgdb) {
+  if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
+
   ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
 
   gene_syms <- AnnotationDbi::mapIds(orgdb,
@@ -55,6 +57,72 @@ ens2sym <- function(x, orgdb) {
   # keep only the genes present in the BbcSE object and order based on
   # the genes in the BbcSE object
   rowData(x) <- cbind(rowData(x), uniq_syms = uniq_syms[rownames(x)])
+
+  validObject(x)
+
+  return(x)
+
+}
+
+###-----------------------------------------------------------------------------
+
+#' Convert Ensembl IDs to Entrez IDs for gene enrichment analyses.
+#'
+#' Convert Ensembl IDs to Entrez IDs for gene enrichment analyses.
+#'
+#' Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
+#' just those in the BbcSE object.
+#' \itemize{
+#' \item Entrez IDs that match multiple Ensembl IDs are NA
+#' \item The first Entrez ID will be returned for genes with multiple possible
+#' Entrez IDs.
+#' \item Genes with no Entrez ID or absent from the database will be
+#' NA. }
+#'
+#' @param x A BbcSE object.
+#' @param orgdb A OrgDb object. Download the annotations for your species from
+#'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'
+#' @return A BbcSE object.
+#' @export
+#' @importFrom AnnotationDbi keys mapIds
+ens2entrez <- function(x, orgdb) {
+  if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
+
+  ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
+
+  entrez_ids <- AnnotationDbi::mapIds(orgdb,
+                                     keys = ens_genes,
+                                     column = "ENTREZID",
+                                     keytype = "ENSEMBL",
+                                     multiVals = "first")
+
+  stopifnot(identical(length(ens_genes), length(entrez_ids)))
+
+  names(entrez_ids) <- ens_genes
+
+  # remove Entrez genes that match more than one Ensembl gene
+  dup_genes <- unique(entrez_ids[duplicated(entrez_ids)])
+  entrez_ids <- entrez_ids[!entrez_ids %in% dup_genes]
+
+  message(paste0(length(entrez_ids),
+                 " genes with valid Entrez ID out of ",
+                 nrow(x),
+                 " total genes"))
+
+  # genes in the BbcSE object absent from OrgDb or removed due to more than one
+  # Ensembl match
+  missing_genes <- rownames(x)[!rownames(x) %in% names(entrez_ids)]
+  names(missing_genes) <- missing_genes # store the ensembl ID as names
+  missing_genes <- NA # convert the ensembl IDs to NAs
+
+  #combine the genes present in OrgDb with those absent
+  entrez_ids <- c(entrez_ids, missing_genes)
+
+  # keep only the genes present in the BbcSE object and order based on
+  # the genes in the BbcSE object
+  rowData(x) <- cbind(rowData(x), entrez_ids = entrez_ids[rownames(x)])
+
+  validObject(x)
 
   return(x)
 
