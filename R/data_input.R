@@ -5,7 +5,7 @@
 #' \code{star_to_mat} returns a count matrix from STAR ReadsPerGene.out.tab
 #' files.
 #'
-#' This function will read in all the ReadsPerGene.out.tab files in the
+#' This function will read in all the '*ReadsPerGene.out.tab' files in the
 #' specified directory and converts it to a counts matrix.
 #'
 #' @param dir A character scalar indicating the directory containing all the
@@ -138,7 +138,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 #'
 #' \code{read_star_map_rates} returns a dataframe from STAR Log.final.out files.
 #'
-#' This function will read in all the Log.final.out files in the specified
+#' This function will read in all the '*Log.final.out' files in the specified
 #' directory and returns a dataframe with alignment metrics.
 #'
 #' @param dir A character scalar indicating the directory containing all the

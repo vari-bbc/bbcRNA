@@ -44,7 +44,9 @@ library(ggplot2)
 # Get counts
 
 ```{r get_counts}
-tcell <- star_to_mat(dir = system.file("extdata/tcell", package = "bbcRNA"), 
+ext_data_dir <- system.file("extdata/tcell", package = "bbcRNA")
+
+tcell <- star_to_mat(dir = ext_data_dir, 
                      rgx = "^[^_]+_[^_]+", column = 2)
 
 head(tcell)
@@ -82,7 +84,7 @@ bbc_obj
 # Get sample meta data
 
 ```{r sample_meta}
-col_meta <- read_col_meta("../inst/extdata/tcell/meta.txt")
+col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
 
 # Add column meta data. May implement a function to add column meta data
 # eventually
@@ -94,7 +96,7 @@ colData(bbc_obj)
 # Get mapping rates
 
 ```{r get_mapping_rates}
-aln_rates <- read_star_map_rates(dir = "../inst/extdata/tcell/", 
+aln_rates <- read_star_map_rates(dir = ext_data_dir, 
                                  rgx = "^[^_]+_[^_]+")
 
 # store the mapping rates in the BbcSE object
