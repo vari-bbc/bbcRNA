@@ -33,7 +33,7 @@ if (!requireNamespace("bbcRNA", quietly = TRUE))
 
 # Load packages
 
-```{r setup}
+```{r setup, message = FALSE}
 library(bbcRNA)
 library(SummarizedExperiment)
 library(org.Mm.eg.db) # load the org.db for your organism
@@ -44,7 +44,8 @@ library(ggplot2)
 # Get counts
 
 ```{r get_counts}
-tcell <- star_to_mat(dir = "../inst/extdata/tcell/", rgx = "^[^_]+_[^_]+", column = 2)
+tcell <- star_to_mat(dir = system.file("extdata/tcell", package = "bbcRNA"), 
+                     rgx = "^[^_]+_[^_]+", column = 2)
 
 head(tcell)
 ```
