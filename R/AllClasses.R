@@ -126,9 +126,9 @@ setValidity("BbcEdgeR", function(object) {
 #'
 #' In a \code{BbcSE} object, "counts" must be the first assay and must contain
 #' non-negative values.
-#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors metadata SimpleList
 #' @importFrom  SummarizedExperiment assayNames assay
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment Assays
 #' @importClassesFrom DESeq2 DESeqDataSet
 #' @importClassesFrom edgeR DGEList DGEGLM DGEExact DGELRT
 .BbcSE <- setClass("BbcSE",
@@ -211,19 +211,31 @@ setValidity("BbcSE", function(object) {
 
 
   ###aln_rates slot-------------------------------------------------------------
+  aln_rates <- aln_rates(object, withDimnames=FALSE)
 
-  if (!is.matrix(aln_rates(object, withDimnames=FALSE))) {
+  if (!is.matrix(aln_rates)) {
     msg <- c(msg, "aln_rates must be a matrix")
-  } else if (length(aln_rates(object, withDimnames=FALSE)) > 0){
+  } else if (length(aln_rates) > 0){
+
+    aln_rates <- aln_rates(object, withDimnames=TRUE)
+
+    aln_rates_colnames <- colnames(aln_rates)
+    if(!identical(length(aln_rates_colnames),
+                  length(unique(aln_rates_colnames)))){
+      msg <- c(msg, "aln_rates column names must be unique")
+    }
 
     valid_aln_rates_colnames <- c("input_reads",
                                   "uniq_aln_reads",
                                   "mult_aln_reads",
                                   "map_rate",
                                   "uniq_map_rate")
-    if(all(colnames(aln_rates(object, withDimnames=FALSE)) %in%
+    if(!all(colnames(aln_rates) %in%
            valid_aln_rates_colnames)) {
-
+      msg <- c(
+        msg, paste0("colnames for aln_rates must be one of: ",
+                    paste(valid_aln_rates_colnames, collapse = ", "))
+      )
     }
 
     if (length(aln_rates(object, withDimnames=FALSE) > 0)) {

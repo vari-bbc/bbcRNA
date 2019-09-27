@@ -13,5 +13,5 @@ aln_rates(x) <- value
 in counts matrix and column names indicating metric type must be set.}
 }
 \description{
-Setter for aln_rates slot
+'map_rate' and 'uniq_map_rate' will be calculated if not already present.
 }

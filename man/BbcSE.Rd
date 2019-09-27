@@ -16,7 +16,7 @@ as row names.}
 
 \item{aln_rates}{Matrix containing alignment metrics. Optional.}
 
-\item{...}{Arguments for SummarizedExperiment.}
+\item{...}{Passed to SummarizedExperiment constructor.}
 }
 \value{
 A BbcSE object (extension of RangedSummarizedExperiment).

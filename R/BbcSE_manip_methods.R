@@ -11,7 +11,7 @@
 #'   as row names.
 #' @param granges GRanges or GRangesList object. Optional.
 #' @param aln_rates Matrix containing alignment metrics. Optional.
-#' @param ... Not used currently.
+#' @param ... Passed to SummarizedExperiment constructor.
 #' @return A BbcSE object (extension of RangedSummarizedExperiment).
 #' @export
 #' @importFrom methods as is
@@ -39,12 +39,14 @@ BbcSE <- function(counts = matrix(0, 0, 0),
     }
 
     se <- SummarizedExperiment(list(counts = counts[common_genes, ]),
-                               rowRanges = granges[common_genes])
+                               rowRanges = granges[common_genes],
+                               ...)
   } else {
     # default granges is fake GRanges data. Needed to get DEFormats::DGEList to
     # work
     se <- SummarizedExperiment(list(counts=counts),
-                               rowRanges = granges)
+                               rowRanges = granges,
+                               ...)
   }
 
   if (length(aln_rates) > 0){
@@ -57,9 +59,12 @@ BbcSE <- function(counts = matrix(0, 0, 0),
   }
 
   bbcse_obj <- .BbcSE(se,
-                      aln_rates = aln_rates,
                       edger = BbcEdgeR(),
                       deseq2 = list())
+
+  # use the setter for aln_rates, not directly in the constructor because it
+  # calculates the rates from the raw mapping counts
+  aln_rates(bbcse_obj) <- aln_rates
 
   validObject(bbcse_obj)
 

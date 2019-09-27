@@ -16,42 +16,55 @@ aln_rates <- function(x, withDimnames=TRUE) {
 
 #' Setter for aln_rates slot
 #'
+#' 'map_rate' and 'uniq_map_rate' will be calculated if not already present.
+#'
 #' @param x A BbcSE object.
 #' @param value A matrix of mapping metrics. Rownames must correspond to samples
 #' in counts matrix and column names indicating metric type must be set.
 #' @export
-`aln_rates<-` <- function(x, value) {
+`aln_rates<-` <- function(x, value = matrix(0, 0, 0)) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
+  if(!is(value, "matrix")) stop("value not a matrix")
+  if(length(value) > 0){
+    # check that sample names match
+    if(!identical(nrow(value), ncol(x)) && all(rownames(value) %in% colnames(x))){
+      stop("Column names in 'x' must all be present in row names of 'value'")
+    }
 
-  # check that sample names match
-  stopifnot(identical(nrow(value), ncol(x)))
-  stopifnot(all(rownames(value) %in% colnames(x)))
+    valid_aln_rates_colnames <- c("input_reads",
+                                  "uniq_aln_reads",
+                                  "mult_aln_reads")
 
-  valid_aln_rates_colnames <- c("input_reads",
-                                "uniq_aln_reads",
-                                "mult_aln_reads")
+    if (!all(valid_aln_rates_colnames %in% colnames(value))){
+      stop(paste0("colnames(value) must contain ",
+                  paste(valid_aln_rates_colnames, collapse = ", ")))
+    }
 
-  if (!all(valid_aln_rates_colnames %in% colnames(value)) &&
-      identical(length(valid_aln_rates_colnames), length(colnames(value)))){
-    stop(paste0("colnames(value) must be ",
-                paste(valid_aln_rates_colnames, collapse = ", ")))
+    if (!"map_rate" %in% colnames(value)) {
+      map_rate <-
+        round(
+          (value[, "uniq_aln_reads"] + value[, "mult_aln_reads"]) /
+            value[, "input_reads"],
+          digits = 3
+        ) * 100
+
+      value <- cbind(value, map_rate = map_rate)
+    }
+
+    if (!"uniq_map_rate" %in% colnames(value)) {
+      uniq_map_rate <- round(value[, "uniq_aln_reads"] /
+                               value[, "input_reads"],
+                             digits = 3) * 100
+
+      value <- cbind(value, uniq_map_rate = uniq_map_rate)
+    }
+
+    # Order the aln_rates according to colnames(x)
+    value <- value[colnames(x), ]
+
   }
-
-  map_rate <-
-    round(
-      (value[, "uniq_aln_reads"] + value[, "mult_aln_reads"]) /
-        value[, "input_reads"],
-      digits = 3
-    ) * 100
-
-  uniq_map_rate <- round(value[, "uniq_aln_reads"] /
-                           value[, "input_reads"],
-                         digits = 3) * 100
-
-  value <- cbind(value, map_rate, uniq_map_rate)
-
-  # set the aln_rates slot. Order the aln_rates according to colnames(x)
-  x@aln_rates <- value[colnames(x), ]
+  # set the aln_rates slot.
+  x@aln_rates <- value
   validObject(x)
   x
 }

@@ -20,6 +20,6 @@ A dataframe.
 \code{read_star_map_rates} returns a dataframe from STAR Log.final.out files.
 }
 \details{
-This function will read in all the Log.final.out files in the specified
+This function will read in all the '*Log.final.out' files in the specified
 directory and returns a dataframe with alignment metrics.
 }

@@ -29,6 +29,6 @@ A matrix where the column names are the sample names and the row
 files.
 }
 \details{
-This function will read in all the ReadsPerGene.out.tab files in the
+This function will read in all the '*ReadsPerGene.out.tab' files in the
 specified directory and converts it to a counts matrix.
 }
