@@ -8,7 +8,11 @@
                       slots = representation(
                         dgelist = "DGEList",
                         de_results = "list",
-                        norm_cts = "SummarizedExperiment"))
+                        norm_cts = "SummarizedExperiment"),
+                      prototype = prototype(
+                        dgelist = edgeR::DGEList(),
+                        de_results = list(),
+                        norm_cts = SummarizedExperiment()))
 
 setValidity("BbcEdgeR", function(object) {
 
@@ -132,6 +136,11 @@ setValidity("BbcEdgeR", function(object) {
                      aln_rates = "matrix",
                      edger = "BbcEdgeR",
                      deseq2 = "list"),
+                   prototype = prototype(
+                     assays = Assays(SimpleList(counts=matrix(0, 0, 0))),
+                     aln_rates = matrix(0, 0, 0),
+                     edger = .BbcEdgeR(),
+                     deseq2 = list()),
                    contains="RangedSummarizedExperiment")
 
 setValidity("BbcSE", function(object) {

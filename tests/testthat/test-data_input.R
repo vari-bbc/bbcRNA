@@ -1,7 +1,4 @@
 # test the star_to_mat function ------------------------------------------------
-counts_mat <- star_to_mat(dir = ext_data_dir,
-                          rgx = "^[^_]+_[^_]+", column = 2)
-
 test_that("star_to_mat returns correct number of columns", {
   expect_equal(length(count_files), ncol(counts_mat))
 })
@@ -23,16 +20,11 @@ test_that("star_to_mat returns correct number of rows", {
 })
 
 # test the read_star_map_rates function ----------------------------------------
-aln_rates <- read_star_map_rates(dir = ext_data_dir,
-                                 rgx = "^[^_]+_[^_]+")
-
 test_that("read_star_map_rates returns correct number of rows", {
   expect_equal(nrow(aln_rates), length(aln_metrics_files))
 })
 
 # test the read_col_meta function ----------------------------------------------
-col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
-
 test_that("read_col_meta returns DataFrame", {
   expect_s4_class(col_meta, "DataFrame")
 })

@@ -19,4 +19,19 @@ aln_metrics_files <- grep(".*Log.final.out(\\.[^\\.\\s]+)?$",
                           list.files(ext_data_dir, full.names = TRUE),
                           value = TRUE, perl = TRUE)
 
+# get counts matrix
+counts_mat <- star_to_mat(dir = ext_data_dir,
+                          rgx = "^[^_]+_[^_]+", column = 2)
+
+# get the alignment metrics
+aln_rates <- read_star_map_rates(dir = ext_data_dir,
+                                 rgx = "^[^_]+_[^_]+")
+
+# get column meta data
+col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
+
+# make BbcSE object
+bbc_obj <- BbcSE(counts = counts_mat)
+
+
 

@@ -11,7 +11,7 @@
 #'   as row names.
 #' @param granges GRanges or GRangesList object. Optional.
 #' @param aln_rates Matrix containing alignment metrics. Optional.
-#' @param ... Arguments for SummarizedExperiment.
+#' @param ... Not used currently.
 #' @return A BbcSE object (extension of RangedSummarizedExperiment).
 #' @export
 #' @importFrom methods as is
