@@ -3,4 +3,7 @@ test_that("BbcSE constructors return valid BbcSE objects.", {
   expect_true(validObject(BbcSE(counts = counts_mat, aln_rates = aln_rates)))
   expect_true(validObject(BbcSE())) # exported
   expect_true(validObject(.BbcSE())) # internal
+  expect_error(BbcSE(counts=1))
+  expect_error(BbcSE(aln_rates=1))
+  expect_error(BbcSE(granges=1))
 })
