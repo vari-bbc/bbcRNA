@@ -23,13 +23,20 @@
 star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 
   # get all the file names for the count files from STAR
-  count_files <- grep("*ReadsPerGene.out.tab",
+  count_file_rgx <- ".*ReadsPerGene.out.tab(\\.[^\\.\\s]+)?$"
+  count_files <- grep(count_file_rgx,
                       list.files(dir, full.names = TRUE),
-                      value = TRUE)
+                      value = TRUE, perl = TRUE)
 
-  stopifnot(length(count_files) > 0) # check at least 1 count file
+  # check at least 1 count file
+  if (length(count_files) < 1){
+    stop(paste0("No count files of regex ", count_file_rgx, "detected\n"))
+  }
 
-  stopifnot(column %in% c(1, 2, 3)) # make sure column requested is valid
+  # check that column requested is valid
+  if (!column %in% c(1, 2, 3)){
+    stop(paste0("Column must be between 1 and 3. Input was: ", column, "\n"))
+  }
 
   # read in files
   counts_list <- lapply(count_files,
@@ -150,7 +157,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 read_star_map_rates <- function(dir, rgx){
 
   # get all the file names for the aln metrics files from STAR
-  aln_metrics_files <- grep(".*Log.final.out$",
+  aln_metrics_files <- grep(".*Log.final.out(\\.[^\\.\\s]+)?$",
                       list.files(dir, full.names = TRUE),
                       value = TRUE,
                       perl = TRUE)
