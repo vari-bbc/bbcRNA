@@ -64,6 +64,9 @@ setGeneric("findDEGs", function(x, ...)
 #'   http://www.genome.jp/kegg/catalog/org_list.html. For Reactome, possible
 #'   values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘yeast’ and
 #'   ‘zebrafish’. For msigdb, run 'msigdbr::msigdbr_show_species()'.
+#' @param contrast_names character value or vector for the contrast(s) of
+#'   interest. See name(de_results(edger(x))). If left to default "" value then
+#'   all contrasts will be processed.
 #' @param ... Passed to gseKEGG, GSEA or gsePathway. See each function for
 #'   possible arguments.
 #' @return A list of gseaResult objects or one gseaResult object

@@ -84,15 +84,26 @@ setMethod("run_gsea", "data.frame", function(x, gene_set="reactome", organism,
 #' @describeIn run_gsea Extract out the gene and signed -log10 PValue. Run
 #'   run_gsea for each result object (contrast).
 #' @export
-setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger", ...) {
+setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger",
+                                        contrast_names = "", ...) {
   if(!"entrez_ids" %in% colnames(rowData(x))) {
     stop("Please run ens2entrez first to get 'entrez_ids' column in rowData")
   }
 
   if(identical("edger", de_pkg)){
+    # get all the contrasts
     edger_results <- de_results(edger(x))[-1] # first element is a DGEGLM object
 
-    edger_results_names <- names(edger_results)
+    if(identical(contrast_names, "")){
+      edger_results_names <- names(edger_results)
+    } else {
+      if(!all(contrast_names %in% names(edger_results))){
+        stop("Not all contrast names found.")
+      }
+      # get requested contrasts
+      edger_results <- de_results(edger(x))[contrast_names]
+      edger_results_names <- contrast_names
+    }
 
     gsea_results <- lapply(edger_results_names, function(edger_res_name){
       dge_table <- edger_results[[edger_res_name]]$table
