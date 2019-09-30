@@ -3,6 +3,12 @@
 
 # bbcRNA: An R package for facilitating RNA-Seq analysis
 
+<!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.org/vari-bbc/bbcRNA.svg?branch=master)](https://travis-ci.org/vari-bbc/bbcRNA)
+<!-- badges: end -->
+
 The goal of bbcRNA is to facilitate RNA-seq analysis, starting from
 counts and ending with differentially expressed gene lists and
 enerichment analyses. The major feature are classes to store different
