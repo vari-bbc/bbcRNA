@@ -75,6 +75,8 @@
 <div id="bbcrna-an-r-package-for-facilitating-rna-seq-analysis" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#bbcrna-an-r-package-for-facilitating-rna-seq-analysis" class="anchor"></a>bbcRNA: An R package for facilitating RNA-Seq analysis</h1></div>
+<!-- badges: start -->
+
 <p>The goal of bbcRNA is to facilitate RNA-seq analysis, starting from counts and ending with differentially expressed gene lists and enerichment analyses. The major feature are classes to store different parts of the RNA-Seq analysis and wrapper functions for running popular tools such as EdgeR and ClusterProfiler. See <a href="https://vari-bbc.github.io/bbcRNA/">the bbcRNA website</a> for a built vignette.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -95,7 +97,7 @@
 <p>The <code>BbcSE</code> class extends SummarizedExperiment. Additional slots are:</p>
 <ol>
 <li>
-<code>aln_rates</code>: a matrix containing alignment metrics for samples.</li>
+<code>aln_metrics</code>: a matrix containing alignment metrics for samples.</li>
 <li>
 <code>edger</code> : a <code>BbcEdgeR</code> object.</li>
 <li>
@@ -183,7 +185,14 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.org/vari-bbc/bbcRNA"><img src="https://travis-ci.org/vari-bbc/bbcRNA.svg?branch=master" alt="Travis build status"></a></li>
+<li><a href="https://codecov.io/gh/vari-bbc/bbcRNA?branch=master"><img src="https://codecov.io/gh/vari-bbc/bbcRNA/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 

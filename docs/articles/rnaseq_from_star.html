@@ -108,10 +108,12 @@
 <div id="get-counts" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-counts" class="anchor"></a>Get counts</h1>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>tcell &lt;-<span class="st"> </span><span class="kw"><a href="../reference/star_to_mat.html">star_to_mat</a></span>(<span class="dt">dir =</span> <span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata/tcell"</span>, <span class="dt">package =</span> <span class="st">"bbcRNA"</span>), </span>
-<span id="cb5-2"><a href="#cb5-2"></a>                     <span class="dt">rgx =</span> <span class="st">"^[^_]+_[^_]+"</span>, <span class="dt">column =</span> <span class="dv">2</span>)</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(tcell)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>ext_data_dir &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata/tcell"</span>, <span class="dt">package =</span> <span class="st">"bbcRNA"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>tcell &lt;-<span class="st"> </span><span class="kw"><a href="../reference/star_to_mat.html">star_to_mat</a></span>(<span class="dt">dir =</span> ext_data_dir, </span>
+<span id="cb5-4"><a href="#cb5-4"></a>                     <span class="dt">rgx =</span> <span class="st">"^[^_]+_[^_]+"</span>, <span class="dt">column =</span> <span class="dv">2</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(tcell)</span></code></pre></div>
 <pre><code>##                    SRR7240735_1 SRR7240736_1 SRR7240737_1 SRR7240738_1
 ## ENSMUSG00000000001         1371         1676         1776         1036
 ## ENSMUSG00000000003            0            0            0            0
@@ -148,7 +150,7 @@
 ## 
 ## Slots:
 ##                                                                 
-## Name:                     aln_rates                        edger
+## Name:                   aln_metrics                        edger
 ## Class:                       matrix                     BbcEdgeR
 ##                                                                 
 ## Name:                        deseq2                    rowRanges
@@ -179,14 +181,14 @@
 ## colnames(8): SRR7240735_1 SRR7240736_1 ... SRR7240741_1
 ##   SRR7240742_1
 ## colData names(0):
-## aln_rates(0): 
+## aln_metrics(0): 
 ## edger(3): dgelist de_results norm_cts 
 ## deseq2(0):</code></pre>
 </div>
 <div id="get-sample-meta-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-sample-meta-data" class="anchor"></a>Get sample meta data</h1>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>col_meta &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_col_meta.html">read_col_meta</a></span>(<span class="st">"../inst/extdata/tcell/meta.txt"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>col_meta &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_col_meta.html">read_col_meta</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(ext_data_dir, <span class="st">"/meta.txt"</span>))</span></code></pre></div>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   sample = col_character(),
@@ -213,14 +215,15 @@
 <div id="get-mapping-rates" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-mapping-rates" class="anchor"></a>Get mapping rates</h1>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>aln_rates &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_star_map_rates.html">read_star_map_rates</a></span>(<span class="dt">dir =</span> <span class="st">"../inst/extdata/tcell/"</span>, </span>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>aln_metrics &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_star_aln_metrics.html">read_star_aln_metrics</a></span>(<span class="dt">dir =</span> ext_data_dir, </span>
 <span id="cb16-2"><a href="#cb16-2"></a>                                 <span class="dt">rgx =</span> <span class="st">"^[^_]+_[^_]+"</span>)</span>
 <span id="cb16-3"><a href="#cb16-3"></a></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># store the mapping rates in the BbcSE object</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="kw"><a href="../reference/aln_rates.html">aln_rates</a></span>(bbc_obj) &lt;-<span class="st"> </span>aln_rates</span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="co"># store the mapping metrics in the BbcSE object</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="kw"><a href="../reference/aln_metrics.html">aln_metrics</a></span>(bbc_obj) &lt;-<span class="st"> </span>aln_metrics</span>
 <span id="cb16-6"><a href="#cb16-6"></a></span>
-<span id="cb16-7"><a href="#cb16-7"></a><span class="co"># aln_rates is the name of both the setter and the getter function for aln_rates</span></span>
-<span id="cb16-8"><a href="#cb16-8"></a><span class="kw"><a href="../reference/aln_rates.html">aln_rates</a></span>(bbc_obj)</span></code></pre></div>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="co"># aln_metrics is the name of both the setter and the getter function for</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="co"># aln_metrics</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="kw"><a href="../reference/aln_metrics.html">aln_metrics</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>##              input_reads uniq_aln_reads mult_aln_reads map_rate
 ## SRR7240735_1    17973953       11081293        6574826     98.2
 ## SRR7240736_1    19582432       12246864        7019710     98.4
@@ -262,9 +265,9 @@
 <div id="plot-alignment-rates" class="section level1">
 <h1 class="hasAnchor">
 <a href="#plot-alignment-rates" class="anchor"></a>Plot alignment rates</h1>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw"><a href="../reference/plot_aln_rates.html">plot_aln_rates</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_aln_reads"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw"><a href="../reference/plot_aln_metrics.html">plot_aln_metrics</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_aln_reads"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_mapping-1.png" width="700"></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw"><a href="../reference/plot_aln_rates.html">plot_aln_rates</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_map_rate"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw"><a href="../reference/plot_aln_metrics.html">plot_aln_metrics</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_map_rate"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_mapping-2.png" width="700"></p>
 </div>
 <div id="add-gene-symbols" class="section level1">
@@ -371,7 +374,7 @@
 <div id="pca" class="section level1">
 <h1 class="hasAnchor">
 <a href="#pca" class="anchor"></a>PCA</h1>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>)</span>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
 <span id="cb37-2"><a href="#cb37-2"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_pca-1.png" width="700"></p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>pca_plots[[<span class="dv">2</span>]]</span></code></pre></div>
@@ -501,54 +504,56 @@
 ## [15] bbcRNA_0.0.0.9000          
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] backports_1.1.4        circlize_0.4.8         Hmisc_4.2-0           
-##   [4] fastmatch_1.1-0        plyr_1.8.4             igraph_1.2.4.1        
-##   [7] lazyeval_0.2.2         splines_3.6.1          usethis_1.5.1         
-##  [10] urltools_1.7.3         digest_0.6.20          htmltools_0.3.6       
-##  [13] GOSemSim_2.10.0        viridis_0.5.1          GO.db_3.8.2           
-##  [16] magrittr_1.5           checkmate_1.9.4        memoise_1.1.0         
-##  [19] cluster_2.1.0          limma_3.40.6           remotes_2.1.0         
-##  [22] annotate_1.62.0        readr_1.3.1            ComplexHeatmap_2.0.0  
-##  [25] graphlayouts_0.5.0     pkgdown_1.4.1          prettyunits_1.0.2     
-##  [28] colorspace_1.4-1       blob_1.2.0             rappdirs_0.3.1        
-##  [31] ggrepel_0.8.1          xfun_0.8               dplyr_0.8.3           
-##  [34] callr_3.3.1            crayon_1.3.4           RCurl_1.95-4.12       
-##  [37] jsonlite_1.6           graph_1.62.0           genefilter_1.66.0     
-##  [40] zeallot_0.1.0          survival_2.44-1.1      glue_1.3.1            
-##  [43] polyclip_1.10-0        gtable_0.3.0           zlibbioc_1.30.0       
-##  [46] XVector_0.24.0         UpSetR_1.4.0           GetoptLong_0.1.7      
-##  [49] pkgbuild_1.0.4         graphite_1.30.0        shape_1.4.4           
-##  [52] msigdbr_7.0.1          scales_1.0.0           DOSE_3.10.2           
-##  [55] edgeR_3.26.7           DBI_1.0.0              Rcpp_1.0.2            
-##  [58] xtable_1.8-4           htmlTable_1.13.1       viridisLite_0.3.0     
-##  [61] progress_1.2.2         clue_0.3-57            gridGraphics_0.4-1    
-##  [64] foreign_0.8-71         reactome.db_1.68.0     bit_1.1-14            
-##  [67] europepmc_0.3          Formula_1.2-3          htmlwidgets_1.3       
-##  [70] httr_1.4.1             fgsea_1.10.1           RColorBrewer_1.1-2    
-##  [73] acepack_1.4.1          XML_3.98-1.20          pkgconfig_2.0.2       
-##  [76] farver_1.1.0           nnet_7.3-12            locfit_1.5-9.1        
-##  [79] labeling_0.3           ggplotify_0.0.4        tidyselect_0.2.5      
-##  [82] rlang_0.4.0            reshape2_1.4.3         munsell_0.5.0         
-##  [85] tools_3.6.1            cli_1.1.0              RSQLite_2.1.2         
-##  [88] devtools_2.1.0         ggridges_0.5.1         evaluate_0.14         
-##  [91] stringr_1.4.0          yaml_2.2.0             processx_3.4.1        
-##  [94] knitr_1.24             bit64_0.9-7            fs_1.3.1              
-##  [97] tidygraph_1.1.2        purrr_0.3.2            ggraph_2.0.0          
-## [100] ReactomePA_1.28.0      DO.db_2.9              xml2_1.2.2            
-## [103] compiler_3.6.1         rstudioapi_0.10        png_0.1-7             
-## [106] testthat_2.2.1         statmod_1.4.32         geneplotter_1.62.0    
-## [109] tibble_2.1.3           tweenr_1.0.1           stringi_1.4.3         
-## [112] ps_1.3.0               desc_1.2.0             lattice_0.20-38       
-## [115] Matrix_1.2-17          vctrs_0.2.0            pillar_1.4.2          
-## [118] triebeard_0.3.0        GlobalOptions_0.1.0    data.table_1.12.2     
-## [121] cowplot_1.0.0          bitops_1.0-6           qvalue_2.16.0         
-## [124] latticeExtra_0.6-28    R6_2.4.0               gridExtra_2.3         
-## [127] sessioninfo_1.1.1      MASS_7.3-51.4          assertthat_0.2.1      
-## [130] pkgload_1.0.2          DESeq2_1.24.0          rprojroot_1.3-2       
-## [133] rjson_0.2.20           withr_2.1.2            GenomeInfoDbData_1.2.1
-## [136] hms_0.5.0              clusterProfiler_3.12.0 rpart_4.1-15          
-## [139] grid_3.6.1             tidyr_0.8.3            rmarkdown_1.14        
-## [142] rvcheck_0.1.3          ggforce_0.3.1          base64enc_0.1-3</code></pre>
+##   [1] tidyselect_0.2.5       RSQLite_2.1.2          htmlwidgets_1.3       
+##   [4] grid_3.6.1             devtools_2.1.0         munsell_0.5.0         
+##   [7] statmod_1.4.32         withr_2.1.2            colorspace_1.4-1      
+##  [10] GOSemSim_2.10.0        knitr_1.24             rstudioapi_0.10       
+##  [13] DOSE_3.10.2            labeling_0.3           urltools_1.7.3        
+##  [16] GenomeInfoDbData_1.2.1 polyclip_1.10-0        bit64_0.9-7           
+##  [19] farver_1.1.0           rprojroot_1.3-2        vctrs_0.2.0           
+##  [22] xfun_0.8               R6_2.4.0               clue_0.3-57           
+##  [25] graphlayouts_0.5.0     locfit_1.5-9.1         msigdbr_7.0.1         
+##  [28] bitops_1.0-6           fgsea_1.10.1           gridGraphics_0.4-1    
+##  [31] assertthat_0.2.1       scales_1.0.0           ggraph_2.0.0          
+##  [34] nnet_7.3-12            gtable_0.3.0           processx_3.4.1        
+##  [37] tidygraph_1.1.2        rlang_0.4.0            zeallot_0.1.0         
+##  [40] genefilter_1.66.0      GlobalOptions_0.1.0    splines_3.6.1         
+##  [43] lazyeval_0.2.2         acepack_1.4.1          europepmc_0.3         
+##  [46] checkmate_1.9.4        yaml_2.2.0             reshape2_1.4.3        
+##  [49] backports_1.1.4        qvalue_2.16.0          Hmisc_4.2-0           
+##  [52] clusterProfiler_3.12.0 tools_3.6.1            usethis_1.5.1         
+##  [55] ggplotify_0.0.4        RColorBrewer_1.1-2     sessioninfo_1.1.1     
+##  [58] ggridges_0.5.1         Rcpp_1.0.2             plyr_1.8.4            
+##  [61] base64enc_0.1-3        progress_1.2.2         zlibbioc_1.30.0       
+##  [64] purrr_0.3.2            RCurl_1.95-4.12        ps_1.3.0              
+##  [67] prettyunits_1.0.2      rpart_4.1-15           GetoptLong_0.1.7      
+##  [70] viridis_0.5.1          cowplot_1.0.0          ggrepel_0.8.1         
+##  [73] cluster_2.1.0          fs_1.3.1               magrittr_1.5          
+##  [76] data.table_1.12.2      DO.db_2.9              circlize_0.4.8        
+##  [79] triebeard_0.3.0        reactome.db_1.68.0     pkgload_1.0.2         
+##  [82] hms_0.5.0              evaluate_0.14          xtable_1.8-4          
+##  [85] XML_3.98-1.20          gridExtra_2.3          shape_1.4.4           
+##  [88] testthat_2.2.1         compiler_3.6.1         tibble_2.1.3          
+##  [91] crayon_1.3.4           htmltools_0.3.6        mgcv_1.8-28           
+##  [94] Formula_1.2-3          tidyr_0.8.3            geneplotter_1.62.0    
+##  [97] ReactomePA_1.28.0      DBI_1.0.0              tweenr_1.0.1          
+## [100] ComplexHeatmap_2.0.0   MASS_7.3-51.4          rappdirs_0.3.1        
+## [103] Matrix_1.2-17          readr_1.3.1            permute_0.9-5         
+## [106] cli_1.1.0              igraph_1.2.4.1         pkgconfig_2.0.2       
+## [109] pkgdown_1.4.1          rvcheck_0.1.3          foreign_0.8-71        
+## [112] xml2_1.2.2             annotate_1.62.0        XVector_0.24.0        
+## [115] stringr_1.4.0          callr_3.3.1            digest_0.6.20         
+## [118] vegan_2.5-6            graph_1.62.0           rmarkdown_1.14        
+## [121] fastmatch_1.1-0        htmlTable_1.13.1       edgeR_3.26.7          
+## [124] graphite_1.30.0        rjson_0.2.20           nlme_3.1-140          
+## [127] jsonlite_1.6           desc_1.2.0             viridisLite_0.3.0     
+## [130] limma_3.40.6           pillar_1.4.2           lattice_0.20-38       
+## [133] httr_1.4.1             pkgbuild_1.0.4         survival_2.44-1.1     
+## [136] GO.db_3.8.2            glue_1.3.1             remotes_2.1.0         
+## [139] UpSetR_1.4.0           png_0.1-7              bit_1.1-14            
+## [142] ggforce_0.3.1          stringi_1.4.3          blob_1.2.0            
+## [145] DESeq2_1.24.0          latticeExtra_0.6-28    memoise_1.1.0         
+## [148] dplyr_0.8.3</code></pre>
 </div>
   </div>
 

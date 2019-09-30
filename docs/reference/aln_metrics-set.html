@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Constructor for BbcSE — BbcSE • bbcRNA</title>
+<title>Setter for aln_metrics slot — aln_metrics&lt;- • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
 
 
-<meta property="og:title" content="Constructor for BbcSE — BbcSE" />
+<meta property="og:title" content="Setter for aln_metrics slot — aln_metrics&lt;-" />
 
-<meta property="og:description" content="BbcSE is a constructor for BbcSE." />
+<meta property="og:description" content="'map_rate' and 'uniq_map_rate' will be calculated if not already present." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,52 +110,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Constructor for BbcSE</h1>
+    <h1>Setter for aln_metrics slot</h1>
     
-    <div class="hidden name"><code>BbcSE.Rd</code></div>
+    <div class="hidden name"><code>aln_metrics-set.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>BbcSE</code> is a constructor for BbcSE.</p>
+    <p>'map_rate' and 'uniq_map_rate' will be calculated if not already present.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>BbcSE</span>(<span class='kw'>counts</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>), <span class='kw'>granges</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'>GRanges</span>(<span class='kw'>seqnames</span> <span class='kw'>=</span>
-  <span class='st'>"foobar"</span>, <span class='kw'>ranges</span> <span class='kw'>=</span> <span class='fl'>0</span>:<span class='fl'>0</span>), <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>counts</span>)), <span class='kw'>aln_metrics</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>),
-  <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='aln_metrics.html'>aln_metrics</a></span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>counts</th>
-      <td><p>A count matrix with sample names as column names and gene names
-as row names.</p></td>
+      <th>x</th>
+      <td><p>A BbcSE object.</p></td>
     </tr>
     <tr>
-      <th>granges</th>
-      <td><p>GRanges or GRangesList object. Optional.</p></td>
-    </tr>
-    <tr>
-      <th>aln_metrics</th>
-      <td><p>Matrix containing alignment metrics. Optional.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Passed to SummarizedExperiment constructor.</p></td>
+      <th>value</th>
+      <td><p>A matrix of mapping metrics. Rownames must correspond to samples
+in counts matrix and column names indicating metric type must be set.</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A BbcSE object (extension of RangedSummarizedExperiment).</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>If GRanges object is provided, the names must match the rownames of the
-    counts matrix. The output object will show only the intersected genes
-    between the the counts and the GRanges.</p>
     
 
   </div>
@@ -163,11 +143,7 @@ as row names.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

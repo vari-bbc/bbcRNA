@@ -128,7 +128,8 @@
   <span class='no'>orgDb</span>, <span class='no'>...</span>)
 
 <span class='co'># S4 method for BbcSE</span>
-<span class='fu'>run_gsea</span>(<span class='no'>x</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>run_gsea</span>(<span class='no'>x</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='kw'>contrast_names</span> <span class='kw'>=</span> <span class='st'>""</span>,
+  <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,6 +164,12 @@ values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘ye
     <tr>
       <th>de_pkg</th>
       <td><p>"edger" or "deseq2". Only used if x is a BbcSE</p></td>
+    </tr>
+    <tr>
+      <th>contrast_names</th>
+      <td><p>character value or vector for the contrast(s) of
+interest. See name(de_results(edger(x))). If left to default "" value then
+all contrasts will be processed.</p></td>
     </tr>
     </table>
     

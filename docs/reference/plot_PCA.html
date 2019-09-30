@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make PCA and scree plots — plot_PCA • bbcRNA</title>
+<title>PCA, screeplot and PERMANOVA test — plot_PCA • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,11 @@
 
 
 
-<meta property="og:title" content="Make PCA and scree plots — plot_PCA" />
+<meta property="og:title" content="PCA, screeplot and PERMANOVA test — plot_PCA" />
 
-<meta property="og:description" content="Make PCA and scree plots." />
+<meta property="og:description" content="Runs PCA on normalized counts. Makes PCA and scree plots. Tests for
+significant clustering based on specific variables using PERMANOVA and
+Euclidean distances." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,18 +112,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make PCA and scree plots</h1>
+    <h1>PCA, screeplot and PERMANOVA test</h1>
     
     <div class="hidden name"><code>plot_PCA.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Make PCA and scree plots.</p>
+    <p>Runs PCA on normalized counts. Makes PCA and scree plots. Tests for
+significant clustering based on specific variables using PERMANOVA and
+Euclidean distances.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_PCA</span>(<span class='no'>x</span>, <span class='kw'>norm_cts_type</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='no'>color_by</span>, <span class='no'>shape_by</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_PCA</span>(<span class='no'>x</span>, <span class='kw'>norm_cts_type</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
+  <span class='kw'>color_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]],
+  <span class='kw'>shape_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>adonis</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>adonis_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]])</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,11 +149,27 @@
       <th>shape_by</th>
       <td><p>colData column to shape by for PCA plot</p></td>
     </tr>
+    <tr>
+      <th>adonis</th>
+      <td><p>logical for whether vegan::adonis should be run. If TRUE,
+adonis() will be run with Euclidean distance calculated from the same
+normalized counts as used for PCA.</p></td>
+    </tr>
+    <tr>
+      <th>adonis_by</th>
+      <td><p>colData column to test using PERMANOVA. May be a vector of
+values; in this case, each variable is tested sequentially using adonis().</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list containing ggplot objects for 1. PCA 2. scree plot.</p>
+    <p>A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
+  of output from vegan::adonis()</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/vegan/man/adonis.html'>adonis</a></code></p></div>
     
 
   </div>
@@ -156,6 +179,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>
