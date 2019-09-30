@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{plot_PCA}
 \alias{plot_PCA}
-\title{Make PCA and scree plots}
+\title{PCA, screeplot and PERMANOVA test}
 \usage{
 plot_PCA(x, norm_cts_type = "edger",
   color_by = colnames(colData(x))[[1]],
@@ -30,7 +30,9 @@ A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
   of output from vegan::adonis()
 }
 \description{
-Make PCA and scree plots.
+Runs PCA on normalized counts. Makes PCA and scree plots. Tests for
+significant clustering based on specific variables using PERMANOVA and
+Euclidean distances.
 }
 \seealso{
 \code{\link[vegan]{adonis}}

@@ -1,6 +1,8 @@
-#' Make PCA and scree plots
+#' PCA, screeplot and PERMANOVA test
 #'
-#' Make PCA and scree plots.
+#' Runs PCA on normalized counts. Makes PCA and scree plots. Tests for
+#' significant clustering based on specific variables using PERMANOVA and
+#' Euclidean distances.
 #'
 #' @param x A BbcSE object.
 #' @param norm_cts_type "edger" or "deseq2"
