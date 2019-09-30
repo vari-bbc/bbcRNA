@@ -14,10 +14,19 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr left_join
 #' @export
-plot_PCA <- function(x, norm_cts_type = "edger", color_by, shape_by){
+plot_PCA <- function(x, norm_cts_type = "edger",
+                     color_by = colnames(colData(x))[[1]],
+                     shape_by = colnames(colData(x))[[1]]
+                     ){
   if (!is(x, "BbcSE")) stop("x is not a BbcSE object")
-  if (missing(color_by)) stop("Provide color_by parameter")
-  if (missing(shape_by)) stop("Provide shape_by parameter")
+
+  if (!color_by %in% colnames(colData(x))) {
+    stop("'color_by' parameter not found in column meta data")
+  }
+  if (!shape_by %in% colnames(colData(x))) {
+    stop("'shape_by' parameter not found in column meta data")
+  }
+
   if (norm_cts_type == "edger"){
     norm_counts <- assay(norm_cts(edger(x)))
     pca <- prcomp(t(norm_counts))
