@@ -7,6 +7,8 @@
 
 [![Travis build
 status](https://travis-ci.org/vari-bbc/bbcRNA.svg?branch=master)](https://travis-ci.org/vari-bbc/bbcRNA)
+[![Codecov test
+coverage](https://codecov.io/gh/vari-bbc/bbcRNA/branch/master/graph/badge.svg)](https://codecov.io/gh/vari-bbc/bbcRNA?branch=master)
 <!-- badges: end -->
 
 The goal of bbcRNA is to facilitate RNA-seq analysis, starting from
