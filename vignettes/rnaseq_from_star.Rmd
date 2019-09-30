@@ -167,7 +167,7 @@ nrow(dgelist(edger(bbc_obj)))
 ```
 # PCA
 ```{r plot_pca}
-pca_plots <- plot_PCA(bbc_obj, color_by="genotype", shape_by="genotype")
+pca_plots <- plot_PCA(bbc_obj, color_by="genotype", shape_by="genotype", adonis_by=c("genotype","rep"))
 pca_plots[[1]]
 pca_plots[[2]]
 ```

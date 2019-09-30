@@ -41,7 +41,8 @@ Imports:
     msigdbr (>= 7.0),
     BiocGenerics (>= 0.3),
     RColorBrewer (>= 1.1),
-    ComplexHeatmap (>= 2.0)
+    ComplexHeatmap (>= 2.0),
+    vegan (>= 2.5)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)

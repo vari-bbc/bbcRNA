@@ -6,30 +6,51 @@
 #' @param norm_cts_type "edger" or "deseq2"
 #' @param color_by colData column to color by for PCA plot
 #' @param shape_by colData column to shape by for PCA plot
-#' @return A list containing ggplot objects for 1. PCA 2. scree plot.
+#' @param adonis logical for whether vegan::adonis should be run. If TRUE,
+#'   adonis() will be run with Euclidean distance calculated from the same
+#'   normalized counts as used for PCA.
+#' @param adonis_by colData column to test using PERMANOVA. May be a vector of
+#'   values; in this case, each variable is tested sequentially using adonis().
+#' @return A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
+#'   of output from vegan::adonis()
+#' @seealso \code{\link[vegan]{adonis}}
 #' @import ggplot2
 #' @importFrom stats prcomp
 #' @importFrom cowplot theme_cowplot
 #' @importFrom SummarizedExperiment assay
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr left_join
+#' @importFrom vegan adonis vegdist
 #' @export
 plot_PCA <- function(x, norm_cts_type = "edger",
                      color_by = colnames(colData(x))[[1]],
-                     shape_by = colnames(colData(x))[[1]]
+                     shape_by = colnames(colData(x))[[1]],
+                     adonis = TRUE,
+                     adonis_by = colnames(colData(x))[[1]]
                      ){
   if (!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
+  if (length(color_by) > 1) {
+    stop("'color_by' must have length of 1")
+  }
+  if (length(shape_by) > 1) {
+    stop("'shape_by' must have length of 1")
+  }
   if (!color_by %in% colnames(colData(x))) {
     stop("'color_by' parameter not found in column meta data")
   }
   if (!shape_by %in% colnames(colData(x))) {
     stop("'shape_by' parameter not found in column meta data")
   }
+  if (!all(adonis_by %in% colnames(colData(x)))) {
+    stop("One or more 'adonis_by' parameter(s) not found in column meta data")
+  }
 
   if (norm_cts_type == "edger"){
     norm_counts <- assay(norm_cts(edger(x)))
     pca <- prcomp(t(norm_counts))
+  } else if (norm_cts_type == "deseq2"){
+    # not implemented yet
   }
 
   pr_comps <- data.frame(pca$x)
@@ -63,9 +84,43 @@ plot_PCA <- function(x, norm_cts_type = "edger",
     theme(axis.title.y = element_text(vjust=1),
           plot.margin = unit(c(0,0,0,6), "mm"))
 
-  all_pca_plots <- list(pca_plot, var_plot)
+  all_pca_output <- list(pca_plot, var_plot)
 
-  all_pca_plots
+  if (isTRUE(adonis)){
+    # calculate Euclidean distance
+    eucl_dist <- vegan::vegdist(t(norm_counts), method="euclidean")
+    column_meta <- colData(x)
+
+    # run adonis() for each 'adonis_by' variable. I couldn't figure out how to
+    # specify the RHS of the 'formula' paramter for vegan::adonis, so as a
+    # work-around, I rename the desired variable to 'group' for each lapply
+    # iteration.
+    adonis_out <- lapply(adonis_by, function(curr_col){
+      column_meta_temp <- column_meta
+      column_meta_temp$group <- column_meta_temp[[curr_col]]
+
+      vegan::adonis(eucl_dist ~ group,
+                    data = column_meta_temp, method = "eu")
+    })
+    names(adonis_out) <-  adonis_by
+
+    # get the P values
+    adonis_pvals <- sapply(adonis_by, function(curr_col) {
+      round(adonis_out[[curr_col]]$aov.tab$`Pr(>F)`[[1]], digits = 3)
+    })
+    names(adonis_pvals) <- adonis_by
+
+    # add the P values to the PCA plot as a caption
+    pvals_concat <- paste0("P-values: ",
+                           paste0(names(adonis_pvals), "=", adonis_pvals,
+                           collapse = ", "))
+    pca_plot <- pca_plot + labs(caption = pvals_concat)
+
+    # assemble output
+    all_pca_output <- list(pca_plot, var_plot, adonis_out)
+  }
+
+  all_pca_output
 }
 
 

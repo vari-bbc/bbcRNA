@@ -4,7 +4,10 @@
 \alias{plot_PCA}
 \title{Make PCA and scree plots}
 \usage{
-plot_PCA(x, norm_cts_type = "edger", color_by, shape_by)
+plot_PCA(x, norm_cts_type = "edger",
+  color_by = colnames(colData(x))[[1]],
+  shape_by = colnames(colData(x))[[1]], adonis = TRUE,
+  adonis_by = colnames(colData(x))[[1]])
 }
 \arguments{
 \item{x}{A BbcSE object.}
@@ -14,10 +17,21 @@ plot_PCA(x, norm_cts_type = "edger", color_by, shape_by)
 \item{color_by}{colData column to color by for PCA plot}
 
 \item{shape_by}{colData column to shape by for PCA plot}
+
+\item{adonis}{logical for whether vegan::adonis should be run. If TRUE,
+adonis() will be run with Euclidean distance calculated from the same
+normalized counts as used for PCA.}
+
+\item{adonis_by}{colData column to test using PERMANOVA. May be a vector of
+values; in this case, each variable is tested sequentially using adonis().}
 }
 \value{
-A list containing ggplot objects for 1. PCA 2. scree plot.
+A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
+  of output from vegan::adonis()
 }
 \description{
 Make PCA and scree plots.
+}
+\seealso{
+\code{\link[vegan]{adonis}}
 }
