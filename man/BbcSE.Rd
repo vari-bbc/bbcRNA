@@ -5,7 +5,7 @@
 \title{Constructor for BbcSE}
 \usage{
 BbcSE(counts = matrix(0, 0, 0), granges = rep(GRanges(seqnames =
-  "foobar", ranges = 0:0), nrow(counts)), aln_rates = matrix(0, 0, 0),
+  "foobar", ranges = 0:0), nrow(counts)), aln_metrics = matrix(0, 0, 0),
   ...)
 }
 \arguments{
@@ -14,7 +14,7 @@ as row names.}
 
 \item{granges}{GRanges or GRangesList object. Optional.}
 
-\item{aln_rates}{Matrix containing alignment metrics. Optional.}
+\item{aln_metrics}{Matrix containing alignment metrics. Optional.}
 
 \item{...}{Passed to SummarizedExperiment constructor.}
 }

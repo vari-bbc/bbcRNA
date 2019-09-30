@@ -143,7 +143,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 
 #' Import STAR Log.final.out files for analyzing mapping rates.
 #'
-#' \code{read_star_map_rates} returns a dataframe from STAR Log.final.out files.
+#' \code{read_star_aln_metrics} returns a dataframe from STAR Log.final.out files.
 #'
 #' This function will read in all the '*Log.final.out' files in the specified
 #' directory and returns a dataframe with alignment metrics.
@@ -154,7 +154,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 #'     sample name from the name of the Log.final.out files.
 #' @return A dataframe.
 #' @export
-read_star_map_rates <- function(dir, rgx){
+read_star_aln_metrics <- function(dir, rgx){
 
   # get all the file names for the aln metrics files from STAR
   aln_metrics_files <- grep(".*Log.final.out(\\.[^\\.\\s]+)?$",

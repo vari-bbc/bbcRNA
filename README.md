@@ -38,7 +38,7 @@ different parts of a DE analysis.
 
 The `BbcSE` class extends SummarizedExperiment. Additional slots are:
 
-1.  `aln_rates`: a matrix containing alignment metrics for samples.
+1.  `aln_metrics`: a matrix containing alignment metrics for samples.
 2.  `edger` : a `BbcEdgeR` object.
 3.  `deseq2`: For storing DESeqDataSet and DESeqResults; not implemented
     yet.

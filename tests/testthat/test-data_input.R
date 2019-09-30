@@ -19,9 +19,9 @@ test_that("star_to_mat returns correct number of rows", {
   expect_equal(ngenes_first_cts_file, nrow(counts_mat))
 })
 
-# test the read_star_map_rates function ----------------------------------------
-test_that("read_star_map_rates returns correct number of rows", {
-  expect_equal(nrow(aln_rates), length(aln_metrics_files))
+# test the read_star_aln_metrics function ----------------------------------------
+test_that("read_star_aln_metrics returns correct number of rows", {
+  expect_equal(nrow(aln_metrics), length(aln_metrics_files))
 })
 
 # test the read_col_meta function ----------------------------------------------

@@ -10,7 +10,7 @@
 #' @param counts A count matrix with sample names as column names and gene names
 #'   as row names.
 #' @param granges GRanges or GRangesList object. Optional.
-#' @param aln_rates Matrix containing alignment metrics. Optional.
+#' @param aln_metrics Matrix containing alignment metrics. Optional.
 #' @param ... Passed to SummarizedExperiment constructor.
 #' @return A BbcSE object (extension of RangedSummarizedExperiment).
 #' @export
@@ -21,7 +21,7 @@
 BbcSE <- function(counts = matrix(0, 0, 0),
                   granges = rep(GRanges(seqnames="foobar", ranges=0:0),
                                 nrow(counts)),
-                  aln_rates = matrix(0, 0, 0),
+                  aln_metrics = matrix(0, 0, 0),
                   ...)
 {
   stopifnot(is(counts, "matrix"))
@@ -49,22 +49,22 @@ BbcSE <- function(counts = matrix(0, 0, 0),
                                ...)
   }
 
-  if (length(aln_rates) > 0){
+  if (length(aln_metrics) > 0){
     # check that sample names match
-    stopifnot(identical(nrow(aln_rates), ncol(counts)))
-    stopifnot(all(rownames(aln_rates) %in% colnames(counts)))
+    stopifnot(identical(nrow(aln_metrics), ncol(counts)))
+    stopifnot(all(rownames(aln_metrics) %in% colnames(counts)))
 
-    # arrange aln_rates rows into same order as counts
-    aln_rates <- aln_rates[colnames(counts), ]
+    # arrange aln_metrics rows into same order as counts
+    aln_metrics <- aln_metrics[colnames(counts), ]
   }
 
   bbcse_obj <- .BbcSE(se,
                       edger = BbcEdgeR(),
                       deseq2 = list())
 
-  # use the setter for aln_rates, not directly in the constructor because it
+  # use the setter for aln_metrics, not directly in the constructor because it
   # calculates the rates from the raw mapping counts
-  aln_rates(bbcse_obj) <- aln_rates
+  aln_metrics(bbcse_obj) <- aln_metrics
 
   validObject(bbcse_obj)
 
@@ -80,15 +80,15 @@ BbcSE <- function(counts = matrix(0, 0, 0),
 setMethod("show", "BbcSE", function(object) {
   out <- callNextMethod()
 
-  aln_rates_ncol <- ncol(aln_rates(object, withDimnames=FALSE))
-  aln_rates_colnames <- ifelse(aln_rates_ncol > 0,
+  aln_metrics_ncol <- ncol(aln_metrics(object, withDimnames=FALSE))
+  aln_metrics_colnames <- ifelse(aln_metrics_ncol > 0,
                                paste(colnames(
-                                 aln_rates(object, withDimnames=TRUE)
+                                 aln_metrics(object, withDimnames=TRUE)
                                ), collapse = " "),
                                "")
 
   cat(
-    "aln_rates(", aln_rates_ncol, "): ", aln_rates_colnames, "\n",
+    "aln_metrics(", aln_metrics_ncol, "): ", aln_metrics_colnames, "\n",
     sep=""
   )
 
@@ -108,7 +108,7 @@ setMethod("show", "BbcSE", function(object) {
 #' @param drop see help("[")
 #' @export
 setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
-  aln_rates <- aln_rates(x, withDimnames=FALSE)
+  aln_metrics <- aln_metrics(x, withDimnames=FALSE)
 
   if (!missing(i)) {
     if (is.character(i)) {
@@ -128,11 +128,11 @@ setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
       )
     }
     j <- as.vector(j)
-    aln_rates <- aln_rates[j, , drop=FALSE]
+    aln_metrics <- aln_metrics[j, , drop=FALSE]
   }
 
   out <- callNextMethod()
-  BiocGenerics:::replaceSlots(out, aln_rates = aln_rates,
+  BiocGenerics:::replaceSlots(out, aln_metrics = aln_metrics,
                               edger = list(),
                               deseq2 = list(),
                               check = TRUE)
@@ -149,7 +149,7 @@ setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
 setReplaceMethod("[", c("BbcSE", "ANY", "ANY", "BbcSE"),
                  function(x, i, j, ..., value) {
 
-                   aln_rates <- aln_rates(x, withDimnames=FALSE)
+                   aln_metrics <- aln_metrics(x, withDimnames=FALSE)
 
                    if (!missing(i)) {
                      if (is.character(i)) {
@@ -171,12 +171,12 @@ setReplaceMethod("[", c("BbcSE", "ANY", "ANY", "BbcSE"),
                      }
                      j <- as.vector(j)
 
-                     aln_rates[j,] <- aln_rates(value, withDimnames=FALSE)
+                     aln_metrics[j,] <- aln_metrics(value, withDimnames=FALSE)
                    }
 
                    out <- callNextMethod()
                    BiocGenerics:::replaceSlots(out,
-                                               aln_rates=aln_rates,
+                                               aln_metrics = aln_metrics,
                                                edger = list(),
                                                deseq2 = list(),
                                                check=TRUE)
@@ -193,9 +193,9 @@ setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
 
   # Checks for identical column state.
   ref <- args[[1]]
-  ref.aln_rates <- aln_rates(ref, withDimnames=FALSE)
+  ref.aln_metrics <- aln_metrics(ref, withDimnames=FALSE)
   for (x in args[-1]) {
-    if (!identical(ref.aln_rates, aln_rates(x, withDimnames=FALSE)))
+    if (!identical(ref.aln_metrics, aln_metrics(x, withDimnames=FALSE)))
     {
       stop("per-column values are not compatible")
     }
@@ -218,9 +218,9 @@ setMethod("rbind", "BbcSE", function(..., deparse.level=1) {
 setMethod("cbind", "BbcSE", function(..., deparse.level=1) {
   args <- list(...)
 
-  all.aln_rates <- lapply(args, aln_rates, withDimnames=FALSE)
+  all.aln_metrics <- lapply(args, aln_metrics, withDimnames=FALSE)
 
-  all.aln_rates <- do.call(rbind, all.aln_rates)
+  all.aln_metrics <- do.call(rbind, all.aln_metrics)
 
   # Checks for identical column state.
   # ref <- args[[1]]
@@ -241,7 +241,7 @@ setMethod("cbind", "BbcSE", function(..., deparse.level=1) {
   on.exit(S4Vectors:::disableValidity(old.validity))
 
   out <- callNextMethod()
-  BiocGenerics:::replaceSlots(out, aln_rates=all.aln_rates,
+  BiocGenerics:::replaceSlots(out, aln_metrics=all.aln_metrics,
                               edger = list(),
                               deseq2 = list(),
                               check=FALSE)

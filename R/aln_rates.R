@@ -1,11 +1,11 @@
-#' Getter for aln_rates slot
+#' Getter for aln_metrics slot
 #' @param x BbcSE object
 #' @param withDimnames logical indicating whether output should have dim names
 #' @export
-aln_rates <- function(x, withDimnames=TRUE) {
+aln_metrics <- function(x, withDimnames=TRUE) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
 
-  out <- x@aln_rates
+  out <- x@aln_metrics
   if (withDimnames) {
     rownames(out) <- colnames(x)
   }
@@ -14,7 +14,7 @@ aln_rates <- function(x, withDimnames=TRUE) {
 
 ###-----------------------------------------------------------------------------
 
-#' Setter for aln_rates slot
+#' Setter for aln_metrics slot
 #'
 #' 'map_rate' and 'uniq_map_rate' will be calculated if not already present.
 #'
@@ -22,7 +22,7 @@ aln_rates <- function(x, withDimnames=TRUE) {
 #' @param value A matrix of mapping metrics. Rownames must correspond to samples
 #' in counts matrix and column names indicating metric type must be set.
 #' @export
-`aln_rates<-` <- function(x, value = matrix(0, 0, 0)) {
+`aln_metrics<-` <- function(x, value = matrix(0, 0, 0)) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
   if(!is(value, "matrix")) stop("value not a matrix")
   if(length(value) > 0){
@@ -31,13 +31,13 @@ aln_rates <- function(x, withDimnames=TRUE) {
       stop("Column names in 'x' must all be present in row names of 'value'")
     }
 
-    valid_aln_rates_colnames <- c("input_reads",
+    valid_aln_metrics_colnames <- c("input_reads",
                                   "uniq_aln_reads",
                                   "mult_aln_reads")
 
-    if (!all(valid_aln_rates_colnames %in% colnames(value))){
+    if (!all(valid_aln_metrics_colnames %in% colnames(value))){
       stop(paste0("colnames(value) must contain ",
-                  paste(valid_aln_rates_colnames, collapse = ", ")))
+                  paste(valid_aln_metrics_colnames, collapse = ", ")))
     }
 
     if (!"map_rate" %in% colnames(value)) {
@@ -59,12 +59,12 @@ aln_rates <- function(x, withDimnames=TRUE) {
       value <- cbind(value, uniq_map_rate = uniq_map_rate)
     }
 
-    # Order the aln_rates according to colnames(x)
+    # Order the aln_metrics according to colnames(x)
     value <- value[colnames(x), ]
 
   }
-  # set the aln_rates slot.
-  x@aln_rates <- value
+  # set the aln_metrics slot.
+  x@aln_metrics <- value
   validObject(x)
   x
 }
@@ -76,22 +76,22 @@ aln_rates <- function(x, withDimnames=TRUE) {
 #' Plot alignment metrics as a bar chart.
 #'
 #' @param x A BbcSE object.
-#' @param type aln_rates column to plot.
+#' @param type aln_metrics column to plot.
 #' @param fill_by Variable to fill by. Can be column from colData() or
-#'   aln_data().
+#'   aln_metrics().
 #' @param facet_by Variable to facet by. Can be column from colData() or
-#'   aln_data().
+#'   aln_metrics().
 #' @return A ggplot object
 #' @export
 #' @import ggplot2
 #' @importFrom tibble as_tibble
 #' @importFrom cowplot theme_cowplot
-plot_aln_rates <- function(x, type = "uniq_map_rate", fill_by = "sample",
-                           facet_by = "") {
+plot_aln_metrics <- function(x, type = "uniq_map_rate", fill_by = "sample",
+                             facet_by = "") {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
   validObject(x)
 
-  aln_data <- tibble::as_tibble(aln_rates(x),
+  aln_data <- tibble::as_tibble(aln_metrics(x),
                                 rownames = "sample")
 
   sample_meta <- tibble::as_tibble(colData(x),

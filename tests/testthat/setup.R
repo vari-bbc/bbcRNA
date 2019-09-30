@@ -24,14 +24,14 @@ counts_mat <- star_to_mat(dir = ext_data_dir,
                           rgx = "^[^_]+_[^_]+", column = 2)
 
 # get the alignment metrics
-aln_rates <- read_star_map_rates(dir = ext_data_dir,
-                                 rgx = "^[^_]+_[^_]+")
+aln_metrics <- read_star_aln_metrics(dir = ext_data_dir,
+                                     rgx = "^[^_]+_[^_]+")
 
 # get column meta data
 col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
 
 # make BbcSE object
-bbc_obj <- BbcSE(counts = counts_mat, aln_rates = aln_rates,
+bbc_obj <- BbcSE(counts = counts_mat, aln_metrics = aln_metrics,
                  colData = col_meta[colnames(counts_mat), ])
 
 # Run edgeR

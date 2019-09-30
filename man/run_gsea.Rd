@@ -12,7 +12,8 @@ run_gsea(x, ...)
 \S4method{run_gsea}{data.frame}(x, gene_set = "reactome", organism,
   orgDb, ...)
 
-\S4method{run_gsea}{BbcSE}(x, de_pkg = "edger", ...)
+\S4method{run_gsea}{BbcSE}(x, de_pkg = "edger", contrast_names = "",
+  ...)
 }
 \arguments{
 \item{x}{A BbcSE object or a DGEList or a DESeqDataSet.}
@@ -33,6 +34,10 @@ values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘ye
 \item{orgDb}{OrgDB object for your organism}
 
 \item{de_pkg}{"edger" or "deseq2". Only used if x is a BbcSE}
+
+\item{contrast_names}{character value or vector for the contrast(s) of
+interest. See name(de_results(edger(x))). If left to default "" value then
+all contrasts will be processed.}
 }
 \value{
 A list of gseaResult objects or one gseaResult object

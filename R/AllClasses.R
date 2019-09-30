@@ -133,12 +133,12 @@ setValidity("BbcEdgeR", function(object) {
 #' @importClassesFrom edgeR DGEList DGEGLM DGEExact DGELRT
 .BbcSE <- setClass("BbcSE",
                    slots = representation(
-                     aln_rates = "matrix",
+                     aln_metrics = "matrix",
                      edger = "BbcEdgeR",
                      deseq2 = "list"),
                    prototype = prototype(
                      assays = Assays(SimpleList(counts=matrix(0, 0, 0))),
-                     aln_rates = matrix(0, 0, 0),
+                     aln_metrics = matrix(0, 0, 0),
                      edger = .BbcEdgeR(),
                      deseq2 = list()),
                    contains="RangedSummarizedExperiment")
@@ -210,44 +210,44 @@ setValidity("BbcSE", function(object) {
 
 
 
-  ###aln_rates slot-------------------------------------------------------------
-  aln_rates <- aln_rates(object, withDimnames=FALSE)
+  ###aln_metrics slot-------------------------------------------------------------
+  aln_metrics <- aln_metrics(object, withDimnames=FALSE)
 
-  if (!is.matrix(aln_rates)) {
-    msg <- c(msg, "aln_rates must be a matrix")
-  } else if (length(aln_rates) > 0){
+  if (!is.matrix(aln_metrics)) {
+    msg <- c(msg, "aln_metrics must be a matrix")
+  } else if (length(aln_metrics) > 0){
 
-    aln_rates <- aln_rates(object, withDimnames=TRUE)
+    aln_metrics <- aln_metrics(object, withDimnames=TRUE)
 
-    aln_rates_colnames <- colnames(aln_rates)
-    if(!identical(length(aln_rates_colnames),
-                  length(unique(aln_rates_colnames)))){
-      msg <- c(msg, "aln_rates column names must be unique")
+    aln_metrics_colnames <- colnames(aln_metrics)
+    if(!identical(length(aln_metrics_colnames),
+                  length(unique(aln_metrics_colnames)))){
+      msg <- c(msg, "aln_metrics column names must be unique")
     }
 
-    valid_aln_rates_colnames <- c("input_reads",
-                                  "uniq_aln_reads",
-                                  "mult_aln_reads",
-                                  "map_rate",
-                                  "uniq_map_rate")
-    if(!all(colnames(aln_rates) %in%
-           valid_aln_rates_colnames)) {
+    valid_aln_metrics_colnames <- c("input_reads",
+                                    "uniq_aln_reads",
+                                    "mult_aln_reads",
+                                    "map_rate",
+                                    "uniq_map_rate")
+    if(!all(colnames(aln_metrics) %in%
+           valid_aln_metrics_colnames)) {
       msg <- c(
-        msg, paste0("colnames for aln_rates must be one of: ",
-                    paste(valid_aln_rates_colnames, collapse = ", "))
+        msg, paste0("colnames for aln_metrics must be one of: ",
+                    paste(valid_aln_metrics_colnames, collapse = ", "))
       )
     }
 
-    if (length(aln_rates(object, withDimnames=FALSE) > 0)) {
-      if (nrow(aln_rates(object, withDimnames=FALSE)) != NC) {
+    if (length(aln_metrics(object, withDimnames=FALSE) > 0)) {
+      if (nrow(aln_metrics(object, withDimnames=FALSE)) != NC) {
         msg <- c(
-          msg, "'nrow(aln_rates)' should be equal to the number of columns"
+          msg, "'nrow(aln_metrics)' should be equal to the number of columns"
         )
       }
 
     }
   }
-  ###END aln_rates slot---------------------------------------------------------
+  ###END aln_metrics slot---------------------------------------------------------
 
   if (is.null(msg)) {
     TRUE

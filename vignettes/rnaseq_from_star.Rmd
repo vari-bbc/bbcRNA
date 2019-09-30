@@ -96,14 +96,15 @@ colData(bbc_obj)
 # Get mapping rates
 
 ```{r get_mapping_rates}
-aln_rates <- read_star_map_rates(dir = ext_data_dir, 
+aln_metrics <- read_star_aln_metrics(dir = ext_data_dir, 
                                  rgx = "^[^_]+_[^_]+")
 
-# store the mapping rates in the BbcSE object
-aln_rates(bbc_obj) <- aln_rates
+# store the mapping metrics in the BbcSE object
+aln_metrics(bbc_obj) <- aln_metrics
 
-# aln_rates is the name of both the setter and the getter function for aln_rates
-aln_rates(bbc_obj)
+# aln_metrics is the name of both the setter and the getter function for
+# aln_metrics
+aln_metrics(bbc_obj)
 ```
 
 # Change the column (sample) names
@@ -128,9 +129,9 @@ validObject(bbc_obj)
 # Plot alignment rates
 
 ```{r plot_mapping}
-plot_aln_rates(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
+plot_aln_metrics(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
 
-plot_aln_rates(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
+plot_aln_metrics(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
 ```
 
 # Add gene symbols

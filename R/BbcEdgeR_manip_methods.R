@@ -46,7 +46,7 @@ dgelist <- function(x) {
 `dgelist<-` <- function(x, value) {
   if(!is(x, "BbcEdgeR")) stop("x is not a BbcEdgeR object")
 
-  # set the aln_rates slot. Order the aln_rates according to colnames(x)
+  # set the dgelist slot.
   x@dgelist <- value
 
   validObject(x)
@@ -75,7 +75,7 @@ de_results <- function(x) {
 `de_results<-` <- function(x, value) {
   if(!is(x, "BbcEdgeR")) stop("x is not a BbcEdgeR object")
 
-  # set the aln_rates slot. Order the aln_rates according to colnames(x)
+  # set the de_results slot.
   x@de_results <- value
 
   validObject(x)
@@ -104,7 +104,7 @@ norm_cts <- function(x) {
 `norm_cts<-` <- function(x, value) {
   if(!is(x, "BbcEdgeR")) stop("x is not a BbcEdgeR object")
 
-  # set the aln_rates slot. Order the aln_rates according to colnames(x)
+  # set the norm_cts slot.
   x@norm_cts <- value
 
   validObject(x)
