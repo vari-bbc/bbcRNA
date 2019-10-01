@@ -5,10 +5,6 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/vari-bbc/bbcRNA.svg?branch=master)](https://travis-ci.org/vari-bbc/bbcRNA)
-[![Codecov test
-coverage](https://codecov.io/gh/vari-bbc/bbcRNA/branch/master/graph/badge.svg)](https://codecov.io/gh/vari-bbc/bbcRNA?branch=master)
 <!-- badges: end -->
 
 The goal of bbcRNA is to facilitate RNA-seq analysis, starting from
@@ -73,7 +69,7 @@ BbcSE()
 #> rowData names(0):
 #> colnames: NULL
 #> colData names(0):
-#> aln_rates(0): 
+#> aln_metrics(0): 
 #> edger(3): dgelist de_results norm_cts 
 #> deseq2(0):
 
