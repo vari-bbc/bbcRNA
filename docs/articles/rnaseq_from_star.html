@@ -296,7 +296,7 @@
 <a href="#get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="anchor"></a>Get Entrez IDs for gene set analyses after DE genes are identified</h1>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2entrez.html">ens2entrez</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
-<pre><code>## 24843 genes with valid Entrez ID out of 50600 total genes</code></pre>
+<pre><code>## 24634 genes with valid Entrez ID out of 50600 total genes</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>## DataFrame with 50600 rows and 2 columns
 ##                             uniq_syms  entrez_ids
@@ -438,8 +438,8 @@
 <span id="cb42-7"><a href="#cb42-7"></a>                                <span class="dt">orgDb =</span> org.Mm.eg.db,</span>
 <span id="cb42-8"><a href="#cb42-8"></a>                                <span class="dt">organism =</span> <span class="st">"Mus musculus"</span>)</span></code></pre></div>
 <pre><code>## genotype_mut_-_WT: removed 0 genes out of 10827 due to logFC = 0 or PValue = 1</code></pre>
-<pre><code>## genotype_mut_-_WT: removed 664 genes out of 10827 due to no Entrez gene match</code></pre>
-<pre><code>## genotype_mut_-_WT: total genes remaining is 10163</code></pre>
+<pre><code>## genotype_mut_-_WT: removed 503 genes out of 10827 due to no Entrez gene match</code></pre>
+<pre><code>## genotype_mut_-_WT: total genes remaining is 10324</code></pre>
 <pre><code>## preparing geneSet collections...</code></pre>
 <pre><code>## GSEA analysis...</code></pre>
 <pre><code>## leading edge analysis...</code></pre>
@@ -463,8 +463,8 @@
 <span id="cb54-6"><a href="#cb54-6"></a>                                <span class="dt">minGSSize =</span> <span class="dv">30</span>,</span>
 <span id="cb54-7"><a href="#cb54-7"></a>                                <span class="dt">use_internal_data =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <pre><code>## genotype_mut_-_WT: removed 0 genes out of 10827 due to logFC = 0 or PValue = 1</code></pre>
-<pre><code>## genotype_mut_-_WT: removed 664 genes out of 10827 due to no Entrez gene match</code></pre>
-<pre><code>## genotype_mut_-_WT: total genes remaining is 10163</code></pre>
+<pre><code>## genotype_mut_-_WT: removed 503 genes out of 10827 due to no Entrez gene match</code></pre>
+<pre><code>## genotype_mut_-_WT: total genes remaining is 10324</code></pre>
 <pre><code>## preparing geneSet collections...</code></pre>
 <pre><code>## GSEA analysis...</code></pre>
 <pre><code>## leading edge analysis...</code></pre>

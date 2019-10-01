@@ -143,8 +143,9 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-just those in the BbcSE object.</p><ul>
+    <p>Entrez IDs with more than one Ensembl ID match are determined only from genes
+present in the BbcSE object, so be sure it is unfiltered.</p>
+<ul>
 <li><p>Entrez IDs that match multiple Ensembl IDs are NA</p></li>
 <li><p>The first Entrez ID will be returned for genes with multiple possible
 Entrez IDs.</p></li>
