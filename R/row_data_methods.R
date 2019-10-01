@@ -75,8 +75,9 @@ ens2sym <- function(x, orgdb) {
 #'
 #' Convert Ensembl IDs to Entrez IDs for gene enrichment analyses.
 #'
-#' Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-#' just those in the BbcSE object.
+#' Entrez IDs with more than one Ensembl ID match are determined only from genes
+#' present in the BbcSE object, so be sure it is unfiltered.
+#'
 #' \itemize{
 #' \item Entrez IDs that match multiple Ensembl IDs are NA
 #' \item The first Entrez ID will be returned for genes with multiple possible
@@ -93,7 +94,11 @@ ens2sym <- function(x, orgdb) {
 ens2entrez <- function(x, orgdb) {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
+  # get Ensembl IDs present in the OrgDb
   ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
+
+  # keep only genes present in BbcSE object
+  ens_genes <- ens_genes[ens_genes %in% rownames(x)]
 
   entrez_ids <- AnnotationDbi::mapIds(orgdb,
                                      keys = ens_genes,
