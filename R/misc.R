@@ -294,3 +294,71 @@ plot_heatmap <- function(x,
 
   return(expr_ht)
 }
+
+###-----------------------------------------------------------------------------
+#' Plot P-values
+#'
+#' Plot P-value distribution for contrasts in edger or deseq2 slot of BbcSE
+#' object
+#'
+#' @param x A BbcSE object
+#' @param de_method "edger" or "deseq2"
+#' @param contrast_names character value or vector for the contrast(s) of
+#'   interest. See name(de_results(edger(x))). If not specified, then all
+#'   contrasts will be processed.
+#' @return A ggplot object
+#' @import ggplot2
+#' @importFrom cowplot theme_cowplot
+#' @export
+plot_pval_distrib <- function(x,
+                         de_method = "edger",
+                         contrast_names) {
+
+  if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
+
+  if(identical("edger", de_method)){
+    # first element is for the model fit. Remove it.
+    gene_and_pval <- de_results(edger(x))[-1]
+
+    if (!missing(contrast_names)){
+      edger_contrast_names <- contrast_names
+      if(!all(edger_contrast_names %in% names(gene_and_pval))){
+       stop("Check that 'contrast_names' all exist in the BbcSE object.")
+      }
+    } else{
+      edger_contrast_names <- names(gene_and_pval)
+    }
+
+    # extract the P-values and add column for the contrast name
+    pvals <- lapply(edger_contrast_names, function(contrast_name){
+      out_df <- gene_and_pval[[contrast_name]]$table[, "PValue", drop = FALSE]
+      out_df$contrast_name <- contrast_name
+      out_df
+    })
+    pvals_combined <- do.call(rbind, pvals)
+
+  } else if (identical("deseq2", de_method))
+  {
+    stop("deseq2 option not implemented yet")
+    gene_and_pval <- ""
+  }
+
+  pvals_combined <- pvals_combined %>%
+    dplyr::group_by(.data$contrast_name) %>%
+    dplyr::mutate(gene_ct = dplyr::n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(contrast_name = paste0(.data$contrast_name,
+                                         " (n=",
+                                         format(.data$gene_ct, big.mark=",",
+                                                scientific=FALSE),
+                                         ")"))
+
+  pval_plot <- ggplot(data = pvals_combined,
+                      ggplot2::aes_string(x = "PValue")) +
+    ggplot2::geom_histogram(color="black", fill="gray55", bins = 20) +
+    ggplot2::scale_x_continuous(breaks = seq(0, 1, 0.1)) +
+    ggplot2::facet_wrap(c("contrast_name")) +
+    cowplot::theme_cowplot()
+
+  return(pval_plot)
+}

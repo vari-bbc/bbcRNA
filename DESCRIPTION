@@ -29,7 +29,6 @@ Imports:
     S4Vectors (>= 0.22),
     GenomicFeatures (>= 1.36),
     GenomicRanges (>= 1.36),
-    DEFormats (>= 1.12),
     AnnotationDbi (>= 1.46),
     ggplot2 (>= 3.2),
     cowplot (>= 1.0),

@@ -291,9 +291,9 @@
 ## ENSMUSG00000112931             Gm4303
 ## ENSMUSG00000112932 ENSMUSG00000112932</code></pre>
 </div>
-<div id="get-entez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="section level1">
+<div id="get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="section level1">
 <h1 class="hasAnchor">
-<a href="#get-entez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="anchor"></a>Get Entez IDs for gene set analyses after DE genes are identified</h1>
+<a href="#get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="anchor"></a>Get Entrez IDs for gene set analyses after DE genes are identified</h1>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2entrez.html">ens2entrez</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
 <pre><code>## 24843 genes with valid Entrez ID out of 50600 total genes</code></pre>
@@ -374,8 +374,9 @@
 <div id="pca" class="section level1">
 <h1 class="hasAnchor">
 <a href="#pca" class="anchor"></a>PCA</h1>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
-<span id="cb37-2"><a href="#cb37-2"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">100</span>) <span class="co"># adonis uses permutations. Set seed to make reproducible.</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
+<span id="cb37-3"><a href="#cb37-3"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_pca-1.png" width="700"></p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>pca_plots[[<span class="dv">2</span>]]</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_pca-2.png" width="700"></p>
@@ -387,7 +388,10 @@
 <span id="cb39-2"><a href="#cb39-2"></a>                    <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
 <span id="cb39-3"><a href="#cb39-3"></a>                    <span class="dt">test =</span> <span class="st">"glmQLFTest"</span>, </span>
 <span id="cb39-4"><a href="#cb39-4"></a>                    <span class="dt">design =</span> <span class="st">"~0+genotype"</span>,</span>
-<span id="cb39-5"><a href="#cb39-5"></a>                    <span class="dt">contrasts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"mut"</span>, <span class="st">"WT"</span>)))</span></code></pre></div>
+<span id="cb39-5"><a href="#cb39-5"></a>                    <span class="dt">contrasts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"mut"</span>, <span class="st">"WT"</span>)))</span>
+<span id="cb39-6"><a href="#cb39-6"></a></span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="kw"><a href="../reference/plot_pval_distrib.html">plot_pval_distrib</a></span>(bbc_obj)</span></code></pre></div>
+<p><img src="rnaseq_from_star_files/figure-html/find_degs-1.png" width="700"></p>
 </div>
 <div id="plot-heatmap" class="section level1">
 <h1 class="hasAnchor">
@@ -545,7 +549,7 @@
 ## [115] stringr_1.4.0          callr_3.3.1            digest_0.6.20         
 ## [118] vegan_2.5-6            graph_1.62.0           rmarkdown_1.14        
 ## [121] fastmatch_1.1-0        htmlTable_1.13.1       edgeR_3.26.7          
-## [124] graphite_1.30.0        rjson_0.2.20           nlme_3.1-140          
+## [124] graphite_1.30.0        rjson_0.2.20           nlme_3.1-141          
 ## [127] jsonlite_1.6           desc_1.2.0             viridisLite_0.3.0     
 ## [130] limma_3.40.6           pillar_1.4.2           lattice_0.20-38       
 ## [133] httr_1.4.1             pkgbuild_1.0.4         survival_2.44-1.1     
@@ -572,7 +576,7 @@
       <li><a href="#change-the-column-sample-names">Change the column (sample) names</a></li>
       <li><a href="#plot-alignment-rates">Plot alignment rates</a></li>
       <li><a href="#add-gene-symbols">Add gene symbols</a></li>
-      <li><a href="#get-entez-ids-for-gene-set-analyses-after-de-genes-are-identified">Get Entez IDs for gene set analyses after DE genes are identified</a></li>
+      <li><a href="#get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified">Get Entrez IDs for gene set analyses after DE genes are identified</a></li>
       <li><a href="#make-dgelist-object">make DGEList object</a></li>
       <li><a href="#pca">PCA</a></li>
       <li><a href="#edger-de-workflow">edgeR DE workflow</a></li>

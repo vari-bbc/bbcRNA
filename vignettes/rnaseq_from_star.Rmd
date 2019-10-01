@@ -141,7 +141,7 @@ bbc_obj <- ens2sym(bbc_obj, org.Mm.eg.db)
 rowData(bbc_obj)
 ```
 
-# Get Entez IDs for gene set analyses after DE genes are identified
+# Get Entrez IDs for gene set analyses after DE genes are identified
 
 ```{r ens2entrez}
 bbc_obj <- ens2entrez(bbc_obj, org.Mm.eg.db)
@@ -167,6 +167,7 @@ nrow(dgelist(edger(bbc_obj)))
 ```
 # PCA
 ```{r plot_pca}
+set.seed(100) # adonis uses permutations. Set seed to make reproducible.
 pca_plots <- plot_PCA(bbc_obj, color_by="genotype", shape_by="genotype", adonis_by=c("genotype","rep"))
 pca_plots[[1]]
 pca_plots[[2]]
@@ -181,6 +182,7 @@ bbc_obj <- findDEGs(bbc_obj,
                     design = "~0+genotype",
                     contrasts = list(c("genotype", "mut", "WT")))
 
+plot_pval_distrib(bbc_obj)
 ```
 
 # plot heatmap
