@@ -2,8 +2,9 @@
 #'
 #' Convert Ensembl IDs to gene symbols.
 #'
-#' Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-#' just those in the BbcSE object.
+#' Gene symbols with more than one Ensembl ID match are determined only from
+#' genes present in the BbcSE object, so be sure it is unfiltered.
+#'
 #' \itemize{
 #'   \item Symbols that match multiple Ensembl IDs will be resolved by concatenating
 #' the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.
@@ -20,7 +21,11 @@
 ens2sym <- function(x, orgdb) {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
+  # get Ensembl IDs present in the OrgDb
   ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
+
+  # keep only genes present in BbcSE object
+  ens_genes <- ens_genes[ens_genes %in% rownames(x)]
 
   gene_syms <- AnnotationDbi::mapIds(orgdb,
                                      keys = ens_genes,
@@ -43,12 +48,12 @@ ens2sym <- function(x, orgdb) {
     return(names)
   }
 
-  uniq_syms <- uniquifyFeatureNames(ens_genes, gene_syms)
+  uniq_syms <- uniquifyFeatureNames(names(gene_syms), gene_syms)
 
-  names(uniq_syms) <- ens_genes
+  names(uniq_syms) <- names(gene_syms)
 
   # genes in the BbcSE object absent from OrgDb
-  missing_syms <- rownames(x)[!rownames(x) %in% ens_genes]
+  missing_syms <- rownames(x)[!rownames(x) %in% names(uniq_syms)]
   names(missing_syms) <- missing_syms
 
   #combine the genes present in OrgDb with those absent

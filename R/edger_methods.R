@@ -31,7 +31,7 @@ edger <- function(x) {
 #' @param x A BbcSE object.
 #' @param group Name of a column from colData()
 #' @param rm_low_genes logical indicating whether low count genes should be
-#'   removed. Implements edgeR::filterByExpr.
+#'   removed. Implements edgeR::filterByExpr. Filters DGEList only.
 #' @param calc_norm logical indicating whether normalization factors should be
 #'   calculated. Implements edgeR::calcNormFactors. Also turns on calculations
 #'   of normalized counts and per-group normalized counts
