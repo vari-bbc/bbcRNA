@@ -19,8 +19,9 @@ A BbcSE object.
 Convert Ensembl IDs to gene symbols.
 }
 \details{
-Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-just those in the BbcSE object.
+Gene symbols with more than one Ensembl ID match are determined only from
+genes present in the BbcSE object, so be sure it is unfiltered.
+
 \itemize{
   \item Symbols that match multiple Ensembl IDs will be resolved by concatenating
 the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.

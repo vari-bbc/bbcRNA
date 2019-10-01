@@ -19,8 +19,9 @@ A BbcSE object.
 Convert Ensembl IDs to Entrez IDs for gene enrichment analyses.
 }
 \details{
-Non 1:1 matches are determined from all the Ensembl IDs in the OrgDb, not
-just those in the BbcSE object.
+Entrez IDs with more than one Ensembl ID match are determined only from genes
+present in the BbcSE object, so be sure it is unfiltered.
+
 \itemize{
 \item Entrez IDs that match multiple Ensembl IDs are NA
 \item The first Entrez ID will be returned for genes with multiple possible

@@ -123,13 +123,12 @@ ens2entrez <- function(x, orgdb) {
   # Ensembl match
   missing_genes <- rownames(x)[!rownames(x) %in% names(entrez_ids)]
   names(missing_genes) <- missing_genes # store the ensembl ID as names
-  missing_genes <- NA # convert the ensembl IDs to NAs
+  missing_genes[1:length(missing_genes)] <- NA # convert the ensembl IDs to NAs
 
   #combine the genes present in OrgDb with those absent
   entrez_ids <- c(entrez_ids, missing_genes)
 
-  # keep only the genes present in the BbcSE object and order based on
-  # the genes in the BbcSE object
+  # order based on the genes in the BbcSE object
   rowData(x) <- cbind(rowData(x), entrez_ids = entrez_ids[rownames(x)])
 
   validObject(x)

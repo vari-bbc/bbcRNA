@@ -76,3 +76,40 @@ test_that("ens2sym works", {
   # test uniquified symbols are duplicated
   expect_true(all(table(gene_syms_df[bbc_obj2_rowdata_uniquified, "symbols"]) > 1))
 })
+
+test_that("ens2entrez works", {
+  bbc_obj2 <- ens2entrez(bbc_obj, org.Mm.eg.db)
+  bbc_obj2_rowdata <- rowData(bbc_obj2)
+  bbc_obj2_rowdata_isna <- rownames(bbc_obj2_rowdata)[is.na(bbc_obj2_rowdata$entrez_ids)]
+  bbc_obj2_rowdata_notna <- rownames(bbc_obj2_rowdata)[!is.na(bbc_obj2_rowdata$entrez_ids)]
+
+  # Ensembl IDs in the OrgDb
+  ens_genes <-  AnnotationDbi::keys(org.Mm.eg.db, keytype="ENSEMBL")
+
+  # keep only Ensembl IDs present in the BbcSE object
+  ens_genes <- ens_genes[ens_genes %in% rownames(bbc_obj)]
+
+  entrez_ids <- AnnotationDbi::mapIds(org.Mm.eg.db,
+                                      keys = ens_genes,
+                                      column = "ENTREZID",
+                                      keytype = "ENSEMBL",
+                                      multiVals = "first")
+
+  dup_entrez_ids <- entrez_ids[duplicated(entrez_ids)]
+  ens_genes_w_dup_entrez <- names(entrez_ids[entrez_ids %in% dup_entrez_ids])
+
+  # test non-na entrez ids correct
+  expect_equivalent(bbc_obj2_rowdata[bbc_obj2_rowdata_notna, "entrez_ids"],
+                    entrez_ids[bbc_obj2_rowdata_notna])
+
+  # test that Entrez IDs with more than one Ensembl match were converted to NAs
+  expect_true(all(is.na(bbc_obj2_rowdata[ens_genes_w_dup_entrez, "entrez_ids"])))
+
+  # test that Entrez ID with unique Ensembl ID matches that were NA are absent
+  # from org db
+  nondup_na_entrez <- bbc_obj2_rowdata[
+    !rownames(bbc_obj2_rowdata) %in% ens_genes_w_dup_entrez &
+      is.na(bbc_obj2_rowdata$entrez_ids),
+    "entrez_ids", drop=FALSE]
+  expect_true(all(!rownames(nondup_na_entrez) %in% names(entrez_ids)))
+})
