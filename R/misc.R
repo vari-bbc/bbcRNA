@@ -98,8 +98,8 @@ plot_PCA <- function(x, norm_cts_type = "edger",
     # work-around, I rename the desired variable to 'group' for each lapply
     # iteration.
     adonis_out <- lapply(adonis_by, function(curr_col){
-      column_meta_temp <- column_meta
-      column_meta_temp$group <- column_meta_temp[[curr_col]]
+      column_meta_temp <- data.frame(group = column_meta[[curr_col]],
+                                     stringsAsFactors = FALSE)
 
       vegan::adonis(eucl_dist ~ group,
                     data = column_meta_temp, method = "eu")
