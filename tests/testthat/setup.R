@@ -34,22 +34,8 @@ col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
 bbc_obj <- BbcSE(counts = counts_mat, aln_metrics = aln_metrics,
                  colData = col_meta[colnames(counts_mat), ])
 
-# Run edgeR
-## make DGEList object, calculate normalization factors
-bbc_obj <- makeDGEList(bbc_obj, group="genotype")
+# filter lowly expressed genes, calculate norm factors, make DGEList
+bbc_obj_dgelist <- makeDGEList(bbc_obj, group="genotype")
 
-## Identify DE genes with glmQLFTest
-bbc_obj_glmQLFTest <- findDEGs(bbc_obj,
-                               de_pkg = "edger",
-                               test = "glmQLFTest",
-                               design = "~0+genotype",
-                               contrasts = list(c("genotype", "mut", "WT")))
-
-## Identify DE genes with glmTreat
-bbc_obj_glmTreat <- findDEGs(bbc_obj,
-                             de_pkg = "edger",
-                             test = "glmTreat",
-                             design = "~0+genotype",
-                             contrasts = list(c("genotype", "mut", "WT")))
 
 

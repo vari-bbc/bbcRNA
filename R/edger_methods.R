@@ -110,8 +110,7 @@ setMethod("normalize_counts", "BbcSE", function(x, de_pkg = "edger") {
     colnames(group_norm_log_cpm) <- paste0(colnames(group_norm_log_cpm),
                                            ".norm_log_cpm")
 
-    ## add group cpms to rowData. Keep in mind genes in DGEList may be subset of
-    ## those in the BbcSE object
+    ## add group cpms to rowData.
     new_row_data <- cbind(rowData(x)[rownames(dgelist_obj), , drop = FALSE],
                           group_norm_log_cpm)
 
