@@ -67,8 +67,9 @@ intervals of the genes are not of interest.
 # Make BbcSE object
 
 The granges parameter for the BbcSE constructor is optional. If not provided,
-dummy GRanges data will be used. SummarizedExperiment can be coerced to 
-RangedSummarizedExperiment without GRanges data, but DEFormat does not work
+dummy GRanges data will be used. SummarizedExperiment can be coerced to
+RangedSummarizedExperiment without GRanges data, but DEFormat (package for
+converting between SummarizedExperiment, DGEList and DESeq2Data) does not work
 with RangedSummarizedExperiment objects with missing data for rowRanges.
  
 ```{r make_obj}
@@ -95,6 +96,11 @@ colData(bbc_obj)
 
 # Get mapping rates
 
+Use `read_star_aln_metrics` to import 'Log.final.out' files from STAR aligner.
+Counts for total input reads, uniqly aligning reads and multi-mapping reads are
+parsed from the STAR output. Overall alignment and uniquely mapping rates are
+calculated. Metrics are stored in the 'aln_metrics' slot.
+
 ```{r get_mapping_rates}
 aln_metrics <- read_star_aln_metrics(dir = ext_data_dir, 
                                  rgx = "^[^_]+_[^_]+")
@@ -108,6 +114,9 @@ aln_metrics(bbc_obj)
 ```
 
 # Change the column (sample) names
+
+Here we demonstrate how to change the sample names from the default SRA IDs to
+something more meaningful.
 
 ```{r change_sample_names}
 # add new column in colData by concatenating two genotype and rep columns
@@ -128,6 +137,10 @@ validObject(bbc_obj)
 
 # Plot alignment rates
 
+Here we demonstrate the `plot_aln_metrics` function and show that the output is
+a ggplot object that can be manipulated as usual, removing the legend in this
+case.
+
 ```{r plot_mapping}
 plot_aln_metrics(x = bbc_obj, type = "uniq_aln_reads", facet_by="genotype", fill="genotype") + ggplot2::theme(legend.position = "none")
 
@@ -135,6 +148,10 @@ plot_aln_metrics(x = bbc_obj, type = "uniq_map_rate", facet_by="genotype", fill=
 ```
 
 # Add gene symbols
+
+`ens2sym` can be used to import gene symbols from an Org.Db object. Output is
+stored as row data and can be accessed using `rowData()`.
+
 ```{r add_gene_syms}
 bbc_obj <- ens2sym(bbc_obj, org.Mm.eg.db)
 
@@ -142,6 +159,15 @@ rowData(bbc_obj)
 ```
 
 # Get Entrez IDs for gene set analyses after DE genes are identified
+
+Similarly, `ens2entrez` can be used to import Entrez IDs from an Org.Db object.
+Output is again stored as row data and can be accessed using `rowData()`.
+`ens2sym` was written with visualization in mind, so 1:1 matches are required.
+In contrast, `ens2entrez` was written to facilitate downstream gene set
+enrichment analyses, so we require only that each Entrez ID maps to only one
+Ensembl ID, but will take the first match if there are multiple possible Entrez
+IDs for a particular Ensembl ID. See the documentation for each function for
+more details.
 
 ```{r ens2entrez}
 bbc_obj <- ens2entrez(bbc_obj, org.Mm.eg.db)
@@ -151,6 +177,12 @@ rowData(bbc_obj)
 
 
 # make DGEList object
+
+Use the `makeDGEList` function to make a DGEList that is stored in a `BbcEdgeR`
+object in the `edger` slot of the BbcSE object. By default, lowly expressed
+genes are removed, normalization factors are calculated and normalized counts
+are calculated and stored in the `norm_cts` slot of the `BbcEdgeR` object.
+
 ```{r make_DGEList}
 # by default, low expression genes filtered out, normalization factors
 # calculated, normalized counts calculated
@@ -166,6 +198,12 @@ nrow(bbc_obj)
 nrow(dgelist(edger(bbc_obj)))
 ```
 # PCA
+
+`plot_PCA` runs a PCA and also tests for significant clusters using `vegan::adonis()`. Output is a list containing:
+1. ggplot object for the PCA plot 
+2. ggplot object for the scree plot 
+3. a list of results from `adonis()`.
+
 ```{r plot_pca}
 set.seed(100) # adonis uses permutations. Set seed to make reproducible.
 pca_plots <- plot_PCA(bbc_obj, color_by="genotype", shape_by="genotype", adonis_by=c("genotype","rep"))
@@ -175,6 +213,10 @@ pca_plots[[2]]
 
 # edgeR DE workflow
 
+Use `findDEGs` to fit a model and test for DE genes for various contrasts. For
+the edgeR workflow, either `glmQLFTest` or `glmTreat` can be selected using the
+`test` argument.
+
 ```{r find_degs}
 bbc_obj <- findDEGs(bbc_obj, 
                     de_pkg = "edger",
@@ -182,10 +224,17 @@ bbc_obj <- findDEGs(bbc_obj,
                     design = "~0+genotype",
                     contrasts = list(c("genotype", "mut", "WT")))
 
+# plot the P-value distribution
 plot_pval_distrib(bbc_obj)
 ```
 
 # plot heatmap
+
+Here we demonstrate the `plot_heatmap` function. Column names from
+`rowData(BbcSE_object)` and `colData(BbcSE_object)` can be passed to annotate or
+split the heatmap. In this example, we demonstrate how to create a new row data
+column to represent up-regulated versus down-regulated genes and pass it to
+`plot_heatmap`.
 
 ```{r heatmap}
 # get the most DE genes (by adjust pval)
@@ -220,6 +269,12 @@ plot_heatmap(x = bbc_obj, genes = top_genes, zscores=FALSE,
 
 
 # GSEA -- Hallmark msigdb
+
+`run_gsea` is a wrapper for clusterProfiler and can be used to run GSEA for
+various gene sets. The output are `gseaResult` objects that can be visualized
+using `enrichplot` methods or processed further with other `clusterProfiler`
+methods.
+
 ```{r gsea_H}
 # set seed to make GSEA deterministic
 set.seed(42)

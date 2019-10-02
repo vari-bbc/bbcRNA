@@ -140,7 +140,7 @@
 <div id="make-bbcse-object" class="section level1">
 <h1 class="hasAnchor">
 <a href="#make-bbcse-object" class="anchor"></a>Make BbcSE object</h1>
-<p>The granges parameter for the BbcSE constructor is optional. If not provided, dummy GRanges data will be used. SummarizedExperiment can be coerced to RangedSummarizedExperiment without GRanges data, but DEFormat does not work with RangedSummarizedExperiment objects with missing data for rowRanges.</p>
+<p>The granges parameter for the BbcSE constructor is optional. If not provided, dummy GRanges data will be used. SummarizedExperiment can be coerced to RangedSummarizedExperiment without GRanges data, but DEFormat (package for converting between SummarizedExperiment, DGEList and DESeq2Data) does not work with RangedSummarizedExperiment objects with missing data for rowRanges.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># bbc_obj &lt;- BbcSE(counts = tcell, granges = granges)</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/BbcSE.html">BbcSE</a></span>(<span class="dt">counts =</span> tcell)</span>
 <span id="cb8-3"><a href="#cb8-3"></a></span>
@@ -215,6 +215,7 @@
 <div id="get-mapping-rates" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-mapping-rates" class="anchor"></a>Get mapping rates</h1>
+<p>Use <code>read_star_aln_metrics</code> to import ‘Log.final.out’ files from STAR aligner. Counts for total input reads, uniqly aligning reads and multi-mapping reads are parsed from the STAR output. Overall alignment and uniquely mapping rates are calculated. Metrics are stored in the ‘aln_metrics’ slot.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>aln_metrics &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_star_aln_metrics.html">read_star_aln_metrics</a></span>(<span class="dt">dir =</span> ext_data_dir, </span>
 <span id="cb16-2"><a href="#cb16-2"></a>                                 <span class="dt">rgx =</span> <span class="st">"^[^_]+_[^_]+"</span>)</span>
 <span id="cb16-3"><a href="#cb16-3"></a></span>
@@ -246,6 +247,7 @@
 <div id="change-the-column-sample-names" class="section level1">
 <h1 class="hasAnchor">
 <a href="#change-the-column-sample-names" class="anchor"></a>Change the column (sample) names</h1>
+<p>Here we demonstrate how to change the sample names from the default SRA IDs to something more meaningful.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># add new column in colData by concatenating two genotype and rep columns</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>new_sample &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>genotype, </span>
 <span id="cb18-3"><a href="#cb18-3"></a>                                      <span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>rep)</span>
@@ -265,6 +267,7 @@
 <div id="plot-alignment-rates" class="section level1">
 <h1 class="hasAnchor">
 <a href="#plot-alignment-rates" class="anchor"></a>Plot alignment rates</h1>
+<p>Here we demonstrate the <code>plot_aln_metrics</code> function and show that the output is a ggplot object that can be manipulated as usual, removing the legend in this case.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw"><a href="../reference/plot_aln_metrics.html">plot_aln_metrics</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_aln_reads"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_mapping-1.png" width="700"></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw"><a href="../reference/plot_aln_metrics.html">plot_aln_metrics</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">type =</span> <span class="st">"uniq_map_rate"</span>, <span class="dt">facet_by=</span><span class="st">"genotype"</span>, <span class="dt">fill=</span><span class="st">"genotype"</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span>(<span class="dt">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div>
@@ -273,6 +276,7 @@
 <div id="add-gene-symbols" class="section level1">
 <h1 class="hasAnchor">
 <a href="#add-gene-symbols" class="anchor"></a>Add gene symbols</h1>
+<p><code>ens2sym</code> can be used to import gene symbols from an Org.Db object. Output is stored as row data and can be accessed using <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData()</a></code>.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2sym.html">ens2sym</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
@@ -294,6 +298,7 @@
 <div id="get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="section level1">
 <h1 class="hasAnchor">
 <a href="#get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="anchor"></a>Get Entrez IDs for gene set analyses after DE genes are identified</h1>
+<p>Similarly, <code>ens2entrez</code> can be used to import Entrez IDs from an Org.Db object. Output is again stored as row data and can be accessed using <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData()</a></code>. <code>ens2sym</code> was written with visualization in mind, so 1:1 matches are required. In contrast, <code>ens2entrez</code> was written to facilitate downstream gene set enrichment analyses, so we require only that each Entrez ID maps to only one Ensembl ID, but will take the first match if there are multiple possible Entrez IDs for a particular Ensembl ID. See the documentation for each function for more details.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2entrez.html">ens2entrez</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
 <pre><code>## 24634 genes with valid Entrez ID out of 50600 total genes</code></pre>
@@ -316,6 +321,7 @@
 <div id="make-dgelist-object" class="section level1">
 <h1 class="hasAnchor">
 <a href="#make-dgelist-object" class="anchor"></a>make DGEList object</h1>
+<p>Use the <code>makeDGEList</code> function to make a DGEList that is stored in a <code>BbcEdgeR</code> object in the <code>edger</code> slot of the BbcSE object. By default, lowly expressed genes are removed, normalization factors are calculated and normalized counts are calculated and stored in the <code>norm_cts</code> slot of the <code>BbcEdgeR</code> object.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># by default, low expression genes filtered out, normalization factors</span></span>
 <span id="cb31-2"><a href="#cb31-2"></a><span class="co"># calculated, normalized counts calculated</span></span>
 <span id="cb31-3"><a href="#cb31-3"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/makeDGEList.html">makeDGEList</a></span>(bbc_obj, <span class="dt">group=</span><span class="st">"genotype"</span>)</span>
@@ -374,6 +380,7 @@
 <div id="pca" class="section level1">
 <h1 class="hasAnchor">
 <a href="#pca" class="anchor"></a>PCA</h1>
+<p><code>plot_PCA</code> runs a PCA and also tests for significant clusters using <code><a href="https://rdrr.io/pkg/vegan/man/adonis.html">vegan::adonis()</a></code>. Output is a list containing: 1. ggplot object for the PCA plot 2. ggplot object for the scree plot 3. a list of results from <code>adonis()</code>.</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">100</span>) <span class="co"># adonis uses permutations. Set seed to make reproducible.</span></span>
 <span id="cb37-2"><a href="#cb37-2"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
 <span id="cb37-3"><a href="#cb37-3"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
@@ -384,18 +391,21 @@
 <div id="edger-de-workflow" class="section level1">
 <h1 class="hasAnchor">
 <a href="#edger-de-workflow" class="anchor"></a>edgeR DE workflow</h1>
+<p>Use <code>findDEGs</code> to fit a model and test for DE genes for various contrasts. For the edgeR workflow, either <code>glmQLFTest</code> or <code>glmTreat</code> can be selected using the <code>test</code> argument.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/findDEGs.html">findDEGs</a></span>(bbc_obj, </span>
 <span id="cb39-2"><a href="#cb39-2"></a>                    <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
 <span id="cb39-3"><a href="#cb39-3"></a>                    <span class="dt">test =</span> <span class="st">"glmQLFTest"</span>, </span>
 <span id="cb39-4"><a href="#cb39-4"></a>                    <span class="dt">design =</span> <span class="st">"~0+genotype"</span>,</span>
 <span id="cb39-5"><a href="#cb39-5"></a>                    <span class="dt">contrasts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"mut"</span>, <span class="st">"WT"</span>)))</span>
 <span id="cb39-6"><a href="#cb39-6"></a></span>
-<span id="cb39-7"><a href="#cb39-7"></a><span class="kw"><a href="../reference/plot_pval_distrib.html">plot_pval_distrib</a></span>(bbc_obj)</span></code></pre></div>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="co"># plot the P-value distribution</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="kw"><a href="../reference/plot_pval_distrib.html">plot_pval_distrib</a></span>(bbc_obj)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/find_degs-1.png" width="700"></p>
 </div>
 <div id="plot-heatmap" class="section level1">
 <h1 class="hasAnchor">
 <a href="#plot-heatmap" class="anchor"></a>plot heatmap</h1>
+<p>Here we demonstrate the <code>plot_heatmap</code> function. Column names from <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData(BbcSE_object)</a></code> and <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData(BbcSE_object)</a></code> can be passed to annotate or split the heatmap. In this example, we demonstrate how to create a new row data column to represent up-regulated versus down-regulated genes and pass it to <code>plot_heatmap</code>.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="co"># get the most DE genes (by adjust pval)</span></span>
 <span id="cb40-2"><a href="#cb40-2"></a>top_genes &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(edgeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span>(</span>
 <span id="cb40-3"><a href="#cb40-3"></a>  <span class="kw"><a href="../reference/de_results.html">de_results</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))[[<span class="dv">2</span>]],</span>
@@ -429,6 +439,7 @@
 <div id="gsea-hallmark-msigdb" class="section level1">
 <h1 class="hasAnchor">
 <a href="#gsea-hallmark-msigdb" class="anchor"></a>GSEA – Hallmark msigdb</h1>
+<p><code>run_gsea</code> is a wrapper for clusterProfiler and can be used to run GSEA for various gene sets. The output are <code>gseaResult</code> objects that can be visualized using <code>enrichplot</code> methods or processed further with other <code>clusterProfiler</code> methods.</p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co"># set seed to make GSEA deterministic</span></span>
 <span id="cb42-2"><a href="#cb42-2"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
 <span id="cb42-3"><a href="#cb42-3"></a></span>
