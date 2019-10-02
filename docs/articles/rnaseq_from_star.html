@@ -321,7 +321,7 @@
 <div id="make-dgelist-object" class="section level1">
 <h1 class="hasAnchor">
 <a href="#make-dgelist-object" class="anchor"></a>make DGEList object</h1>
-<p>Use the <code>makeDGEList</code> function to make a DGEList that is stored in a <code>BbcEdgeR</code> object in the <code>edger</code> slot of the BbcSE object. By default, lowly expressed genes are removed, normalization factors are calculated and normalized counts are calculated and stored in the <code>norm_cts</code> slot of the <code>BbcEdgeR</code> object.</p>
+<p>Use the <code>makeDGEList</code> function to make a DGEList that is stored in a <code>BbcEdgeR</code> object in the <code>edger</code> slot of the BbcSE object. By default, lowly expressed genes are removed, normalization factors are calculated and normalized counts are calculated and stored in the <code>norm_cts</code> slot of the <code>BbcEdgeR</code> object as a <code>SummarizedExperiment</code>. In the same <code>SummarizedExperiment</code>, mean normalized counts for each group specified in the DGEList object are also calculated and stored as row data.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># by default, low expression genes filtered out, normalization factors</span></span>
 <span id="cb31-2"><a href="#cb31-2"></a><span class="co"># calculated, normalized counts calculated</span></span>
 <span id="cb31-3"><a href="#cb31-3"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/makeDGEList.html">makeDGEList</a></span>(bbc_obj, <span class="dt">group=</span><span class="st">"genotype"</span>)</span>
