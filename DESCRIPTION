@@ -2,13 +2,11 @@ Package: bbcRNA
 Type: Package
 Title: Bulk RNA-seq workflow for VAI BBC
 Version: 0.1.0
-Authors@R: 
-    c(person(given = "Kin",
-           family = "Lau",
-           role = c("aut", "cre"),
-           email = "kin.lau@vai.org"))
+Authors@R: c(person(given = "Kin", family = "Lau", role = c("aut", "cre"), 
+    email = "kin.lau@vai.org"))
 Description: This package provides functions and a class (bbcRNA) to perform 
     standard bulk RNA-seq analyses.
+URL: https://vari-bbc.github.io/bbcRNA/index.html , https://github.com/vari-bbc/bbcRNA
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
