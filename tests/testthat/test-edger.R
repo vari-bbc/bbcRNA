@@ -114,22 +114,6 @@ test_that("findDEGs runs correctly", {
                                    contrast = contrast,
                                    lfc = log2(2))
 
-  ## Identify DE genes with glmQLFTest
-  bbc_obj_glmQLFTest <- findDEGs(bbc_obj_dgelist,
-                                 de_pkg = "edger",
-                                 test = "glmQLFTest",
-                                 design = "~0+genotype",
-                                 contrasts = list(c("genotype", "mut", "WT")))
-
-  ## Identify DE genes with glmTreat
-  bbc_obj_glmTreat <- findDEGs(bbc_obj_dgelist,
-                               de_pkg = "edger",
-                               test = "glmTreat",
-                               design = "~0+genotype",
-                               contrasts = list(c("genotype", "mut", "WT")))
-
-  str(qlf_test)
-  str(de_results(edger(bbc_obj_glmQLFTest))[[2]])
   expect_equivalent(qlf_test, de_results(edger(bbc_obj_glmQLFTest))[[2]])
   expect_equivalent(glmtreat_test, de_results(edger(bbc_obj_glmTreat))[[2]])
 })

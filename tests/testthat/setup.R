@@ -37,5 +37,22 @@ bbc_obj <- BbcSE(counts = counts_mat, aln_metrics = aln_metrics,
 # filter lowly expressed genes, calculate norm factors, make DGEList
 bbc_obj_dgelist <- makeDGEList(bbc_obj, group="genotype")
 
+# Identify DE genes with glmQLFTest
+bbc_obj_glmQLFTest <- findDEGs(bbc_obj_dgelist,
+                               de_pkg = "edger",
+                               test = "glmQLFTest",
+                               design = "~0+genotype",
+                               contrasts = list(c("genotype", "mut", "WT")))
+bbc_obj_glmQLFTest <- ens2sym(bbc_obj_glmQLFTest, org.Mm.eg.db)
+
+
+# Identify DE genes with glmTreat
+bbc_obj_glmTreat <- findDEGs(bbc_obj_dgelist,
+                             de_pkg = "edger",
+                             test = "glmTreat",
+                             design = "~0+genotype",
+                             contrasts = list(c("genotype", "mut", "WT")))
+
+bbc_obj_glmTreat <- ens2sym(bbc_obj_glmTreat, org.Mm.eg.db)
 
 
