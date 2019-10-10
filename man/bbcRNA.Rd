@@ -9,8 +9,3 @@
 This package provides functions and a class (bbcRNA) to perform
 standard bulk RNA-seq analyses.
 }
-\section{Functions}{
-
-star_to_mat
-}
-
