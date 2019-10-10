@@ -225,7 +225,8 @@ bbc_obj <- findDEGs(bbc_obj,
                     de_pkg = "edger",
                     test = "glmQLFTest", 
                     design = "~0+genotype",
-                    contrasts = list(c("genotype", "mut", "WT")))
+                    contrasts = list(c("genotype", "mut", "WT"),
+                                     c("genotype", "WT", "mut")))
 
 # plot the P-value distribution
 plot_pval_distrib(bbc_obj)

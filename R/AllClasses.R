@@ -54,7 +54,7 @@ setValidity("BbcEdgeR", function(object) {
                "object@de_results[[1]] must be named DGEGLM.")
     }
 
-    invisible(lapply(myderesults[[-1]], function(curr_edger){
+    invisible(lapply(myderesults[-1], function(curr_edger){
       if (!is(curr_edger, "DGEExact") && !is(curr_edger, "DGELRT")) {
         msg <- c(msg,
                  "object@de_results[[-1]] must contain only edgeR result objects.")

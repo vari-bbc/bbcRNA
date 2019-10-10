@@ -118,4 +118,12 @@ test_that("findDEGs runs correctly", {
   expect_equivalent(glmtreat_test, de_results(edger(bbc_obj_glmTreat))[[2]])
 })
 
-
+test_that("findDEGs does not produce an error with two contrasts", {
+  # should not produce an error
+  expect_error(findDEGs(bbc_obj_dgelist,
+                        de_pkg = "edger",
+                        test = "glmQLFTest",
+                        design = "~0+genotype",
+                        contrasts = list(c("genotype", "mut", "WT"),
+                                         c("genotype", "WT", "mut"))), NA)
+})
