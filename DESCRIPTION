@@ -10,6 +10,7 @@ URL: https://vari-bbc.github.io/bbcRNA/index.html
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
+biocViews:
 Imports: 
     edgeR (>= 3.26),
     DESeq2 (>= 1.24),
