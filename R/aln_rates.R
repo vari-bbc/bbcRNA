@@ -98,16 +98,16 @@ plot_aln_metrics <- function(x, type = "uniq_map_rate", fill_by = "sample",
                                    rownames = "sample")
 
   if(!type %in% colnames(aln_data)){
-    stop(paste0(type, " is not a column in aln_data"))
+    stop(paste0(type, " is not a column in aln_metrics"))
   }
 
   if(!fill_by %in% c(colnames(aln_data), colnames(sample_meta))){
-    stop(paste0(type, " is not a column in aln_data or colData"))
+    stop(paste0(fill_by, " is not a column in aln_metrics or colData"))
   }
 
   if(!identical(facet_by, "") &&
      !facet_by %in% c(colnames(aln_data), colnames(sample_meta))){
-    stop(paste0(type, " is not a column in aln_data or colData"))
+    stop(paste0(facet_by, " is not a column in aln_metrics or colData"))
   }
 
 
