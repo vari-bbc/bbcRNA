@@ -72,8 +72,8 @@ setValidity("BbcEdgeR", function(object) {
     # in @de_results[[1]]
     common_elems <- intersect(names(myderesults$DGEGLM), names(myderesults[[2]]))
 
-        if(length(common_elems) != 16) {
-      stop("DGEGLM and DGELRT objects in @de_results should share 16 elements with the same name based on test with tcell data")
+        if(length(common_elems) < 16) {
+      stop("DGEGLM and DGELRT objects in @de_results should share at least 16 elements with the same name")
     }
 
     for (i in 2:length(myderesults)){
