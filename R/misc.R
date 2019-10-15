@@ -356,8 +356,8 @@ plot_pval_distrib <- function(x,
 
   pval_plot <- ggplot(data = pvals_combined,
                       ggplot2::aes_string(x = "PValue")) +
-    ggplot2::geom_histogram(color="black", fill="gray55", bins = 20) +
-    ggplot2::scale_x_continuous(breaks = seq(0, 1, 0.1)) +
+    ggplot2::geom_histogram(color="black", fill="gray55",
+                            breaks = seq(0, 1, 0.05)) +
     ggplot2::facet_wrap(c("contrast_name")) +
     cowplot::theme_cowplot()
 
