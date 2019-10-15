@@ -79,6 +79,7 @@ plot_PCA <- function(x, norm_cts_type = "edger",
                      aes_string(x="num", y="prop")) +
     geom_point(size=1.5) +
     geom_line() +
+    scale_x_continuous(breaks = seq(1, 100, 2)) +
     xlab("Principal Component") +
     ylab("Prop. of Variance") +
     ggtitle("PCA Plot of Expression Profiling") +
