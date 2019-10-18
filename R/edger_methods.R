@@ -207,22 +207,18 @@ lists_to_edger_contrasts <- function(contrasts_list, design){
 #' @importFrom stats model.matrix as.formula
 #' @importFrom stringr str_detect
 #' @export
-setMethod("findDEGs", "DGEList", function(x, test, design, contrasts,
+setMethod("findDEGs", "DGEList", function(x, test, design, contrasts, coefs,
                                           sample_meta, lfc = log2(2)) {
 
   design <- model.matrix(as.formula(design), data = sample_meta)
 
   # dashes will be confusing when defining 'interaction' contrasts.
-  if(any(stringr::str_detect(colnames(design), "-"))) {
+  if (any(stringr::str_detect(colnames(design), "-"))) {
     stop("No dashes allowed in design colnames")
   }
 
   # check if anything in the design is non-estimable:
   if (!is.null(limma::nonEstimable(design))) stop("Design not estimable.")
-
-  # Format contrasts so that they are readable for edgeR
-  edger_contrasts <- lists_to_edger_contrasts(contrasts_list = contrasts,
-                                              design = design)
 
   # calculate dispersions
   x <- edgeR::estimateDisp(x, design, robust = TRUE)
@@ -230,35 +226,69 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts,
   # calculate fit
   fit <- edgeR::glmQLFit(x, design, robust = TRUE)
 
-  # either test produces a DGELRT object
-  if(identical(test, "glmQLFTest")){
+  test_res_contrasts <- list()
+  test_res_coefs <- list()
 
-    test_res <- lapply(colnames(edger_contrasts),
-                       function(contr_name) {
-                         edgeR::glmQLFTest(fit,
-                                           contrast = edger_contrasts[, contr_name]
-                                           )
-                       }
-    )
+  if (!is.null(contrasts)){
+    # Format contrasts so that they are readable for edgeR
+    edger_contrasts <- lists_to_edger_contrasts(contrasts_list = contrasts,
+                                                design = design)
+    # either test produces a DGELRT object
+    if (identical(test, "glmQLFTest")){
 
-  } else if (identical(test, "glmTreat")){
+      test_res_contrasts <- lapply(
+        colnames(edger_contrasts), function(contr_name) {
+          edgeR::glmQLFTest(fit, contrast = edger_contrasts[, contr_name])
+        }
+      )
 
-    test_res <- lapply(colnames(edger_contrasts),
-                       function(contr_name) {
-                         edgeR::glmTreat(fit,
-                                         contrast = edger_contrasts[, contr_name],
-                                         lfc = lfc
-                         )
-                       }
-    )
+    } else if (identical(test, "glmTreat")){
+
+      test_res_contrasts <- lapply(
+        colnames(edger_contrasts), function(contr_name) {
+          edgeR::glmTreat(fit, contrast = edger_contrasts[, contr_name],
+                          lfc = lfc)
+        }
+      )
+    }
+    # set the contrasts as the names for each contrast in test_res_contrasts
+    names(test_res_contrasts) <- colnames(edger_contrasts)
   }
 
-  # set the contrasts as the names for each contrast in test_res
-  names(test_res) <- colnames(edger_contrasts)
+  if (!is.null(coefs)){
+    # check coefs valid
+    for (coef in coefs){
+      if (!is.numeric(as.data.frame(design)[[coef]])){
+        stop(paste0("Invalid coefficient: ", coef))
+      }
+    }
+
+    # either test produces a DGELRT object
+    if (identical(test, "glmQLFTest")){
+
+      test_res_coefs <- lapply(
+        coefs, function(coef) {
+          edgeR::glmQLFTest(fit, coef = coef)
+        }
+      )
+
+    } else if (identical(test, "glmTreat")){
+
+      test_res_coefs <- lapply(
+        coefs, function(coef) {
+          edgeR::glmTreat(fit, coef = coef, lfc = lfc)
+        }
+      )
+
+    }
+    # set the coefs as the names for each coef in test_res_coefs
+    names(test_res_coefs) <- paste0("coef_", unlist(coefs))
+  }
+
 
   # store the fit in the first element of the results list and the results from
   # each contrast in the rest of the list
-  edger_res_list <- c(list(DGEGLM = fit), test_res)
+  edger_res_list <- c(list(DGEGLM = fit), test_res_contrasts, test_res_coefs)
 
   return(BbcEdgeR(dgelist = x, de_results = edger_res_list))
 })
@@ -268,8 +298,19 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts,
 #' @importFrom edgeR glmQLFTest glmTreat glmQLFit
 #' @export
 setMethod("findDEGs", "BbcSE", function(x, de_pkg = "edger",
-                                        test = "glmQLFTest", design, contrasts,
+                                        test = "glmQLFTest", design,
+                                        contrasts = NULL,
+                                        coefs = NULL,
                                         lfc = log2(2)) {
+
+  if((!is.null(contrasts) & !all(!duplicated(contrasts))) |
+     (!is.null(coefs) & !all(!duplicated(coefs)))){
+    stop("Contrasts and coefs cannot be duplicated.")
+  }
+
+  if(is.null(contrasts) & is.null(coefs)){
+    stop("Specify contrasts and/or coefs")
+  }
 
   if (identical(de_pkg, "edger")){
     if("results" %in% names(edger(x))) {
@@ -277,8 +318,8 @@ setMethod("findDEGs", "BbcSE", function(x, de_pkg = "edger",
     }
 
     bbcedger_obj <- findDEGs(x = dgelist(edger(x)), test = test,
-                                       design = design, contrasts = contrasts,
-                                       sample_meta = colData(x), lfc = lfc)
+                             design = design, contrasts = contrasts,
+                             coefs = coefs, sample_meta = colData(x), lfc = lfc)
 
     # copy norm_cts slot from the old BbcEdgeR object
     norm_cts(bbcedger_obj) <- norm_cts(edger(x))

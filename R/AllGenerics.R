@@ -33,6 +33,9 @@ setGeneric("normalize_counts", function(x, ...)
 #' @param contrasts list of chr vectors containing variable name, numerator
 #'   level, denominator level. For nested contrasts, use the format
 #'   'level2-level1' for the numerator and denominator values.
+#' @param coefs  list of integers or character vectors indicating which
+#'   coefficients of the linear model are to be tested equal to zero. Values
+#'   must be columns or column names of design.
 #' @param test For de_pkg="edger", either "glmQLFTest" or "glmTreat"
 #' @param sample_meta Column meta data as DataFrame or data.frame
 #' @param lfc See edgeR::glmTreat. Only used for test="glmTreat".

@@ -29,6 +29,7 @@ aln_metrics <- read_star_aln_metrics(dir = ext_data_dir,
 
 # get column meta data
 col_meta <- read_col_meta(paste0(ext_data_dir, "/meta.txt"))
+col_meta$genotype <- factor(col_meta$genotype, levels=c("WT", "mut"))
 
 # make BbcSE object
 bbc_obj <- BbcSE(counts = counts_mat, aln_metrics = aln_metrics,
@@ -54,5 +55,12 @@ bbc_obj_glmTreat <- findDEGs(bbc_obj_dgelist,
                              contrasts = list(c("genotype", "mut", "WT")))
 
 bbc_obj_glmTreat <- ens2sym(bbc_obj_glmTreat, org.Mm.eg.db)
+
+# Identify DE genes using coefs
+bbc_obj_glmQLFTest_coef <- findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                                    coefs=list(2))
+
+bbc_obj_glmTreat_coef <- findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                                  coefs=list(2), test="glmTreat", lfc = log2(2))
 
 

@@ -127,3 +127,46 @@ test_that("findDEGs does not produce an error with two contrasts", {
                         contrasts = list(c("genotype", "mut", "WT"),
                                          c("genotype", "WT", "mut"))), NA)
 })
+
+test_that("findDEGs with coefs returns same table as contrasts", {
+  expect_equivalent(de_results(edger(bbc_obj_glmQLFTest_coef))[[2]]$table,
+                    de_results(edger(bbc_obj_glmQLFTest))[[2]]$table)
+  expect_equivalent(de_results(edger(bbc_obj_glmTreat_coef))[[2]]$table,
+                    de_results(edger(bbc_obj_glmTreat))[[2]]$table)
+})
+
+test_that("findDEGs works when both coefs and contrasts supplied", {
+
+  combined <- findDEGs(x=bbc_obj_dgelist, design="~0+genotype",
+                       coefs=list(1, 2),
+                       contrasts=list(c("genotype", "mut", "WT")))
+
+  expect_equivalent(de_results(edger(combined))[["genotype_mut_-_WT"]],
+                    de_results(edger(bbc_obj_glmQLFTest))[[2]])
+
+  coef <- findDEGs(x=bbc_obj_dgelist, design="~0+genotype",
+                       coefs=list(2))
+
+  expect_equivalent(de_results(edger(combined))[["coef_2"]],
+                    de_results(edger(coef))[[2]])
+})
+
+test_that("findDEGs works when both coefs specified as name", {
+
+  coef <- findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                   coefs=list("genotypemut"))
+
+  expect_equivalent(de_results(edger(bbc_obj_glmQLFTest_coef))[[2]],
+                    de_results(edger(coef))[[2]])
+})
+
+test_that("Invalid coefs return error", {
+  expect_error(findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                        coefs=list("foobar")),
+               regexp="Invalid coefficient: foobar")
+  expect_error(findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                        coefs=list(100)),
+               regexp="subscript out of bounds")
+})
+
+
