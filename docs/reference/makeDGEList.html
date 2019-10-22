@@ -121,7 +121,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>makeDGEList</span>(<span class='no'>x</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rm_low_genes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>calc_norm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>makeDGEList</span>(<span class='no'>x</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rm_low_genes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>calc_norm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>min_count</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,6 +145,11 @@ removed. Implements edgeR::filterByExpr. Filters DGEList only.</p></td>
       <td><p>logical indicating whether normalization factors should be
 calculated. Implements edgeR::calcNormFactors. Also turns on calculations
 of normalized counts and per-group normalized counts</p></td>
+    </tr>
+    <tr>
+      <th>min_count</th>
+      <td><p>numeric. Used only if rm_low_genes=TRUE. Sets min.count for
+edgeR::filterByExpr.</p></td>
     </tr>
     </table>
     

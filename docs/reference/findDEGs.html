@@ -124,12 +124,12 @@
     <pre class="usage"><span class='fu'>findDEGs</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S4 method for DGEList</span>
-<span class='fu'>findDEGs</span>(<span class='no'>x</span>, <span class='no'>test</span>, <span class='no'>design</span>, <span class='no'>contrasts</span>, <span class='no'>sample_meta</span>,
-  <span class='kw'>lfc</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log2</a></span>(<span class='fl'>2</span>))
+<span class='fu'>findDEGs</span>(<span class='no'>x</span>, <span class='no'>test</span>, <span class='no'>design</span>, <span class='no'>contrasts</span>, <span class='no'>coefs</span>,
+  <span class='no'>sample_meta</span>, <span class='kw'>lfc</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log2</a></span>(<span class='fl'>2</span>))
 
 <span class='co'># S4 method for BbcSE</span>
 <span class='fu'>findDEGs</span>(<span class='no'>x</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='kw'>test</span> <span class='kw'>=</span> <span class='st'>"glmQLFTest"</span>,
-  <span class='no'>design</span>, <span class='no'>contrasts</span>, <span class='kw'>lfc</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log2</a></span>(<span class='fl'>2</span>))</pre>
+  <span class='no'>design</span>, <span class='kw'>contrasts</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coefs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lfc</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log2</a></span>(<span class='fl'>2</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,6 +156,12 @@ must be present in colData. For de_pkg="edger", passed to glmQLFit</p></td>
       <td><p>list of chr vectors containing variable name, numerator
 level, denominator level. For nested contrasts, use the format
 'level2-level1' for the numerator and denominator values.</p></td>
+    </tr>
+    <tr>
+      <th>coefs</th>
+      <td><p>list of integers or character vectors indicating which
+coefficients of the linear model are to be tested equal to zero. Values
+must be columns or column names of design.</p></td>
     </tr>
     <tr>
       <th>sample_meta</th>
