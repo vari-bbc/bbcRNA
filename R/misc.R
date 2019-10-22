@@ -191,6 +191,9 @@ plot_heatmap <- function(x,
     # convert to zscores (gene-wise) if needed
     if(isTRUE(zscores)){
       expr_mat <- t(scale(t(expr_mat), center = TRUE, scale = TRUE))
+      expr_scale_title <- "Z-scores"
+    } else{
+      expr_scale_title <- "Norm. log CPM"
     }
 
     # get gene labels, either from rowData or from rownames of expr_mat
@@ -266,16 +269,17 @@ plot_heatmap <- function(x,
 
     if(!is.null(coldata_annot)){
       coldata_annot <- ComplexHeatmap::HeatmapAnnotation(
-        df = coldata_annot[colnames(expr_mat),])
+        df = coldata_annot[colnames(expr_mat), , drop=FALSE])
     }
 
     if(!is.null(rowdata_annot)){
       rowdata_annot <- ComplexHeatmap::rowAnnotation(
-        df = rowdata_annot[rownames(expr_mat),])
+        df = rowdata_annot[rownames(expr_mat), , drop=FALSE])
     }
 
     # make main heatmap
     expr_ht <- ComplexHeatmap::Heatmap(expr_mat,
+                                       name = expr_scale_title,
                                        cluster_row_slices = FALSE,
                                        cluster_column_slices = FALSE,
                                        cluster_rows = clust_rows,
