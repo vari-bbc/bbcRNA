@@ -133,7 +133,7 @@ setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
 
   out <- callNextMethod()
   BiocGenerics:::replaceSlots(out, aln_metrics = aln_metrics,
-                              edger = list(),
+                              edger = BbcEdgeR(),
                               deseq2 = list(),
                               check = TRUE)
 })
