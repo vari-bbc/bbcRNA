@@ -258,9 +258,12 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts, coefs,
   if (!is.null(coefs)){
     # check coefs valid
     for (coef in coefs){
-      if (!is.numeric(as.data.frame(design)[[coef]])){
+      # use sapply to account for when testing multiple coefs
+      tryCatch({
+        stopifnot(all(sapply(as.data.frame(design)[coef], is.numeric)))
+      }, error = function(e) {
         stop(paste0("Invalid coefficient: ", coef))
-      }
+      })
     }
 
     # either test produces a DGELRT object
@@ -282,7 +285,8 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts, coefs,
 
     }
     # set the coefs as the names for each coef in test_res_coefs
-    names(test_res_coefs) <- paste0("coef_", unlist(coefs))
+    # use make.names in case there is a ":" (testing multiple coefs at the same time)
+    names(test_res_coefs) <- make.names(paste0("coef_", unlist(coefs)))
   }
 
 

@@ -166,7 +166,7 @@ test_that("Invalid coefs return error", {
                regexp="Invalid coefficient: foobar")
   expect_error(findDEGs(x=bbc_obj_dgelist, design="~genotype",
                         coefs=list(100)),
-               regexp="subscript out of bounds")
+               regexp="Invalid coefficient: 100")
 })
 
 
