@@ -32,6 +32,8 @@ edger <- function(x) {
 #' @param group Name of a column from colData()
 #' @param rm_low_genes logical indicating whether low count genes should be
 #'   removed. Implements edgeR::filterByExpr. Filters DGEList only.
+#' @param min_count numeric. Used only if rm_low_genes=TRUE. Sets min.count for
+#'   edgeR::filterByExpr.
 #' @param calc_norm logical indicating whether normalization factors should be
 #'   calculated. Implements edgeR::calcNormFactors. Also turns on calculations
 #'   of normalized counts and per-group normalized counts
@@ -41,7 +43,7 @@ edger <- function(x) {
 #' @importFrom SummarizedExperiment assay colData SummarizedExperiment
 #' @export
 makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
-                        calc_norm = TRUE) {
+                        calc_norm = TRUE, min_count = 10) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
   if(nrow(dgelist(edger(x))) > 0) stop("edger slot not empty")
   if(missing(group)) stop("Please provide group parameter")
@@ -54,7 +56,8 @@ makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
   if (isTRUE(rm_low_genes)){
     # filter out lowly expressed genes
     rows_keep <- edgeR::filterByExpr(myDGEList,
-                                     group = myDGEList$samples$group)
+                                     group = myDGEList$samples$group,
+                                     min.count = min_count)
 
     # The option keep.lib.sizes=FALSE causes the library sizes to be recomputed
     # after the filtering. This is generally recommended, although the effect on
