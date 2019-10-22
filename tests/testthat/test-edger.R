@@ -86,7 +86,7 @@ test_that("makeDGEList runs correctly", {
   rows_keep <- edgeR::filterByExpr(temp_dgelist,
                                    group = temp_dgelist$samples$group)
 
-  temp_dgelist <- temp_dgelist[rows_keep, ]
+  temp_dgelist <- temp_dgelist[rows_keep, , keep.lib.sizes=FALSE]
 
   expect_equivalent(dgelist(edger(bbc_obj2c)), temp_dgelist)
   expect_equivalent(norm_cts(edger(bbc_obj2c)), SummarizedExperiment())

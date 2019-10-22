@@ -56,7 +56,10 @@ makeDGEList <- function(x, group = NULL, rm_low_genes = TRUE,
     rows_keep <- edgeR::filterByExpr(myDGEList,
                                      group = myDGEList$samples$group)
 
-    myDGEList <- myDGEList[rows_keep, ]
+    # The option keep.lib.sizes=FALSE causes the library sizes to be recomputed
+    # after the filtering. This is generally recommended, although the effect on
+    # the downstream analysis is usually small.
+    myDGEList <- myDGEList[rows_keep, , keep.lib.sizes=FALSE]
   }
 
   if (isTRUE(calc_norm)){
