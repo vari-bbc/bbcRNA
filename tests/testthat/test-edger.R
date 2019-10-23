@@ -160,6 +160,32 @@ test_that("findDEGs works when both coefs specified as name", {
                     de_results(edger(coef))[[2]])
 })
 
+test_that("findDEGs works when multiple coefs specified", {
+
+  coef <- findDEGs(x=bbc_obj_dgelist, design="~genotype",
+                   coefs=list(2, 1:2))
+
+  expect_equivalent(de_results(edger(bbc_obj_glmQLFTest_coef))[[2]],
+                    de_results(edger(coef))[[2]])
+
+  design <- model.matrix(as.formula("~genotype"),
+                         data = colData(bbc_obj_dgelist))
+
+  temp_dgelist <- dgelist(edger(bbc_obj_dgelist))
+
+  # calculate dispersions
+  temp_dgelist <- edgeR::estimateDisp(temp_dgelist, design, robust = TRUE)
+
+  # calculate fit
+  temp_fit <- edgeR::glmQLFit(temp_dgelist, design, robust = TRUE)
+
+  qlf_test <- edgeR::glmQLFTest(temp_fit,
+                                coef = 1:2)
+
+  expect_equivalent(qlf_test,
+                    de_results(edger(coef))[[3]])
+})
+
 test_that("Invalid coefs return error", {
   expect_error(findDEGs(x=bbc_obj_dgelist, design="~genotype",
                         coefs=list("foobar")),

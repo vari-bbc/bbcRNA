@@ -292,7 +292,7 @@ setMethod("findDEGs", "DGEList", function(x, test, design, contrasts, coefs,
     }
     # set the coefs as the names for each coef in test_res_coefs
     # use make.names in case there is a ":" (testing multiple coefs at the same time)
-    names(test_res_coefs) <- make.names(paste0("coef_", unlist(coefs)))
+    names(test_res_coefs) <- make.names(paste0("coef_", coefs))
   }
 
 
