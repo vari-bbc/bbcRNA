@@ -199,10 +199,14 @@ plot_heatmap <- function(x,
     # get gene labels, either from rowData or from rownames of expr_mat
     if(!is.null(gene_labels)){
       if(length(gene_labels) > 1) stop("gene_labels can only be one column")
-      gene_labels <- rowData(x)[genes, gene_labels]
-    } else{
-      gene_labels <- rownames(expr_mat)
-      names(gene_labels) <- gene_labels
+      if(gene_labels == "rownames"){
+        gene_labels <- rownames(expr_mat)
+        names(gene_labels) <- gene_labels
+      } else {
+        if(!gene_labels %in% colnames(rowData(x)))
+          stop(paste0(gene_labels, " does not exist in rowData"))
+        gene_labels <- rowData(x)[genes, gene_labels]
+      }
     }
 
     ## make sure no duplicated gene labels
@@ -259,7 +263,9 @@ plot_heatmap <- function(x,
 
     # double-check things are in order even though they should be sorted already
     expr_mat <- expr_mat[genes, ]
-    gene_labels <- gene_labels[rownames(expr_mat)]
+
+    if(!is.null(gene_labels))
+      gene_labels <- gene_labels[rownames(expr_mat)]
 
     if(!is.null(coldata_split))
       coldata_split <- coldata_split[colnames(expr_mat)]
