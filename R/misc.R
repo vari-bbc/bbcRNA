@@ -284,10 +284,15 @@ plot_heatmap <- function(x,
     # continuous (numeric) respectively.
     prep_colors_for_complexheatmap <- function(df){
       df_isNumeric <- sapply(df, is.numeric)
+      df_isFactor <- sapply(df, is.factor)
 
       color_list <- lapply(seq(1, length(df_isNumeric)), function(x){
         if(isFALSE(df_isNumeric[x])){
-          uniq_values <- unique(df[, x])
+          if(isFALSE(df_isFactor[x])){
+            uniq_values <- unique(df[, x])
+          } else{
+            uniq_values <- levels(df[, x])
+          }
           colors <- colorspace::qualitative_hcl(length(uniq_values), palette = "Dark 3")
           names(colors) <- uniq_values
         } else{
