@@ -153,6 +153,8 @@ plot_PCA <- function(x, norm_cts_type = "edger",
 #'    book}
 #' @importFrom dplyr select ends_with
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom colorspace qualitative_hcl
+#' @importFrom circlize colorRamp2
 #' @importFrom ComplexHeatmap Heatmap HeatmapAnnotation rowAnnotation
 #' @export
 plot_heatmap <- function(x,
@@ -207,6 +209,9 @@ plot_heatmap <- function(x,
           stop(paste0(gene_labels, " does not exist in rowData"))
         gene_labels <- rowData(x)[genes, gene_labels]
       }
+      showGeneNames <- TRUE
+    } else{
+      showGeneNames <- FALSE
     }
 
     ## make sure no duplicated gene labels
@@ -264,8 +269,9 @@ plot_heatmap <- function(x,
     # double-check things are in order even though they should be sorted already
     expr_mat <- expr_mat[genes, ]
 
-    if(!is.null(gene_labels))
+    if(!is.null(gene_labels)){
       gene_labels <- gene_labels[rownames(expr_mat)]
+    }
 
     if(!is.null(coldata_split))
       coldata_split <- coldata_split[colnames(expr_mat)]
@@ -273,14 +279,44 @@ plot_heatmap <- function(x,
     if(!is.null(rowdata_split))
       rowdata_split <- rowdata_split[rownames(expr_mat)]
 
+    # function that returns a list of named vectors which contain either colors
+    # or a function for colors depending on whether the column is discrete or
+    # continuous (numeric) respectively.
+    prep_colors_for_complexheatmap <- function(df){
+      df_isNumeric <- sapply(df, is.numeric)
+
+      color_list <- lapply(seq(1, length(df_isNumeric)), function(x){
+        if(isFALSE(df_isNumeric[x])){
+          uniq_values <- unique(df[, x])
+          colors <- colorspace::qualitative_hcl(length(uniq_values), palette = "Dark 3")
+          names(colors) <- uniq_values
+        } else{
+          colors <-  circlize::colorRamp2(seq(min(df[, x]),
+                                              max(df[, x]), length = 3),
+                                          c("blue", "#EEEEEE", "red"))
+        }
+        return(colors)
+      })
+      names(color_list) <- colnames(df)
+
+      color_list
+    }
+    ### End function
+
     if(!is.null(coldata_annot)){
+      # complexheatmap assigns random colors to discrete annotations
+      # here we define the palette manually
       coldata_annot <- ComplexHeatmap::HeatmapAnnotation(
-        df = coldata_annot[colnames(expr_mat), , drop=FALSE])
+        df = coldata_annot[colnames(expr_mat), , drop=FALSE],
+        col = prep_colors_for_complexheatmap(coldata_annot))
     }
 
     if(!is.null(rowdata_annot)){
+      # complexheatmap assigns random colors to discrete annotations
+      # here we define the palette manually
       rowdata_annot <- ComplexHeatmap::rowAnnotation(
-        df = rowdata_annot[rownames(expr_mat), , drop=FALSE])
+        df = rowdata_annot[rownames(expr_mat), , drop=FALSE],
+        col = prep_colors_for_complexheatmap(rowdata_annot))
     }
 
     # make main heatmap
@@ -295,7 +331,8 @@ plot_heatmap <- function(x,
                                        top_annotation = coldata_annot,
                                        right_annotation = rowdata_annot,
                                        row_title_rot = 0,
-                                       row_labels = gene_labels)
+                                       row_labels = gene_labels,
+                                       show_row_names = showGeneNames)
 
 
   } else if (identical("deseq2", de_method))

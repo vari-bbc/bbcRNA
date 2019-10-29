@@ -265,6 +265,8 @@ names(mut_vs_WT_sign) <- rownames(de_table)
 ## store LFC sign in rowData. Genes with no matches will be NA.
 rowData(bbc_obj)$mut_vs_WT_sign <- 
   mut_vs_WT_sign[match(rownames(bbc_obj), names(mut_vs_WT_sign))]
+## make rep a factor
+colData(bbc_obj)$rep <- factor(colData(bbc_obj)$rep, levels=c("1", "2", "3", "4"))
 
 # plot Zscores of normalized log2 cpms
 plot_heatmap(x = bbc_obj, genes = top_genes, zscores=TRUE, 
@@ -276,6 +278,7 @@ plot_heatmap(x = bbc_obj, genes = top_genes, zscores=TRUE,
 plot_heatmap(x = bbc_obj, genes = top_genes, zscores=FALSE, 
              rowdata_split = "mut_vs_WT_sign",
              gene_labels = "uniq_syms", grouped=TRUE)
+
 ```
 
 
