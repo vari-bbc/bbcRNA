@@ -270,7 +270,7 @@ colData(bbc_obj)$rep <- factor(colData(bbc_obj)$rep, levels=c("1", "2", "3", "4"
 
 # plot Zscores of normalized log2 cpms
 plot_heatmap(x = bbc_obj, genes = top_genes, zscores=TRUE, 
-             rowdata_annot = "mut_vs_WT_sign", coldata_annot = "rep",
+             rowdata_annot = "mut_vs_WT_sign", coldata_annot = c("rep", "new_sample", "genotype"),
              rowdata_split = "mut_vs_WT_sign", coldata_split="genotype", 
              gene_labels = "uniq_syms")
 

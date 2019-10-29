@@ -153,7 +153,6 @@ plot_PCA <- function(x, norm_cts_type = "edger",
 #'    book}
 #' @importFrom dplyr select ends_with
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom colorspace qualitative_hcl
 #' @importFrom circlize colorRamp2
 #' @importFrom ComplexHeatmap Heatmap HeatmapAnnotation rowAnnotation
 #' @export
@@ -169,7 +168,6 @@ plot_heatmap <- function(x,
                          clust_cols = TRUE,
                          zscores = FALSE,
                          grouped = FALSE) {
-
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
   if(identical("edger", de_method)){
@@ -285,6 +283,7 @@ plot_heatmap <- function(x,
     prep_colors_for_complexheatmap <- function(df){
       df_isNumeric <- sapply(df, is.numeric)
       df_isFactor <- sapply(df, is.factor)
+      rcolorbrwer_discrete_pals <- c("Dark2", "Paired", "Set1", "Accent", "Set2")
 
       color_list <- lapply(seq(1, length(df_isNumeric)), function(x){
         if(isFALSE(df_isNumeric[x])){
@@ -293,7 +292,11 @@ plot_heatmap <- function(x,
           } else{
             uniq_values <- levels(df[, x])
           }
-          colors <- colorspace::qualitative_hcl(length(uniq_values), palette = "Dark 3")
+
+          if(length(uniq_values) > 8) stop("Annotation variable cannot have >8 unique values.")
+
+          colors <- RColorBrewer::brewer.pal(8,
+                                             rcolorbrwer_discrete_pals[x])[1:length(uniq_values)]
           names(colors) <- uniq_values
         } else{
           colors <-  circlize::colorRamp2(seq(min(df[, x]),
@@ -302,6 +305,7 @@ plot_heatmap <- function(x,
         }
         return(colors)
       })
+
       names(color_list) <- colnames(df)
 
       color_list
