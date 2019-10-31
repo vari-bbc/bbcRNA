@@ -206,6 +206,7 @@ plot_heatmap <- function(x,
         if(!gene_labels %in% colnames(rowData(x)))
           stop(paste0(gene_labels, " does not exist in rowData"))
         gene_labels <- rowData(x)[genes, gene_labels]
+        names(gene_labels) <- genes
       }
       showGeneNames <- TRUE
     } else{
