@@ -179,13 +179,13 @@ plot_heatmap <- function(x,
       if(!is.null(coldata_annot) | !is.null(coldata_split)) {
        stop("column data options not compatible with grouped=TRUE")
       }
-      expr_mat <- rowData(norm_cts(curr_bbcedger))[genes, ] %>%
+      expr_mat <- rowData(norm_cts(curr_bbcedger))[genes, , drop=FALSE] %>%
         as.data.frame(stringsAsFactors=FALSE) %>%
         dplyr::select(dplyr::ends_with(".norm_log_cpm")) %>%
         as.matrix()
 
     } else {
-      expr_mat <- assay(norm_cts(curr_bbcedger), "norm_log_cpm")[genes, ]
+      expr_mat <- assay(norm_cts(curr_bbcedger), "norm_log_cpm")[genes, , drop=FALSE]
     }
 
     # convert to zscores (gene-wise) if needed
@@ -266,7 +266,7 @@ plot_heatmap <- function(x,
     }
 
     # double-check things are in order even though they should be sorted already
-    expr_mat <- expr_mat[genes, ]
+    expr_mat <- expr_mat[genes, , drop=FALSE]
 
     if(!is.null(gene_labels)){
       gene_labels <- gene_labels[rownames(expr_mat)]

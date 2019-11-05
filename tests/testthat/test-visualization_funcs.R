@@ -13,3 +13,18 @@ test_that("plot_aln_metrics returns correct data", {
 
   expect_equivalent(plot$data, combined_df[, colnames(plot$data)])
 })
+
+# plot_heatmap -----------------------------------------------------------------
+test_that("plot_heatmap works for one gene", {
+  # expect no error
+  expect_error(
+   bbc_obj_glmQLFTest@edger@norm_cts["ENSMUSG00000000001", ], NA)
+
+  # expect no error
+  expect_error(
+    plot_heatmap(bbc_obj_glmQLFTest,
+                 genes = rownames(bbc_obj_glmQLFTest@edger@dgelist)[1],
+                 zscores = TRUE,
+                 gene_labels = "uniq_syms"), NA)
+
+})
