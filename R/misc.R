@@ -174,6 +174,18 @@ plot_heatmap <- function(x,
     curr_bbcedger <- edger(x)
     if(identical(BbcEdgeR(), curr_bbcedger)) stop("Empty 'edger' slot")
 
+    # check if there are normalized counts for all requested genes
+    genes_avail <- genes %in% rownames(dgelist(curr_bbcedger))
+    if(!all(genes_avail)){
+      if(sum(genes_avail) == 0) stop("No genes with normalized counts available.")
+      num_genes_no_norm_cts <- sum(!genes_avail)
+      message(paste0("Not plotting ", sum(!genes_avail),
+                     " genes because normalized counts not available."))
+      message(paste0("Plotting ", sum(genes_avail),
+                     " genes with normalized counts."))
+      genes <- genes[genes_avail]
+    }
+
     # get the expression matrix
     if(isTRUE(grouped)){
       if(!is.null(coldata_annot) | !is.null(coldata_split)) {

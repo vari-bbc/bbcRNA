@@ -18,13 +18,23 @@ test_that("plot_aln_metrics returns correct data", {
 test_that("plot_heatmap works for one gene", {
   # expect no error
   expect_error(
-   bbc_obj_glmQLFTest@edger@norm_cts["ENSMUSG00000000001", ], NA)
-
-  # expect no error
-  expect_error(
     plot_heatmap(bbc_obj_glmQLFTest,
                  genes = rownames(bbc_obj_glmQLFTest@edger@dgelist)[1],
                  zscores = TRUE,
                  gene_labels = "uniq_syms"), NA)
+})
 
+test_that("plot_heatmap works when there are requested genes with no normalized counts", {
+  genes_in_SE <- nrow(bbc_obj_glmQLFTest)
+  genes_in_dgelist <- nrow(bbc_obj_glmQLFTest@edger@dgelist)
+  genes_rm <- genes_in_SE - genes_in_dgelist
+  msg1 <- paste0("Not plotting ", genes_rm, " genes because normalized counts not available.")
+  msg2 <- paste0("Plotting ", genes_in_dgelist, " genes with normalized counts.")
+
+  msges <- capture_messages(plot_heatmap(bbc_obj_glmQLFTest, zscores = FALSE))
+  expect_match(msges[1], msg1)
+  expect_match(msges[2], msg2)
+
+  expect_error(plot_heatmap(bbc_obj_glmQLFTest, genes = c("foo", "bar")),
+  "No genes with normalized counts available.")
 })
