@@ -78,6 +78,10 @@ test_that("ens2entrez works", {
   # test that Entrez IDs with more than one Ensembl match were converted to NAs
   expect_true(all(is.na(bbc_obj2_rowdata[ens_genes_w_dup_entrez, "entrez_ids"])))
 
+  # test that all Entrez IDs are unique
+  nonna_entrez <- bbc_obj2_rowdata[bbc_obj2_rowdata_notna, "entrez_ids"]
+  expect_true(length(unique(nonna_entrez)) == length(nonna_entrez))
+
   # test that Entrez ID with unique Ensembl ID matches that were NA are absent
   # from org db
   nondup_na_entrez <- bbc_obj2_rowdata[

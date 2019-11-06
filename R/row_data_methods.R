@@ -114,6 +114,9 @@ ens2entrez <- function(x, orgdb) {
   dup_genes <- unique(entrez_ids[duplicated(entrez_ids)])
   entrez_ids <- entrez_ids[!entrez_ids %in% dup_genes]
 
+  # make sure entrez ids unique
+  stopifnot(length(entrez_ids) ==  length(unique(entrez_ids)))
+
   message(paste0(length(entrez_ids),
                  " genes with valid Entrez ID out of ",
                  nrow(x),
