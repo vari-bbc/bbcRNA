@@ -237,3 +237,22 @@ find_missing_in_gseaResult <- function(gseaResults, bbcRNA, de_pkg="edger") {
 }
 
 ###-----------------------------------------------------------------------------
+#' @describeIn shorten_desc Shorten description in enrichResult.
+#' @export
+#' @importFrom stringr str_trunc
+setMethod("shorten_desc", "enrichResult", function(x, max_len=50) {
+  x@result$Description <- stringr::str_trunc(x@result$Description, max_len)
+  return(x)
+})
+
+###-----------------------------------------------------------------------------
+
+#' @describeIn shorten_desc Shorten description in enrichResult.
+#' @export
+#' @importFrom stringr str_trunc
+setMethod("shorten_desc", "gseaResult", function(x, max_len=50) {
+  x@result$Description <- stringr::str_trunc(x@result$Description, max_len)
+  return(x)
+})
+
+###-----------------------------------------------------------------------------

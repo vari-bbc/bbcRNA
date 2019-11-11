@@ -309,6 +309,7 @@ missing_genes <- find_missing_in_gseaResult(H_gsea_results_list, bbc_obj)
 enrichplot::dotplot(H_gsea_results_list[[1]], showCategory=10, 
                     title="Top gene sets", split=".sign") + 
   facet_grid(.~.sign)
+
 ```
 
 # GSEA -- KEGG
@@ -326,6 +327,11 @@ names(kegg_gsea_results_list)
 
 ```{r plot_kegggsea}
 enrichplot::dotplot(kegg_gsea_results_list[[1]], showCategory=10, 
+                    title="Top gene sets", split=".sign") + 
+  facet_grid(.~.sign)
+
+# shorten the descriptions to 30 characters or less
+enrichplot::dotplot(shorten_desc(kegg_gsea_results_list[[1]], 30), showCategory=10, 
                     title="Top gene sets", split=".sign") + 
   facet_grid(.~.sign)
 

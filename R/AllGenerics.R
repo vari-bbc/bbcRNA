@@ -86,3 +86,14 @@ setGeneric("run_gsea", function(x, ...)
 )
 
 ###-----------------------------------------------------------------------------
+#' Shorten Description names from ClusterProfiler results.
+#'
+#' Shorten Description names.
+#'
+#' @param x A enrichResult or gseaResult object.
+#' @param max_len Maximum length of Description
+#' @return A enrichResult or gseaResult
+#' @export
+setGeneric("shorten_desc", function(x, max_len)
+  standardGeneric("shorten_desc")
+)
