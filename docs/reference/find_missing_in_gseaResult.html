@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run GSEA — run_gsea • bbcRNA</title>
+<title>Compare genes in clusterProfiler gseaResult to genes in a bbcRNA object — find_missing_in_gseaResult • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,12 @@
 
 
 
-<meta property="og:title" content="Run GSEA — run_gsea" />
+<meta property="og:title" content="Compare genes in clusterProfiler gseaResult to genes in a bbcRNA object — find_missing_in_gseaResult" />
 
-<meta property="og:description" content="Run GSEA" />
+<meta property="og:description" content="Output dataframe for genes that did not have an Entrez match (based on rules
+in ens2entrez) and genes that are present in the bbcRNA object but not in the
+bbcRNA object. Output LFC and PValue. If present in the bbcRNA object but not
+in the DE analysis, then it is inferred to be a lowly expressed gene." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,99 +113,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run GSEA</h1>
+    <h1>Compare genes in clusterProfiler gseaResult to genes in a bbcRNA object</h1>
     
-    <div class="hidden name"><code>run_gsea.Rd</code></div>
+    <div class="hidden name"><code>find_missing_in_gseaResult.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Run GSEA</p>
+    <p>Output dataframe for genes that did not have an Entrez match (based on rules
+in ens2entrez) and genes that are present in the bbcRNA object but not in the
+bbcRNA object. Output LFC and PValue. If present in the bbcRNA object but not
+in the DE analysis, then it is inferred to be a lowly expressed gene.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>run_gsea</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for data.frame</span>
-<span class='fu'>run_gsea</span>(<span class='no'>x</span>, <span class='kw'>gene_set</span> <span class='kw'>=</span> <span class='st'>"reactome"</span>, <span class='no'>organism</span>,
-  <span class='no'>orgDb</span>, <span class='no'>...</span>)
-
-<span class='co'># S4 method for BbcSE</span>
-<span class='fu'>run_gsea</span>(<span class='no'>x</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
-  <span class='kw'>rank_by</span> <span class='kw'>=</span> <span class='st'>"signed-log10pval"</span>, <span class='kw'>contrast_names</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>find_missing_in_gseaResult</span>(<span class='no'>gseaResults</span>, <span class='no'>bbcRNA</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A BbcSE object or a DGEList or a DESeqDataSet.</p></td>
+      <th>gseaResults</th>
+      <td><p>A list of ClusterProfiler::gseaResult objects outputted by 'run_gsea'.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Passed to gseKEGG, GSEA or gsePathway. See each function for
-possible arguments.</p></td>
-    </tr>
-    <tr>
-      <th>gene_set</th>
-      <td><p>one of "kegg", "reactome", "H", "C1", "C2", "C3", "C4", "C5",
-"C6", "C7"</p></td>
-    </tr>
-    <tr>
-      <th>organism</th>
-      <td><p>For compatibility with dowstream tools, the organism is
-specified differently depending on the desired gene set. For KEGG, use the
-three-letter code according to
-http://www.genome.jp/kegg/catalog/org_list.html. For Reactome, possible
-values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘yeast’ and
-‘zebrafish’. For msigdb, run 'msigdbr::msigdbr_show_species()'.</p></td>
-    </tr>
-    <tr>
-      <th>orgDb</th>
-      <td><p>OrgDB object for your organism</p></td>
+      <th>bbcRNA</th>
+      <td><p>bbcRNA object</p></td>
     </tr>
     <tr>
       <th>de_pkg</th>
-      <td><p>"edger" or "deseq2". Only used if x is a BbcSE</p></td>
-    </tr>
-    <tr>
-      <th>rank_by</th>
-      <td><dl class='dl-horizontal'>
- <dt>"signed-log10pval"</dt><dd><p>-log10 of the PValue from the DE analysis, signed
- by the LFC.</p></dd>
- <dt>"-log10pval"</dt><dd><p>-log10 of the PValue from the DE analysis. May be ideal
- for gene sets that contain both up-regulated and down-regulated genes for a
- particular process or pathway etc.</p></dd>
-
-</dl></td>
-    </tr>
-    <tr>
-      <th>contrast_names</th>
-      <td><p>character value or vector for the contrast(s) of
-interest. See name(de_results(edger(x))). If left to default "" value then
-all contrasts will be processed.</p></td>
+      <td><p>"edger" or "deseq2"</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of gseaResult objects or one gseaResult object</p>
-    
-    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
-
-    
-<ul>
-<li><p><code>data.frame</code>: x is a dataframe with gene name as col1 and
-metric(log2FC or F etc) as col2. Function will sort by col2 in decreasing
-order. See '?prep_clusterprofiler_genelist'.</p></li>
-<li><p><code>BbcSE</code>: Extract out the gene and signed -log10 PValue. Run
-run_gsea for each result object (contrast).</p></li>
-</ul>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/clusterProfiler/man/gseKEGG.html'>gseKEGG</a> <a href='https://rdrr.io/pkg/clusterProfiler/man/GSEA.html'>GSEA</a>
-<a href='https://rdrr.io/pkg/ReactomePA/man/gsePathway.html'>gsePathway</a></code></p></div>
+    <p>A dataframe of missing genes.</p>
     
 
   </div>
@@ -212,10 +158,6 @@ run_gsea for each result object (contrast).</p></li>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#methods-by-class-">Methods (by class)</a></li>
-
-      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>

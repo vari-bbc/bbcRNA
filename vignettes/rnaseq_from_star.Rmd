@@ -300,6 +300,9 @@ H_gsea_results_list <- run_gsea(x = bbc_obj,
                                 organism = "Mus musculus")
 
 names(H_gsea_results_list)
+
+# to get the missing genes
+missing_genes <- find_missing_in_gseaResult(H_gsea_results_list, bbc_obj)
 ```
 
 ```{r plot_Hgsea}

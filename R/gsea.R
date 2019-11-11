@@ -159,3 +159,81 @@ setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger",
 })
 
 ###-----------------------------------------------------------------------------
+#' Compare genes in clusterProfiler gseaResult to genes in a bbcRNA object
+#'
+#' Output dataframe for genes that did not have an Entrez match (based on rules
+#' in ens2entrez) and genes that are present in the bbcRNA object but not in the
+#' bbcRNA object. Extracts LFC and PValue from DE results. If present in the
+#' bbcRNA object but not in the DE analysis, then it is inferred to be a lowly
+#' expressed gene. Includes all rowData.
+#'
+#' @param gseaResults A list of ClusterProfiler::gseaResult objects outputted by 'run_gsea'.
+#' @param bbcRNA  bbcRNA object
+#' @param de_pkg "edger" or "deseq2"
+#' @return A dataframe of missing genes.
+#' @export
+#' @importFrom dplyr filter mutate left_join
+#' @importFrom tibble rownames_to_column
+find_missing_in_gseaResult <- function(gseaResults, bbcRNA, de_pkg="edger") {
+
+  # row data from bbcRNA object
+  bbcRNA_rowdata <- rowData(bbcRNA)
+
+  # bbcRNA object must have 'entrez_ids' column
+  if(!"entrez_ids" %in% colnames(bbcRNA_rowdata)){
+    stop("Must have run ens2entrez with bbcRNA object. Use bbcRNA object used for 'run_gsea'.")
+  }
+
+  # compare gsea results to edgeR results
+  if(identical(de_pkg, "edger")){
+    gseaResults_names <- names(gseaResults)
+    names(gseaResults_names) <- gseaResults_names
+
+    # list of contrasts and list of gsea results must have same element names
+    if(!all(gseaResults_names %in% names(bbcRNA@edger@de_results))){
+      stop("Not all names of gseaResults matched by contrasts in bbcRNA object.")
+    }
+
+    # for each gseaResult name, identify the missing genes and get LFC and PValue from corresponding edgeR result
+    missing_genes_list <- lapply(gseaResults_names, function(gseaRes_name){
+
+      # subset for the current gseaResult object from the list and get the gene names (which are in Entrez format)
+      curr_gseaRes <- gseaResults[[gseaRes_name]]
+      curr_gseaRes_entrez <- names(curr_gseaRes@geneList)
+
+      # check that all the gseaResult genes are in the rowdata of the bbcRNA object
+      if(!all(curr_gseaRes_entrez %in% bbcRNA_rowdata$entrez_ids)){
+        stop("Not all genes in gseaResult object found in bbcRNA object. Be sure to use same bbcRNA object used for 'run_gsea'.")
+      }
+
+      # get genes present in bbcRNA object but not gseaResult
+      missing_genes <- bbcRNA_rowdata %>%
+        as.data.frame(stringsAsFactors=FALSE) %>%
+        tibble::rownames_to_column("ens_gene") %>%
+        dplyr::filter(!.data$entrez_ids %in% curr_gseaRes_entrez)
+
+      # get the edgeR results corresponding to the current gseaResult
+      edger_de_table <- bbcRNA@edger@de_results[[gseaRes_name]]$table %>%
+        tibble::rownames_to_column("ens_gene")
+      edger_genes <- edger_de_table$ens_gene
+
+      # sanity check that all genes in the edgeR results are in the bbcRNA object. Should never be triggered.
+      if(!all(edger_genes %in% rownames(bbcRNA_rowdata))){
+        stop("Not all genes in edgeR object found in bbcRNA object.")
+      }
+
+      missing_genes_detail <- missing_genes %>%
+        # assume genes absent from edger object but present in bbcRNA to be lowly expressed
+        dplyr::mutate(low_expr=ifelse(!missing_genes$ens_gene %in% edger_genes,
+                                      TRUE, FALSE)) %>%
+        # merge missing genes with edgeR LFC and PValue
+        dplyr::left_join(edger_de_table[,c("ens_gene","logFC","PValue"), drop=FALSE], by="ens_gene")
+
+      missing_genes_detail
+    })
+  }
+
+  return(missing_genes_list)
+}
+
+###-----------------------------------------------------------------------------
