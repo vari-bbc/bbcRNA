@@ -12,8 +12,8 @@ run_gsea(x, ...)
 \S4method{run_gsea}{data.frame}(x, gene_set = "reactome", organism,
   orgDb, ...)
 
-\S4method{run_gsea}{BbcSE}(x, de_pkg = "edger", contrast_names = "",
-  ...)
+\S4method{run_gsea}{BbcSE}(x, de_pkg = "edger",
+  rank_by = "signed-log10pval", contrast_names = "", ...)
 }
 \arguments{
 \item{x}{A BbcSE object or a DGEList or a DESeqDataSet.}
@@ -34,6 +34,14 @@ values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘ye
 \item{orgDb}{OrgDB object for your organism}
 
 \item{de_pkg}{"edger" or "deseq2". Only used if x is a BbcSE}
+
+\item{rank_by}{\describe{
+ \item{"signed-log10pval"}{-log10 of the PValue from the DE analysis, signed
+ by the LFC.}
+ \item{"-log10pval"}{-log10 of the PValue from the DE analysis. May be ideal
+ for gene sets that contain both up-regulated and down-regulated genes for a
+ particular process or pathway etc.}
+}}
 
 \item{contrast_names}{character value or vector for the contrast(s) of
 interest. See name(de_results(edger(x))). If left to default "" value then

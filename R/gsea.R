@@ -85,6 +85,7 @@ setMethod("run_gsea", "data.frame", function(x, gene_set="reactome", organism,
 #'   run_gsea for each result object (contrast).
 #' @export
 setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger",
+                                        rank_by="signed-log10pval",
                                         contrast_names = "", ...) {
   if(!"entrez_ids" %in% colnames(rowData(x))) {
     stop("Please run ens2entrez first to get 'entrez_ids' column in rowData")
@@ -132,13 +133,19 @@ setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger",
       message(paste0(edger_res_name, ": total genes remaining is ",
                      nrow(filt_dge_table)))
 
-      # calculate -log10(Pvalue) signed by LFC
-      filt_dge_table$signed_minuslog10Pval <-
-        sign(filt_dge_table$logFC) * -log10(filt_dge_table$PValue)
+      # calculate rank_metric
+      if(identical(rank_by, "signed-log10pval")){
+        filt_dge_table$rank_metric <-
+          sign(filt_dge_table$logFC) * -log10(filt_dge_table$PValue)
+      } else if(identical(rank_by, "-log10pval")){
+        filt_dge_table$rank_metric <- -log10(filt_dge_table$PValue)
+      } else{
+        stop("Specify valid ranking metric.")
+      }
 
-      # get entrezgene and signed_minuslog10Pval
+      # get entrezgene and rank_metric
       genes_and_score <- filt_dge_table[,c("entrez_ids",
-                                           "signed_minuslog10Pval")]
+                                           "rank_metric")]
 
       # run the data.frame method of 'run_gsea'
       run_gsea(x = genes_and_score, ...)

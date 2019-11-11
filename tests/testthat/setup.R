@@ -45,6 +45,7 @@ bbc_obj_glmQLFTest <- findDEGs(bbc_obj_dgelist,
                                design = "~0+genotype",
                                contrasts = list(c("genotype", "mut", "WT")))
 bbc_obj_glmQLFTest <- ens2sym(bbc_obj_glmQLFTest, org.Mm.eg.db)
+bbc_obj_glmQLFTest <- ens2entrez(bbc_obj_glmQLFTest, org.Mm.eg.db)
 
 
 # Identify DE genes with glmTreat

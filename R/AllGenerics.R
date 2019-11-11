@@ -70,6 +70,13 @@ setGeneric("findDEGs", function(x, ...)
 #' @param contrast_names character value or vector for the contrast(s) of
 #'   interest. See name(de_results(edger(x))). If left to default "" value then
 #'   all contrasts will be processed.
+#' @param rank_by \describe{
+#'  \item{"signed-log10pval"}{-log10 of the PValue from the DE analysis, signed
+#'  by the LFC.}
+#'  \item{"-log10pval"}{-log10 of the PValue from the DE analysis. May be ideal
+#'  for gene sets that contain both up-regulated and down-regulated genes for a
+#'  particular process or pathway etc.}
+#' }
 #' @param ... Passed to gseKEGG, GSEA or gsePathway. See each function for
 #'   possible arguments.
 #' @return A list of gseaResult objects or one gseaResult object
