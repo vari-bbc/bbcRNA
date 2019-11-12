@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert Ensembl IDs to gene symbols. — ens2sym • bbcRNA</title>
+<title>Search biomart datasets with keyword — searchBM • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
 
 
-<meta property="og:title" content="Convert Ensembl IDs to gene symbols. — ens2sym" />
+<meta property="og:title" content="Search biomart datasets with keyword — searchBM" />
 
-<meta property="og:description" content="Convert Ensembl IDs to gene symbols." />
+<meta property="og:description" content="Search biomart datasets with keyword" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,55 +110,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert Ensembl IDs to gene symbols.</h1>
+    <h1>Search biomart datasets with keyword</h1>
     
-    <div class="hidden name"><code>ens2sym.Rd</code></div>
+    <div class="hidden name"><code>searchBM.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Convert Ensembl IDs to gene symbols.</p>
+    <p>Search biomart datasets with keyword</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>ens2sym</span>(<span class='no'>x</span>, <span class='no'>orgdb</span>, <span class='kw'>BMdataset</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>searchBM</span>(<span class='no'>keyword</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A BbcSE object.</p></td>
-    </tr>
-    <tr>
-      <th>orgdb</th>
-      <td><p>A OrgDb object. Download the annotations for your species from
-'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
-used if BMdataset="".</p></td>
-    </tr>
-    <tr>
-      <th>BMdataset</th>
-      <td><p>character. The name of the BM dataset you want to use. Try
-to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
-if needed.</p></td>
+      <th>keyword</th>
+      <td><p>regex to search for. Perl style.</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A BbcSE object.</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Gene symbols with more than one Ensembl ID match are determined only from
-genes present in the BbcSE object, so be sure it is unfiltered.</p>
-<ul>
-<li><p>Symbols that match multiple Ensembl IDs will be resolved by concatenating
-the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.</p></li>
-<li><p>Genes with multiple possible symbols will be labelled as Ensembl ID.</p></li>
-<li><p>Genes absent from OrgDb/Biomart will be labelled as Ensembl ID.</p></li>
-</ul>
-
     
 
   </div>
@@ -166,11 +138,7 @@ the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.</p></li>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

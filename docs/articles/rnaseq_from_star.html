@@ -197,7 +197,7 @@
 ## )</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Add column meta data. May implement a function to add column meta data</span></span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co"># eventually</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj), col_meta[<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(bbc_obj), ])</span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)[, <span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(col_meta)] &lt;-<span class="st"> </span>col_meta[<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(bbc_obj), ]</span>
 <span id="cb14-4"><a href="#cb14-4"></a></span>
 <span id="cb14-5"><a href="#cb14-5"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>## DataFrame with 8 rows and 2 columns
@@ -278,8 +278,22 @@
 <a href="#add-gene-symbols" class="anchor"></a>Add gene symbols</h1>
 <p><code>ens2sym</code> can be used to import gene symbols from an Org.Db object. Output is stored as row data and can be accessed using <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData()</a></code>.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2sym.html">ens2sym</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
+<pre><code>## Using OrgDb.</code></pre>
+<pre><code>## 50600 total genes in BbcSE object.</code></pre>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
+<pre><code>## 196 genes removed due to more than 1 matching symbol.</code></pre>
+<pre><code>## 24538 genes with symbols found.</code></pre>
+<pre><code>## 42 genes with uniquified symbols.</code></pre>
+<pre><code>## 26062 genes either missing from database or filtered due to criteria described in documentation.</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co"># BioMart is also supported. In mouse, Biomart seems to give more matches and</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="co"># the more appropriate symbol. However, for most protein-coding genes, the</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="co"># results should be the same between orgdb and biomart. Biomart is slower and</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="co"># can take 30 seconds-1min to finish. Another disadvantage is that while orgdb</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="co"># is a package, Biomart data needs to be downloaded each time and thus is less</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="co"># reproducible.</span></span>
+<span id="cb30-7"><a href="#cb30-7"></a><span class="co"># bbc_obj &lt;- ens2sym(bbc_obj, BMdataset = "mmusculus_gene_ensembl")</span></span>
+<span id="cb30-8"><a href="#cb30-8"></a></span>
+<span id="cb30-9"><a href="#cb30-9"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>## DataFrame with 50600 rows and 1 column
 ##                             uniq_syms
 ##                           &lt;character&gt;
@@ -299,10 +313,17 @@
 <h1 class="hasAnchor">
 <a href="#get-entrez-ids-for-gene-set-analyses-after-de-genes-are-identified" class="anchor"></a>Get Entrez IDs for gene set analyses after DE genes are identified</h1>
 <p>Similarly, <code>ens2entrez</code> can be used to import Entrez IDs from an Org.Db object. Output is again stored as row data and can be accessed using <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData()</a></code>. <code>ens2sym</code> was written with visualization in mind, so 1:1 matches are required. In contrast, <code>ens2entrez</code> was written to facilitate downstream gene set enrichment analyses, so we require only that each Entrez ID maps to only one Ensembl ID, but will take the first match if there are multiple possible Entrez IDs for a particular Ensembl ID. See the documentation for each function for more details.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2entrez.html">ens2entrez</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ens2entrez.html">ens2entrez</a></span>(bbc_obj, org.Mm.eg.db)</span></code></pre></div>
+<pre><code>## Using OrgDb.</code></pre>
 <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
+<pre><code>## 25866 Ensembl IDs not in the database.</code></pre>
+<pre><code>## 100 Ensembl IDs matching the same Entrez ID as another Ensembl ID.</code></pre>
 <pre><code>## 24634 genes with valid Entrez ID out of 50600 total genes</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a><span class="co"># BioMart is also supported. This is handy for certain species that for some</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="co"># reason don't have Ensembl IDs in their orgdb (pig as of Nov 2019 for example)</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="co"># bbc_obj &lt;- ens2sym(bbc_obj, BMdataset = "mmusculus_gene_ensembl")</span></span>
+<span id="cb38-4"><a href="#cb38-4"></a></span>
+<span id="cb38-5"><a href="#cb38-5"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>## DataFrame with 50600 rows and 2 columns
 ##                             uniq_syms  entrez_ids
 ##                           &lt;character&gt; &lt;character&gt;
@@ -322,12 +343,12 @@
 <h1 class="hasAnchor">
 <a href="#make-dgelist-object" class="anchor"></a>make DGEList object</h1>
 <p>Use the <code>makeDGEList</code> function to make a DGEList that is stored in a <code>BbcEdgeR</code> object in the <code>edger</code> slot of the BbcSE object. By default, lowly expressed genes are removed, normalization factors are calculated and normalized counts are calculated and stored in the <code>norm_cts</code> slot of the <code>BbcEdgeR</code> object as a <code>SummarizedExperiment</code>. In the same <code>SummarizedExperiment</code>, mean normalized counts for each group specified in the DGEList object are also calculated and stored as row data.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># by default, low expression genes filtered out, normalization factors</span></span>
-<span id="cb31-2"><a href="#cb31-2"></a><span class="co"># calculated, normalized counts calculated</span></span>
-<span id="cb31-3"><a href="#cb31-3"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/makeDGEList.html">makeDGEList</a></span>(bbc_obj, <span class="dt">group=</span><span class="st">"genotype"</span>)</span>
-<span id="cb31-4"><a href="#cb31-4"></a></span>
-<span id="cb31-5"><a href="#cb31-5"></a><span class="co"># what's in the edger slot now?</span></span>
-<span id="cb31-6"><a href="#cb31-6"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="co"># by default, low expression genes filtered out, normalization factors</span></span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="co"># calculated, normalized counts calculated</span></span>
+<span id="cb40-3"><a href="#cb40-3"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/makeDGEList.html">makeDGEList</a></span>(bbc_obj, <span class="dt">group=</span><span class="st">"genotype"</span>)</span>
+<span id="cb40-4"><a href="#cb40-4"></a></span>
+<span id="cb40-5"><a href="#cb40-5"></a><span class="co"># what's in the edger slot now?</span></span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))</span></code></pre></div>
 <pre><code>## Formal class 'BbcEdgeR' [package "bbcRNA"] with 3 slots
 ##   ..@ dgelist   :Formal class 'DGEList' [package "edgeR"] with 1 slot
 ##   .. .. ..@ .Data:List of 2
@@ -370,45 +391,45 @@
 ##   .. .. .. .. ..@ elementMetadata: NULL
 ##   .. .. .. .. ..@ metadata       : list()
 ##   .. .. ..@ metadata       : list()</code></pre>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="co"># Number of rows in the SE</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(bbc_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co"># Number of rows in the SE</span></span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(bbc_obj)</span></code></pre></div>
 <pre><code>## [1] 50600</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="co"># Number of genes in edger$DGEList</span></span>
-<span id="cb35-2"><a href="#cb35-2"></a><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="kw"><a href="../reference/dgelist.html">dgelist</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj)))</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="co"># Number of genes in edger$DGEList</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="kw"><a href="../reference/dgelist.html">dgelist</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj)))</span></code></pre></div>
 <pre><code>## [1] 10827</code></pre>
 </div>
 <div id="pca" class="section level1">
 <h1 class="hasAnchor">
 <a href="#pca" class="anchor"></a>PCA</h1>
 <p><code>plot_PCA</code> runs a PCA and also tests for significant clusters using <code><a href="https://rdrr.io/pkg/vegan/man/adonis.html">vegan::adonis()</a></code>. Output is a list containing: 1. ggplot object for the PCA plot 2. ggplot object for the scree plot 3. a list of results from <code>adonis()</code>.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">100</span>) <span class="co"># adonis uses permutations. Set seed to make reproducible.</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
-<span id="cb37-3"><a href="#cb37-3"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">100</span>) <span class="co"># adonis uses permutations. Set seed to make reproducible.</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a>pca_plots &lt;-<span class="st"> </span><span class="kw"><a href="../reference/plot_PCA.html">plot_PCA</a></span>(bbc_obj, <span class="dt">color_by=</span><span class="st">"genotype"</span>, <span class="dt">shape_by=</span><span class="st">"genotype"</span>, <span class="dt">adonis_by=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>,<span class="st">"rep"</span>))</span>
+<span id="cb46-3"><a href="#cb46-3"></a>pca_plots[[<span class="dv">1</span>]]</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_pca-1.png" width="700"></p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>pca_plots[[<span class="dv">2</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>pca_plots[[<span class="dv">2</span>]]</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/plot_pca-2.png" width="700"></p>
 </div>
 <div id="edger-de-workflow" class="section level1">
 <h1 class="hasAnchor">
 <a href="#edger-de-workflow" class="anchor"></a>edgeR DE workflow</h1>
 <p>Use <code>findDEGs</code> to fit a model and test for DE genes for various contrasts. For the edgeR workflow, either <code>glmQLFTest</code> or <code>glmTreat</code> can be selected using the <code>test</code> argument.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/findDEGs.html">findDEGs</a></span>(bbc_obj, </span>
-<span id="cb39-2"><a href="#cb39-2"></a>                    <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
-<span id="cb39-3"><a href="#cb39-3"></a>                    <span class="dt">test =</span> <span class="st">"glmQLFTest"</span>, </span>
-<span id="cb39-4"><a href="#cb39-4"></a>                    <span class="dt">design =</span> <span class="st">"~0+genotype"</span>,</span>
-<span id="cb39-5"><a href="#cb39-5"></a>                    <span class="dt">contrasts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"mut"</span>, <span class="st">"WT"</span>),</span>
-<span id="cb39-6"><a href="#cb39-6"></a>                                     <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"WT"</span>, <span class="st">"mut"</span>)))</span>
-<span id="cb39-7"><a href="#cb39-7"></a></span>
-<span id="cb39-8"><a href="#cb39-8"></a><span class="co"># plot the P-value distribution</span></span>
-<span id="cb39-9"><a href="#cb39-9"></a><span class="kw"><a href="../reference/plot_pval_distrib.html">plot_pval_distrib</a></span>(bbc_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>bbc_obj &lt;-<span class="st"> </span><span class="kw"><a href="../reference/findDEGs.html">findDEGs</a></span>(bbc_obj, </span>
+<span id="cb48-2"><a href="#cb48-2"></a>                    <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
+<span id="cb48-3"><a href="#cb48-3"></a>                    <span class="dt">test =</span> <span class="st">"glmQLFTest"</span>, </span>
+<span id="cb48-4"><a href="#cb48-4"></a>                    <span class="dt">design =</span> <span class="st">"~0+genotype"</span>,</span>
+<span id="cb48-5"><a href="#cb48-5"></a>                    <span class="dt">contrasts =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"mut"</span>, <span class="st">"WT"</span>),</span>
+<span id="cb48-6"><a href="#cb48-6"></a>                                     <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"genotype"</span>, <span class="st">"WT"</span>, <span class="st">"mut"</span>)))</span>
+<span id="cb48-7"><a href="#cb48-7"></a></span>
+<span id="cb48-8"><a href="#cb48-8"></a><span class="co"># plot the P-value distribution</span></span>
+<span id="cb48-9"><a href="#cb48-9"></a><span class="kw"><a href="../reference/plot_pval_distrib.html">plot_pval_distrib</a></span>(bbc_obj)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/find_degs-1.png" width="700"></p>
 </div>
 <div id="extract-the-de-results-as-a-dataframe" class="section level1">
 <h1 class="hasAnchor">
 <a href="#extract-the-de-results-as-a-dataframe" class="anchor"></a>Extract the DE results as a dataframe</h1>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>de_res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_de_table.html">get_de_table</a></span>(bbc_obj)</span>
-<span id="cb40-2"><a href="#cb40-2"></a></span>
-<span id="cb40-3"><a href="#cb40-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(de_res)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>de_res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_de_table.html">get_de_table</a></span>(bbc_obj)</span>
+<span id="cb49-2"><a href="#cb49-2"></a></span>
+<span id="cb49-3"><a href="#cb49-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(de_res)</span></code></pre></div>
 <pre><code>## List of 2
 ##  $ genotype_mut_-_WT:'data.frame':   10827 obs. of  9 variables:
 ##   ..$ gene_symbol     : chr [1:10827] "Atp2b4" "Runx2" "Irf7" "Il15ra" ...
@@ -435,50 +456,50 @@
 <h1 class="hasAnchor">
 <a href="#plot-heatmap" class="anchor"></a>plot heatmap</h1>
 <p>Here we demonstrate the <code>plot_heatmap</code> function. Column names from <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData(BbcSE_object)</a></code> and <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData(BbcSE_object)</a></code> can be passed to annotate or split the heatmap. In this example, we demonstrate how to create a new row data column to represent up-regulated versus down-regulated genes and pass it to <code>plot_heatmap</code>.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="co"># get the most DE genes (by adjust pval)</span></span>
-<span id="cb42-2"><a href="#cb42-2"></a>top_genes &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(edgeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span>(</span>
-<span id="cb42-3"><a href="#cb42-3"></a>  <span class="kw"><a href="../reference/de_results.html">de_results</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))[[<span class="dv">2</span>]],</span>
-<span id="cb42-4"><a href="#cb42-4"></a>  <span class="dt">n=</span><span class="dv">20</span>)</span>
-<span id="cb42-5"><a href="#cb42-5"></a>)</span>
-<span id="cb42-6"><a href="#cb42-6"></a></span>
-<span id="cb42-7"><a href="#cb42-7"></a><span class="co"># get the sign of the LFC and store in rowData</span></span>
-<span id="cb42-8"><a href="#cb42-8"></a><span class="co">## get the de_results slot of the BbcEdgeR object</span></span>
-<span id="cb42-9"><a href="#cb42-9"></a>bbc_de_res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/de_results.html">de_results</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))</span>
-<span id="cb42-10"><a href="#cb42-10"></a><span class="co">## get contrast results</span></span>
-<span id="cb42-11"><a href="#cb42-11"></a>de_table &lt;-<span class="st"> </span>bbc_de_res<span class="op">$</span><span class="st">`</span><span class="dt">genotype_mut_-_WT</span><span class="st">`</span><span class="op">$</span>table</span>
-<span id="cb42-12"><a href="#cb42-12"></a><span class="co">## get the LFC sign</span></span>
-<span id="cb42-13"><a href="#cb42-13"></a>mut_vs_WT_sign &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(de_table<span class="op">$</span>logFC <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"up"</span>, <span class="st">"down"</span>)</span>
-<span id="cb42-14"><a href="#cb42-14"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(mut_vs_WT_sign) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(de_table)</span>
-<span id="cb42-15"><a href="#cb42-15"></a><span class="co">## store LFC sign in rowData. Genes with no matches will be NA.</span></span>
-<span id="cb42-16"><a href="#cb42-16"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)<span class="op">$</span>mut_vs_WT_sign &lt;-<span class="st"> </span></span>
-<span id="cb42-17"><a href="#cb42-17"></a><span class="st">  </span>mut_vs_WT_sign[<span class="kw"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(bbc_obj), <span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(mut_vs_WT_sign))]</span>
-<span id="cb42-18"><a href="#cb42-18"></a><span class="co">## make rep a factor</span></span>
-<span id="cb42-19"><a href="#cb42-19"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>rep &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>rep, <span class="dt">levels=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>))</span>
-<span id="cb42-20"><a href="#cb42-20"></a></span>
-<span id="cb42-21"><a href="#cb42-21"></a><span class="co"># plot Zscores of normalized log2 cpms</span></span>
-<span id="cb42-22"><a href="#cb42-22"></a><span class="kw"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">genes =</span> top_genes, <span class="dt">zscores=</span><span class="ot">TRUE</span>, </span>
-<span id="cb42-23"><a href="#cb42-23"></a>             <span class="dt">rowdata_annot =</span> <span class="st">"mut_vs_WT_sign"</span>, <span class="dt">coldata_annot =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"rep"</span>, <span class="st">"new_sample"</span>, <span class="st">"genotype"</span>),</span>
-<span id="cb42-24"><a href="#cb42-24"></a>             <span class="dt">rowdata_split =</span> <span class="st">"mut_vs_WT_sign"</span>, <span class="dt">coldata_split=</span><span class="st">"genotype"</span>, </span>
-<span id="cb42-25"><a href="#cb42-25"></a>             <span class="dt">gene_labels =</span> <span class="st">"uniq_syms"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="co"># get the most DE genes (by adjust pval)</span></span>
+<span id="cb51-2"><a href="#cb51-2"></a>top_genes &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(edgeR<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/edgeR/man/topTags.html">topTags</a></span>(</span>
+<span id="cb51-3"><a href="#cb51-3"></a>  <span class="kw"><a href="../reference/de_results.html">de_results</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))[[<span class="dv">2</span>]],</span>
+<span id="cb51-4"><a href="#cb51-4"></a>  <span class="dt">n=</span><span class="dv">20</span>)</span>
+<span id="cb51-5"><a href="#cb51-5"></a>)</span>
+<span id="cb51-6"><a href="#cb51-6"></a></span>
+<span id="cb51-7"><a href="#cb51-7"></a><span class="co"># get the sign of the LFC and store in rowData</span></span>
+<span id="cb51-8"><a href="#cb51-8"></a><span class="co">## get the de_results slot of the BbcEdgeR object</span></span>
+<span id="cb51-9"><a href="#cb51-9"></a>bbc_de_res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/de_results.html">de_results</a></span>(<span class="kw"><a href="../reference/edger.html">edger</a></span>(bbc_obj))</span>
+<span id="cb51-10"><a href="#cb51-10"></a><span class="co">## get contrast results</span></span>
+<span id="cb51-11"><a href="#cb51-11"></a>de_table &lt;-<span class="st"> </span>bbc_de_res<span class="op">$</span><span class="st">`</span><span class="dt">genotype_mut_-_WT</span><span class="st">`</span><span class="op">$</span>table</span>
+<span id="cb51-12"><a href="#cb51-12"></a><span class="co">## get the LFC sign</span></span>
+<span id="cb51-13"><a href="#cb51-13"></a>mut_vs_WT_sign &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(de_table<span class="op">$</span>logFC <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="st">"up"</span>, <span class="st">"down"</span>)</span>
+<span id="cb51-14"><a href="#cb51-14"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(mut_vs_WT_sign) &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(de_table)</span>
+<span id="cb51-15"><a href="#cb51-15"></a><span class="co">## store LFC sign in rowData. Genes with no matches will be NA.</span></span>
+<span id="cb51-16"><a href="#cb51-16"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">rowData</a></span>(bbc_obj)<span class="op">$</span>mut_vs_WT_sign &lt;-<span class="st"> </span></span>
+<span id="cb51-17"><a href="#cb51-17"></a><span class="st">  </span>mut_vs_WT_sign[<span class="kw"><a href="https://rdrr.io/r/base/match.html">match</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(bbc_obj), <span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(mut_vs_WT_sign))]</span>
+<span id="cb51-18"><a href="#cb51-18"></a><span class="co">## make rep a factor</span></span>
+<span id="cb51-19"><a href="#cb51-19"></a><span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>rep &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">colData</a></span>(bbc_obj)<span class="op">$</span>rep, <span class="dt">levels=</span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>))</span>
+<span id="cb51-20"><a href="#cb51-20"></a></span>
+<span id="cb51-21"><a href="#cb51-21"></a><span class="co"># plot Zscores of normalized log2 cpms</span></span>
+<span id="cb51-22"><a href="#cb51-22"></a><span class="kw"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">genes =</span> top_genes, <span class="dt">zscores=</span><span class="ot">TRUE</span>, </span>
+<span id="cb51-23"><a href="#cb51-23"></a>             <span class="dt">rowdata_annot =</span> <span class="st">"mut_vs_WT_sign"</span>, <span class="dt">coldata_annot =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"rep"</span>, <span class="st">"new_sample"</span>, <span class="st">"genotype"</span>),</span>
+<span id="cb51-24"><a href="#cb51-24"></a>             <span class="dt">rowdata_split =</span> <span class="st">"mut_vs_WT_sign"</span>, <span class="dt">coldata_split=</span><span class="st">"genotype"</span>, </span>
+<span id="cb51-25"><a href="#cb51-25"></a>             <span class="dt">gene_labels =</span> <span class="st">"uniq_syms"</span>)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/heatmap-1.png" width="700"></p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># plot average normalized log2 cpms</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a><span class="kw"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">genes =</span> top_genes, <span class="dt">zscores=</span><span class="ot">FALSE</span>, </span>
-<span id="cb43-3"><a href="#cb43-3"></a>             <span class="dt">rowdata_split =</span> <span class="st">"mut_vs_WT_sign"</span>,</span>
-<span id="cb43-4"><a href="#cb43-4"></a>             <span class="dt">gene_labels =</span> <span class="st">"uniq_syms"</span>, <span class="dt">grouped=</span><span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="co"># plot average normalized log2 cpms</span></span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="kw"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span>(<span class="dt">x =</span> bbc_obj, <span class="dt">genes =</span> top_genes, <span class="dt">zscores=</span><span class="ot">FALSE</span>, </span>
+<span id="cb52-3"><a href="#cb52-3"></a>             <span class="dt">rowdata_split =</span> <span class="st">"mut_vs_WT_sign"</span>,</span>
+<span id="cb52-4"><a href="#cb52-4"></a>             <span class="dt">gene_labels =</span> <span class="st">"uniq_syms"</span>, <span class="dt">grouped=</span><span class="ot">TRUE</span>)</span></code></pre></div>
 <p><img src="rnaseq_from_star_files/figure-html/heatmap-2.png" width="700"></p>
 </div>
 <div id="gsea-hallmark-msigdb" class="section level1">
 <h1 class="hasAnchor">
 <a href="#gsea-hallmark-msigdb" class="anchor"></a>GSEA – Hallmark msigdb</h1>
 <p><code>run_gsea</code> is a wrapper for clusterProfiler and can be used to run GSEA for various gene sets. The output are <code>gseaResult</code> objects that can be visualized using <code>enrichplot</code> methods or processed further with other <code>clusterProfiler</code> methods.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a><span class="co"># set seed to make GSEA deterministic</span></span>
-<span id="cb44-2"><a href="#cb44-2"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
-<span id="cb44-3"><a href="#cb44-3"></a></span>
-<span id="cb44-4"><a href="#cb44-4"></a>H_gsea_results_list &lt;-<span class="st"> </span><span class="kw"><a href="../reference/run_gsea.html">run_gsea</a></span>(<span class="dt">x =</span> bbc_obj,</span>
-<span id="cb44-5"><a href="#cb44-5"></a>                                <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
-<span id="cb44-6"><a href="#cb44-6"></a>                                <span class="dt">gene_set =</span> <span class="st">"H"</span>,</span>
-<span id="cb44-7"><a href="#cb44-7"></a>                                <span class="dt">orgDb =</span> org.Mm.eg.db,</span>
-<span id="cb44-8"><a href="#cb44-8"></a>                                <span class="dt">organism =</span> <span class="st">"Mus musculus"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co"># set seed to make GSEA deterministic</span></span>
+<span id="cb53-2"><a href="#cb53-2"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
+<span id="cb53-3"><a href="#cb53-3"></a></span>
+<span id="cb53-4"><a href="#cb53-4"></a>H_gsea_results_list &lt;-<span class="st"> </span><span class="kw"><a href="../reference/run_gsea.html">run_gsea</a></span>(<span class="dt">x =</span> bbc_obj,</span>
+<span id="cb53-5"><a href="#cb53-5"></a>                                <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
+<span id="cb53-6"><a href="#cb53-6"></a>                                <span class="dt">gene_set =</span> <span class="st">"H"</span>,</span>
+<span id="cb53-7"><a href="#cb53-7"></a>                                <span class="dt">orgDb =</span> org.Mm.eg.db,</span>
+<span id="cb53-8"><a href="#cb53-8"></a>                                <span class="dt">organism =</span> <span class="st">"Mus musculus"</span>)</span></code></pre></div>
 <pre><code>## genotype_mut_-_WT: removed 0 genes out of 10827 due to logFC = 0 or PValue = 1</code></pre>
 <pre><code>## genotype_mut_-_WT: removed 503 genes out of 10827 due to no Entrez gene match</code></pre>
 <pre><code>## genotype_mut_-_WT: total genes remaining is 10324</code></pre>
@@ -493,26 +514,26 @@
 <pre><code>## GSEA analysis...</code></pre>
 <pre><code>## leading edge analysis...</code></pre>
 <pre><code>## done...</code></pre>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(H_gsea_results_list)</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(H_gsea_results_list)</span></code></pre></div>
 <pre><code>## [1] "genotype_mut_-_WT" "genotype_WT_-_mut"</code></pre>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="co"># to get the missing genes</span></span>
-<span id="cb61-2"><a href="#cb61-2"></a>missing_genes &lt;-<span class="st"> </span><span class="kw"><a href="../reference/find_missing_in_gseaResult.html">find_missing_in_gseaResult</a></span>(H_gsea_results_list, bbc_obj)</span></code></pre></div>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>enrichplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html">dotplot</a></span>(H_gsea_results_list[[<span class="dv">1</span>]], <span class="dt">showCategory=</span><span class="dv">10</span>, </span>
-<span id="cb62-2"><a href="#cb62-2"></a>                    <span class="dt">title=</span><span class="st">"Top gene sets"</span>, <span class="dt">split=</span><span class="st">".sign"</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb62-3"><a href="#cb62-3"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(.<span class="op">~</span>.sign)</span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a><span class="co"># to get the missing genes</span></span>
+<span id="cb70-2"><a href="#cb70-2"></a>missing_genes &lt;-<span class="st"> </span><span class="kw"><a href="../reference/find_missing_in_gseaResult.html">find_missing_in_gseaResult</a></span>(H_gsea_results_list, bbc_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>enrichplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html">dotplot</a></span>(H_gsea_results_list[[<span class="dv">1</span>]], <span class="dt">showCategory=</span><span class="dv">10</span>, </span>
+<span id="cb71-2"><a href="#cb71-2"></a>                    <span class="dt">title=</span><span class="st">"Top gene sets"</span>, <span class="dt">split=</span><span class="st">".sign"</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb71-3"><a href="#cb71-3"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(.<span class="op">~</span>.sign)</span></code></pre></div>
 <pre><code>## wrong orderBy parameter; set to default `orderBy = "x"`</code></pre>
 <p><img src="rnaseq_from_star_files/figure-html/plot_Hgsea-1.png" width="700"></p>
 </div>
 <div id="gsea-kegg" class="section level1">
 <h1 class="hasAnchor">
 <a href="#gsea-kegg" class="anchor"></a>GSEA – KEGG</h1>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>kegg_gsea_results_list &lt;-<span class="st"> </span><span class="kw"><a href="../reference/run_gsea.html">run_gsea</a></span>(<span class="dt">x =</span> bbc_obj,</span>
-<span id="cb64-2"><a href="#cb64-2"></a>                                <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
-<span id="cb64-3"><a href="#cb64-3"></a>                                <span class="dt">gene_set =</span> <span class="st">"kegg"</span>,</span>
-<span id="cb64-4"><a href="#cb64-4"></a>                                <span class="dt">orgDb =</span> org.Mm.eg.db,</span>
-<span id="cb64-5"><a href="#cb64-5"></a>                                <span class="dt">organism =</span> <span class="st">"mmu"</span>,</span>
-<span id="cb64-6"><a href="#cb64-6"></a>                                <span class="dt">minGSSize =</span> <span class="dv">30</span>,</span>
-<span id="cb64-7"><a href="#cb64-7"></a>                                <span class="dt">use_internal_data =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a>kegg_gsea_results_list &lt;-<span class="st"> </span><span class="kw"><a href="../reference/run_gsea.html">run_gsea</a></span>(<span class="dt">x =</span> bbc_obj,</span>
+<span id="cb73-2"><a href="#cb73-2"></a>                                <span class="dt">de_pkg =</span> <span class="st">"edger"</span>,</span>
+<span id="cb73-3"><a href="#cb73-3"></a>                                <span class="dt">gene_set =</span> <span class="st">"kegg"</span>,</span>
+<span id="cb73-4"><a href="#cb73-4"></a>                                <span class="dt">orgDb =</span> org.Mm.eg.db,</span>
+<span id="cb73-5"><a href="#cb73-5"></a>                                <span class="dt">organism =</span> <span class="st">"mmu"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6"></a>                                <span class="dt">minGSSize =</span> <span class="dv">30</span>,</span>
+<span id="cb73-7"><a href="#cb73-7"></a>                                <span class="dt">use_internal_data =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
 <pre><code>## genotype_mut_-_WT: removed 0 genes out of 10827 due to logFC = 0 or PValue = 1</code></pre>
 <pre><code>## genotype_mut_-_WT: removed 503 genes out of 10827 due to no Entrez gene match</code></pre>
 <pre><code>## genotype_mut_-_WT: total genes remaining is 10324</code></pre>
@@ -527,19 +548,25 @@
 <pre><code>## GSEA analysis...</code></pre>
 <pre><code>## leading edge analysis...</code></pre>
 <pre><code>## done...</code></pre>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(kegg_gsea_results_list)</span></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a><span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(kegg_gsea_results_list)</span></code></pre></div>
 <pre><code>## [1] "genotype_mut_-_WT" "genotype_WT_-_mut"</code></pre>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>enrichplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html">dotplot</a></span>(kegg_gsea_results_list[[<span class="dv">1</span>]], <span class="dt">showCategory=</span><span class="dv">10</span>, </span>
-<span id="cb81-2"><a href="#cb81-2"></a>                    <span class="dt">title=</span><span class="st">"Top gene sets"</span>, <span class="dt">split=</span><span class="st">".sign"</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb81-3"><a href="#cb81-3"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(.<span class="op">~</span>.sign)</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>enrichplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html">dotplot</a></span>(kegg_gsea_results_list[[<span class="dv">1</span>]], <span class="dt">showCategory=</span><span class="dv">10</span>, </span>
+<span id="cb90-2"><a href="#cb90-2"></a>                    <span class="dt">title=</span><span class="st">"Top gene sets"</span>, <span class="dt">split=</span><span class="st">".sign"</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb90-3"><a href="#cb90-3"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(.<span class="op">~</span>.sign)</span></code></pre></div>
 <pre><code>## wrong orderBy parameter; set to default `orderBy = "x"`</code></pre>
 <p><img src="rnaseq_from_star_files/figure-html/plot_kegggsea-1.png" width="700"></p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="co">#gseaplot(kegg_gsea_results_list[[1]], geneSetID = "mmu05200", by="runningScore")</span></span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a><span class="co"># shorten the descriptions to 30 characters or less</span></span>
+<span id="cb92-2"><a href="#cb92-2"></a>enrichplot<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html">dotplot</a></span>(<span class="kw"><a href="../reference/shorten_desc.html">shorten_desc</a></span>(kegg_gsea_results_list[[<span class="dv">1</span>]], <span class="dv">30</span>), <span class="dt">showCategory=</span><span class="dv">10</span>, </span>
+<span id="cb92-3"><a href="#cb92-3"></a>                    <span class="dt">title=</span><span class="st">"Top gene sets"</span>, <span class="dt">split=</span><span class="st">".sign"</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb92-4"><a href="#cb92-4"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span>(.<span class="op">~</span>.sign)</span></code></pre></div>
+<pre><code>## wrong orderBy parameter; set to default `orderBy = "x"`</code></pre>
+<p><img src="rnaseq_from_star_files/figure-html/plot_kegggsea-2.png" width="700"></p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a><span class="co">#gseaplot(kegg_gsea_results_list[[1]], geneSetID = "mmu05200", by="runningScore")</span></span></code></pre></div>
 </div>
 <div id="session-info" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h1>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</span></code></pre></div>
 <pre><code>## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
 ## Running under: macOS Mojave 10.14.6
@@ -595,27 +622,27 @@
 ##  [79] triebeard_0.3.0        reactome.db_1.68.0     pkgload_1.0.2         
 ##  [82] hms_0.5.0              evaluate_0.14          xtable_1.8-4          
 ##  [85] XML_3.98-1.20          gridExtra_2.3          shape_1.4.4           
-##  [88] testthat_2.2.1         compiler_3.6.1         tibble_2.1.3          
-##  [91] crayon_1.3.4           htmltools_0.3.6        mgcv_1.8-28           
-##  [94] Formula_1.2-3          tidyr_0.8.3            geneplotter_1.62.0    
-##  [97] ReactomePA_1.28.0      DBI_1.0.0              tweenr_1.0.1          
-## [100] ComplexHeatmap_2.0.0   MASS_7.3-51.4          rappdirs_0.3.1        
-## [103] Matrix_1.2-17          readr_1.3.1            permute_0.9-5         
-## [106] cli_1.1.0              igraph_1.2.4.1         pkgconfig_2.0.2       
-## [109] pkgdown_1.4.1          rvcheck_0.1.3          foreign_0.8-71        
-## [112] xml2_1.2.2             annotate_1.62.0        XVector_0.24.0        
-## [115] stringr_1.4.0          callr_3.3.1            digest_0.6.20         
-## [118] vegan_2.5-6            graph_1.62.0           rmarkdown_1.14        
-## [121] fastmatch_1.1-0        htmlTable_1.13.1       edgeR_3.26.7          
-## [124] graphite_1.30.0        rjson_0.2.20           nlme_3.1-141          
-## [127] jsonlite_1.6           desc_1.2.0             viridisLite_0.3.0     
-## [130] limma_3.40.6           pillar_1.4.2           lattice_0.20-38       
-## [133] httr_1.4.1             pkgbuild_1.0.4         survival_2.44-1.1     
-## [136] GO.db_3.8.2            glue_1.3.1             remotes_2.1.0         
-## [139] UpSetR_1.4.0           png_0.1-7              bit_1.1-14            
-## [142] ggforce_0.3.1          stringi_1.4.3          blob_1.2.0            
-## [145] DESeq2_1.24.0          latticeExtra_0.6-28    memoise_1.1.0         
-## [148] dplyr_0.8.3</code></pre>
+##  [88] testthat_2.2.1         compiler_3.6.1         biomaRt_2.40.3        
+##  [91] tibble_2.1.3           crayon_1.3.4           htmltools_0.3.6       
+##  [94] mgcv_1.8-28            Formula_1.2-3          geneplotter_1.62.0    
+##  [97] tidyr_0.8.3            ReactomePA_1.28.0      DBI_1.0.0             
+## [100] tweenr_1.0.1           ComplexHeatmap_2.0.0   MASS_7.3-51.4         
+## [103] rappdirs_0.3.1         Matrix_1.2-17          readr_1.3.1           
+## [106] permute_0.9-5          cli_1.1.0              igraph_1.2.4.1        
+## [109] pkgconfig_2.0.2        pkgdown_1.4.1          rvcheck_0.1.3         
+## [112] foreign_0.8-71         xml2_1.2.2             annotate_1.62.0       
+## [115] XVector_0.24.0         stringr_1.4.0          callr_3.3.1           
+## [118] digest_0.6.20          vegan_2.5-6            graph_1.62.0          
+## [121] rmarkdown_1.14         fastmatch_1.1-0        htmlTable_1.13.1      
+## [124] edgeR_3.26.7           graphite_1.30.0        rjson_0.2.20          
+## [127] nlme_3.1-141           jsonlite_1.6           desc_1.2.0            
+## [130] viridisLite_0.3.0      limma_3.40.6           pillar_1.4.2          
+## [133] lattice_0.20-38        httr_1.4.1             pkgbuild_1.0.4        
+## [136] survival_2.44-1.1      GO.db_3.8.2            glue_1.3.1            
+## [139] remotes_2.1.0          UpSetR_1.4.0           png_0.1-7             
+## [142] bit_1.1-14             ggforce_0.3.1          stringi_1.4.3         
+## [145] blob_1.2.0             DESeq2_1.24.0          latticeExtra_0.6-28   
+## [148] memoise_1.1.0          dplyr_0.8.3</code></pre>
 </div>
   </div>
 

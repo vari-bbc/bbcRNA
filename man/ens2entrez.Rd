@@ -4,13 +4,18 @@
 \alias{ens2entrez}
 \title{Convert Ensembl IDs to Entrez IDs for gene enrichment analyses.}
 \usage{
-ens2entrez(x, orgdb)
+ens2entrez(x, orgdb, BMdataset = "")
 }
 \arguments{
 \item{x}{A BbcSE object.}
 
 \item{orgdb}{A OrgDb object. Download the annotations for your species from
-'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'}
+'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
+used if BMdataset="".}
+
+\item{BMdataset}{character. The name of the BM dataset you want to use. Try
+to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
+if needed.}
 }
 \value{
 A BbcSE object.

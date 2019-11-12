@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert Ensembl IDs to gene symbols. — ens2sym • bbcRNA</title>
+<title>Shorten Description names from ClusterProfiler results. — shorten_desc • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,9 +32,9 @@
 
 
 
-<meta property="og:title" content="Convert Ensembl IDs to gene symbols. — ens2sym" />
+<meta property="og:title" content="Shorten Description names from ClusterProfiler results. — shorten_desc" />
 
-<meta property="og:description" content="Convert Ensembl IDs to gene symbols." />
+<meta property="og:description" content="Shorten Description names." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,55 +110,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert Ensembl IDs to gene symbols.</h1>
+    <h1>Shorten Description names from ClusterProfiler results.</h1>
     
-    <div class="hidden name"><code>ens2sym.Rd</code></div>
+    <div class="hidden name"><code>shorten_desc.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Convert Ensembl IDs to gene symbols.</p>
+    <p>Shorten Description names.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>ens2sym</span>(<span class='no'>x</span>, <span class='no'>orgdb</span>, <span class='kw'>BMdataset</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>shorten_desc</span>(<span class='no'>x</span>, <span class='no'>max_len</span>)
+
+<span class='co'># S4 method for enrichResult</span>
+<span class='fu'>shorten_desc</span>(<span class='no'>x</span>, <span class='kw'>max_len</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+
+<span class='co'># S4 method for gseaResult</span>
+<span class='fu'>shorten_desc</span>(<span class='no'>x</span>, <span class='kw'>max_len</span> <span class='kw'>=</span> <span class='fl'>50</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A BbcSE object.</p></td>
+      <td><p>A enrichResult or gseaResult object.</p></td>
     </tr>
     <tr>
-      <th>orgdb</th>
-      <td><p>A OrgDb object. Download the annotations for your species from
-'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
-used if BMdataset="".</p></td>
-    </tr>
-    <tr>
-      <th>BMdataset</th>
-      <td><p>character. The name of the BM dataset you want to use. Try
-to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
-if needed.</p></td>
+      <th>max_len</th>
+      <td><p>Maximum length of Description</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A BbcSE object.</p>
+    <p>A enrichResult or gseaResult</p>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
 
-    <p>Gene symbols with more than one Ensembl ID match are determined only from
-genes present in the BbcSE object, so be sure it is unfiltered.</p>
+    
 <ul>
-<li><p>Symbols that match multiple Ensembl IDs will be resolved by concatenating
-the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.</p></li>
-<li><p>Genes with multiple possible symbols will be labelled as Ensembl ID.</p></li>
-<li><p>Genes absent from OrgDb/Biomart will be labelled as Ensembl ID.</p></li>
+<li><p><code>enrichResult</code>: Shorten description in enrichResult.</p></li>
+<li><p><code>gseaResult</code>: Shorten description in enrichResult.</p></li>
 </ul>
-
     
 
   </div>
@@ -169,7 +163,7 @@ the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.</p></li>
       
       <li><a href="#value">Value</a></li>
 
-      <li><a href="#details">Details</a></li>
+      <li><a href="#methods-by-class-">Methods (by class)</a></li>
           </ul>
 
   </div>

@@ -8,32 +8,91 @@
 #' \itemize{
 #'   \item Symbols that match multiple Ensembl IDs will be resolved by concatenating
 #' the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.
-#'   \item Genes with multiple possible symbols will be labelled as NA.
-#'   \item Genes absent from OrgDb will be labelled as Ensembl ID.
+#'   \item Genes with multiple possible symbols will be labelled as Ensembl ID.
+#'   \item Genes absent from OrgDb/Biomart will be labelled as Ensembl ID.
 #' }
 #'
 #' @param x A BbcSE object.
 #' @param orgdb A OrgDb object. Download the annotations for your species from
-#'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'
+#'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
+#'   used if BMdataset="".
+#' @param BMdataset character. The name of the BM dataset you want to use. Try
+#'   to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
+#'   if needed.
 #' @return A BbcSE object.
 #' @export
-#' @importFrom AnnotationDbi keys mapIds
-ens2sym <- function(x, orgdb) {
+#' @importFrom AnnotationDbi keys mapIds keytypes
+#' @importFrom biomaRt getBM useMart useDataset listDatasets
+ens2sym <- function(x, orgdb, BMdataset="") {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
-  # get Ensembl IDs present in the OrgDb
-  ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
+  if(BMdataset==""){
+    message("Using OrgDb.")
+    message(paste0(nrow(x), " total genes in BbcSE object."))
 
-  # keep only genes present in BbcSE object
-  ens_genes <- ens_genes[ens_genes %in% rownames(x)]
+    if(!"ENSEMBL" %in% keytypes(orgdb)){
+      stop("This org.db does not have Ensembl IDs. Use biomart (set BMdataset option).")
+    }
+    # get Ensembl IDs present in the OrgDb
+    ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
 
-  gene_syms <- AnnotationDbi::mapIds(orgdb,
-                                     keys = ens_genes,
-                                     column = "SYMBOL",
-                                     keytype = "ENSEMBL",
-                                     multiVals = "asNA")
+    # keep only genes present in BbcSE object
+    ens_genes <- ens_genes[ens_genes %in% rownames(x)]
 
-  stopifnot(identical(length(ens_genes), length(gene_syms)))
+    # this returns a list and all matches will be returned for each ensembl gene
+    gene_syms <- AnnotationDbi::mapIds(orgdb,
+                                       keys = ens_genes,
+                                       column = "SYMBOL",
+                                       keytype = "ENSEMBL",
+                                       multiVals = "list")
+
+    stopifnot(identical(length(ens_genes), length(gene_syms)))
+
+    # Remove Ensembl IDs with multiple symbols
+    ## Count them
+    num_w_multi_sym <- sum(sapply(gene_syms, function(x){length(x) > 1}))
+    message(paste0(num_w_multi_sym,
+                   " genes removed due to more than 1 matching symbol."))
+
+    ## Remove them
+    gene_syms <- unlist(gene_syms[sapply(gene_syms, function(x){length(x) == 1})])
+
+  } else{
+    # select mart to use
+    ensembl <- biomaRt::useMart("ensembl")
+
+    # make sure dataset exists and print out version
+    ensembl_datasets <- biomaRt::listDatasets(mart=ensembl)
+    ensembl_dataset_to_use <- ensembl_datasets[ensembl_datasets$dataset==BMdataset, ]
+    if(identical(nrow(ensembl_dataset_to_use), 0)){
+      stop("BM dataset does not exist.")
+    } else{
+      stopifnot(nrow(ensembl_dataset_to_use) == 1) # make sure only one matching dataset
+    }
+    message(paste0("Using Biomart. Dataset version: ", ensembl_dataset_to_use$version))
+    message(paste0(nrow(x), " total genes in BbcSE object."))
+
+    # get the dataset from BM
+    ensembl <- biomaRt::useDataset(BMdataset, mart=ensembl)
+
+    ens_2_symbol <- biomaRt::getBM(attributes = c("ensembl_gene_id", "external_gene_name"), mart = ensembl)
+
+    # keep only genes present in BbcSE object
+    ens_2_symbol <- ens_2_symbol[ens_2_symbol$ensembl_gene_id %in% rownames(x), ]
+
+    # Make NA if there are multiple possible symbols
+    ## Find Ensembl IDs with multiple symbols
+    ens_w_multi_sym <- unique(ens_2_symbol[duplicated(ens_2_symbol$ensembl_gene_id),
+                                           "ensembl_gene_id", drop=TRUE])
+    num_genes_b4_filt <- nrow(ens_2_symbol)
+    ## Remove Ensembl IDs with multiple symbols
+    ens_2_symbol <- ens_2_symbol[!ens_2_symbol$ensembl_gene_id %in% ens_w_multi_sym, ]
+    message(paste0(num_genes_b4_filt-nrow(ens_2_symbol),
+                   " genes removed due to more than 1 matching symbol."))
+
+    gene_syms <- ens_2_symbol$external_gene_name
+    names(gene_syms) <- ens_2_symbol$ensembl_gene_id
+  }
 
   # function to uniquify gene names from Scater
   uniquifyFeatureNames <- function (ID, names)
@@ -48,20 +107,28 @@ ens2sym <- function(x, orgdb) {
     return(names)
   }
 
+  message(paste0(length(gene_syms), " genes with symbols found."))
+
+  # uniquify names by concatenating Ensembl ID and gene symbol with a '_' if
+  # gene symbol is multi-matching
   uniq_syms <- uniquifyFeatureNames(names(gene_syms), gene_syms)
+  message(paste0(sum(gene_syms!=uniq_syms), " genes with uniquified symbols."))
 
   names(uniq_syms) <- names(gene_syms)
 
-  # genes in the BbcSE object absent from OrgDb
+  # genes in the BbcSE object absent from OrgDb/Biomart
   missing_syms <- rownames(x)[!rownames(x) %in% names(uniq_syms)]
   names(missing_syms) <- missing_syms
+  message(paste0(length(missing_syms), " genes either missing from database or filtered due to criteria described in documentation."))
 
-  #combine the genes present in OrgDb with those absent
+  #combine the genes present in OrgDb/Biomart with those absent
   uniq_syms <- c(uniq_syms, missing_syms)
 
   # keep only the genes present in the BbcSE object and order based on
   # the genes in the BbcSE object
-  rowData(x) <- cbind(rowData(x), uniq_syms = uniq_syms[rownames(x)])
+  stopifnot(all(rownames(x) %in% names(uniq_syms)))
+  rowData(x)$uniq_syms <- uniq_syms[rownames(x)]
+  #rowData(x) <- cbind(rowData(x), uniq_syms = uniq_syms[rownames(x)])
 
   validObject(x)
 
@@ -87,13 +154,14 @@ ens2sym <- function(x, orgdb) {
 #'
 #' @param x A BbcSE object.
 #' @param orgdb A OrgDb object. Download the annotations for your species from
-#'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'
-#' @param BMdataset character. The name of the BM dataset you want to use. Try to
-#'   use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset if
-#'   needed.
+#'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
+#'   used if BMdataset="".
+#' @param BMdataset character. The name of the BM dataset you want to use. Try
+#'   to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
+#'   if needed.
 #' @return A BbcSE object.
 #' @export
-#' @importFrom AnnotationDbi keys mapIds
+#' @importFrom AnnotationDbi keys mapIds keytypes
 #' @importFrom biomaRt getBM useMart useDataset listDatasets
 ens2entrez <- function(x, orgdb, BMdataset="") {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
@@ -179,7 +247,8 @@ ens2entrez <- function(x, orgdb, BMdataset="") {
   entrez_ids <- c(entrez_ids, missing_genes)
 
   # order based on the genes in the BbcSE object
-  rowData(x) <- cbind(rowData(x), entrez_ids = entrez_ids[rownames(x)])
+  rowData(x)$entrez_ids <- entrez_ids[rownames(x)]
+  #rowData(x) <- cbind(rowData(x), entrez_ids = entrez_ids[rownames(x)])
 
   validObject(x)
 
@@ -193,7 +262,7 @@ ens2entrez <- function(x, orgdb, BMdataset="") {
 #'
 #' Search biomart datasets with keyword
 #'
-#' @param regex regex to search for. Perl style.
+#' @param keyword regex to search for. Perl style.
 #' @export
 #' @importFrom biomaRt listDatasets
 searchBM <- function(keyword){

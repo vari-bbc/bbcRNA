@@ -121,7 +121,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>ens2entrez</span>(<span class='no'>x</span>, <span class='no'>orgdb</span>)</pre>
+    <pre class="usage"><span class='fu'>ens2entrez</span>(<span class='no'>x</span>, <span class='no'>orgdb</span>, <span class='kw'>BMdataset</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,7 +133,14 @@
     <tr>
       <th>orgdb</th>
       <td><p>A OrgDb object. Download the annotations for your species from
-'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'</p></td>
+'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
+used if BMdataset="".</p></td>
+    </tr>
+    <tr>
+      <th>BMdataset</th>
+      <td><p>character. The name of the BM dataset you want to use. Try
+to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
+if needed.</p></td>
     </tr>
     </table>
     

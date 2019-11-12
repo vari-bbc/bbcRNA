@@ -4,13 +4,18 @@
 \alias{ens2sym}
 \title{Convert Ensembl IDs to gene symbols.}
 \usage{
-ens2sym(x, orgdb)
+ens2sym(x, orgdb, BMdataset = "")
 }
 \arguments{
 \item{x}{A BbcSE object.}
 
 \item{orgdb}{A OrgDb object. Download the annotations for your species from
-'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'}
+'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'. Only
+used if BMdataset="".}
+
+\item{BMdataset}{character. The name of the BM dataset you want to use. Try
+to use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset
+if needed.}
 }
 \value{
 A BbcSE object.
@@ -25,7 +30,7 @@ genes present in the BbcSE object, so be sure it is unfiltered.
 \itemize{
   \item Symbols that match multiple Ensembl IDs will be resolved by concatenating
 the Ensembl ID and the gene symbol. Uses scater::uniquifyFeatureNames.
-  \item Genes with multiple possible symbols will be labelled as NA.
-  \item Genes absent from OrgDb will be labelled as Ensembl ID.
+  \item Genes with multiple possible symbols will be labelled as Ensembl ID.
+  \item Genes absent from OrgDb/Biomart will be labelled as Ensembl ID.
 }
 }

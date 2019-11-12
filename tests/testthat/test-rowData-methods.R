@@ -1,11 +1,50 @@
 
 test_that("ens2sym works", {
-  bbc_obj2 <- ens2sym(bbc_obj, org.Mm.eg.db)
-  bbc_obj2_rowdata <- rowData(bbc_obj2)
-  #bbc_obj2_rowdata_isNA <- is.na(bbc_obj2_rowdata$uniq_syms)
-  bbc_obj2_rowdata_uniquified <- stringr::str_detect(bbc_obj2_rowdata$uniq_syms,
-                                                     "_ENS[A-Z]*G[0-9]+$")
+  test_gene_syms <- function(bbc, ens2syms){
 
+    bbc_rowdata <- rowData(bbc)
+
+    # add genes that are absent from database
+    missing_genes <- rownames(bbc_rowdata)[!rownames(bbc_rowdata) %in%
+                                             names(ens2syms)]
+    names(missing_genes) <- missing_genes
+
+    gene_syms_df <- data.frame(symbols = c(ens2syms,
+                                           rep(NA, length(missing_genes))),
+                               stringsAsFactors = FALSE)
+
+    rownames(gene_syms_df) <- c(names(ens2syms), names(missing_genes))
+
+    # replace NAs with Ensembl ID
+    gene_syms_df$symbols <- ifelse(is.na(gene_syms_df$symbols),
+                                   rownames(gene_syms_df), gene_syms_df$symbols)
+
+    # concatenate gene symbols with Ensembl IDs
+    gene_syms_df$concat_sym <- paste0(gene_syms_df$symbols, "_",
+                                      rownames(gene_syms_df))
+
+    # match gene order
+    stopifnot(all(rownames(bbc_rowdata) %in% rownames(gene_syms_df)))
+    gene_syms_df <- gene_syms_df[rownames(bbc_rowdata), ]
+
+    # test non-uniquified symbols correct
+    bbc_uniquified <- stringr::str_detect(bbc_rowdata$uniq_syms,
+                                          "_ENS[A-Z]*G[0-9]+$")
+
+    expect_equivalent(bbc_rowdata[!bbc_uniquified, "uniq_syms"],
+                      gene_syms_df[!bbc_uniquified, "symbols"])
+
+    # test uniquified symbols correct
+    expect_equivalent(bbc_rowdata[bbc_uniquified, "uniq_syms"],
+                      gene_syms_df[bbc_uniquified, "concat_sym"])
+
+    # test uniquified symbols are duplicated
+    expect_true(all(table(gene_syms_df[bbc_uniquified, "symbols"]) > 1))
+
+    invisible()
+  }
+
+  # OrgDb
   ens_genes <-  AnnotationDbi::keys(org.Mm.eg.db, keytype="ENSEMBL")
 
   gene_syms <- AnnotationDbi::mapIds(org.Mm.eg.db,
@@ -14,40 +53,27 @@ test_that("ens2sym works", {
                                      keytype = "ENSEMBL",
                                      multiVals = "asNA")
 
+  test_gene_syms(ens2sym(bbc_obj, org.Mm.eg.db), gene_syms)
 
-  # add genes that are absent from org.db
-  missing_genes <- rownames(bbc_obj2_rowdata)[!rownames(bbc_obj2_rowdata) %in%
-                                                names(gene_syms)]
-  names(missing_genes) <- missing_genes
+  # Biomart
+  ensembl <- biomaRt::useMart("ensembl")
+  ensembl <- biomaRt::useDataset("mmusculus_gene_ensembl", mart=ensembl)
+  ens_2_sym <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                                "external_gene_name"),
+                                 mart = ensembl)
 
-  gene_syms_df <- data.frame(symbols = c(gene_syms,
-                                         rep(NA, length(missing_genes))),
-                             stringsAsFactors = FALSE)
+  # Make NA if there are multiple possible symbols
+  ## Find Ensembl IDs with multiple symbols
+  ens_w_multi_sym <- unique(ens_2_sym[duplicated(ens_2_sym$ensembl_gene_id),
+                                         "ensembl_gene_id", drop=TRUE])
+  ## Remove Ensembl IDs with multiple symbols
+  ens_2_sym <- ens_2_sym[!ens_2_sym$ensembl_gene_id %in% ens_w_multi_sym, ]
 
-  rownames(gene_syms_df) <- c(names(gene_syms), names(missing_genes))
+  gene_syms_BM <- ens_2_sym$external_gene_name
+  names(gene_syms_BM) <- ens_2_sym$ensembl_gene_id
 
-  # replace NAs with Ensembl ID
-  gene_syms_df$symbols <- ifelse(is.na(gene_syms_df$symbols),
-                                 rownames(gene_syms_df), gene_syms_df$symbols)
-
-  # concatenate gene symbols with Ensembl IDs
-  gene_syms_df$concat_sym <- paste0(gene_syms_df$symbols, "_",
-                                    rownames(gene_syms_df))
-
-  # match gene order
-  stopifnot(all(rownames(bbc_obj2_rowdata) %in% rownames(gene_syms_df)))
-  gene_syms_df <- gene_syms_df[rownames(bbc_obj2_rowdata), ]
-
-  # test non-uniquified symbols correct
-  expect_equivalent(bbc_obj2_rowdata[!bbc_obj2_rowdata_uniquified, "uniq_syms"],
-                    gene_syms_df[!bbc_obj2_rowdata_uniquified, "symbols"])
-
-  # test uniquified symbols correct
-  expect_equivalent(bbc_obj2_rowdata[bbc_obj2_rowdata_uniquified, "uniq_syms"],
-                    gene_syms_df[bbc_obj2_rowdata_uniquified, "concat_sym"])
-
-  # test uniquified symbols are duplicated
-  expect_true(all(table(gene_syms_df[bbc_obj2_rowdata_uniquified, "symbols"]) > 1))
+  test_gene_syms(ens2sym(bbc_obj, BMdataset="mmusculus_gene_ensembl"),
+                 gene_syms_BM)
 })
 
 
