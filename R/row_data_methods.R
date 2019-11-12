@@ -88,27 +88,70 @@ ens2sym <- function(x, orgdb) {
 #' @param x A BbcSE object.
 #' @param orgdb A OrgDb object. Download the annotations for your species from
 #'   'http://bioconductor.org/packages/release/BiocViews.html#___OrgDb'
+#' @param BMdataset character. The name of the BM dataset you want to use. Try to
+#'   use 'bbcRNA::searchBM("species_name")' to find the appropriate dataset if
+#'   needed.
 #' @return A BbcSE object.
 #' @export
 #' @importFrom AnnotationDbi keys mapIds
-ens2entrez <- function(x, orgdb) {
+#' @importFrom biomaRt getBM useMart useDataset listDatasets
+ens2entrez <- function(x, orgdb, BMdataset="") {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
 
-  # get Ensembl IDs present in the OrgDb
-  ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
+  if(BMdataset==""){
+    message("Using OrgDb.")
+    if(!"ENSEMBL" %in% keytypes(org.Ss.eg.db)){
+      stop("This org.db does not have Ensembl IDs. Use biomart (set useBM=TRUE).")
+    }
+    # get Ensembl IDs present in the OrgDb
+    ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
 
-  # keep only genes present in BbcSE object
-  ens_genes <- ens_genes[ens_genes %in% rownames(x)]
+    # keep only genes present in BbcSE object
+    ens_genes <- ens_genes[ens_genes %in% rownames(x)]
 
-  entrez_ids <- AnnotationDbi::mapIds(orgdb,
-                                     keys = ens_genes,
-                                     column = "ENTREZID",
-                                     keytype = "ENSEMBL",
-                                     multiVals = "first")
+    # get entrez ids
+    entrez_ids <- AnnotationDbi::mapIds(orgdb,
+                                        keys = ens_genes,
+                                        column = "ENTREZID",
+                                        keytype = "ENSEMBL",
+                                        multiVals = "first")
 
-  stopifnot(identical(length(ens_genes), length(entrez_ids)))
+    stopifnot(identical(length(ens_genes), length(entrez_ids)))
 
-  names(entrez_ids) <- ens_genes
+    #names(entrez_ids) <- ens_genes
+
+  } else {
+    # bbc_obj <- ens2sym(bbc_obj, org.Ss.eg.db)
+
+    # select mart to use
+    ensembl <- biomaRt::useMart("ensembl")
+
+    # make sure dataset exists and print out version
+    ensembl_datasets <- biomaRt::listDatasets(mart=ensembl)
+    ensembl_dataset_to_use <- ensembl_datasets[ensembl_datasets$dataset==BMdataset, ]
+    if(identical(nrow(ensembl_dataset_to_use), 0)){
+      stop("BM dataset does not exist.")
+    } else{
+      stopifnot(nrow(ensembl_dataset_to_use) == 1) # make sure only one matching dataset
+    }
+    message(paste0("Using Biomart. Dataset version: ", ensembl_dataset_to_use$version))
+
+    # get the dataset from BM
+    ensembl <- biomaRt::useDataset(BMdataset, mart=ensembl)
+
+    #ens_2_symbol <- biomaRt::getBM(attributes = c("ensembl_gene_id", "external_gene_name"), mart = ensembl)
+    ens_2_entrez <- biomaRt::getBM(attributes = c("ensembl_gene_id", "entrezgene_id"), mart = ensembl)
+
+    # keep only genes present in BbcSE object
+    ens_2_entrez <- ens_2_entrez[ens_2_entrez$ensembl_gene_id %in% rownames(x)]
+
+    # take the first match if there are multiple matches
+    ens_2_entrez[!duplicated(ens_2_entrez$ensembl_gene_id), ]
+
+    entrez_ids <- ens_2_entrez$entrezgene_id
+    names(entrez_ids) <- ens_2_entrez$ensembl_gene_id
+    #ens_2_symbol <- dplyr::rename(ens_2_symbol, ens_gene = ensembl_gene_id)
+  }
 
   # remove Entrez genes that match more than one Ensembl gene
   dup_genes <- unique(entrez_ids[duplicated(entrez_ids)])
@@ -122,8 +165,8 @@ ens2entrez <- function(x, orgdb) {
                  nrow(x),
                  " total genes"))
 
-  # genes in the BbcSE object absent from OrgDb or removed due to more than one
-  # Ensembl match
+  # genes in the BbcSE object absent from OrgDb/Biomart or removed due to more
+  # than one Ensembl match
   missing_genes <- rownames(x)[!rownames(x) %in% names(entrez_ids)]
   names(missing_genes) <- missing_genes # store the ensembl ID as names
   missing_genes[1:length(missing_genes)] <- NA # convert the ensembl IDs to NAs
@@ -138,5 +181,30 @@ ens2entrez <- function(x, orgdb) {
 
   return(x)
 
+}
+
+###-----------------------------------------------------------------------------
+
+#' Search biomart datasets with keyword
+#'
+#' Search biomart datasets with keyword
+#'
+#' @param regex regex to search for. Perl style.
+#' @export
+#' @importFrom biomaRt listDatasets
+searchBM <- function(keyword){
+  ensembl <- useMart("ensembl")
+
+  bm_datasets <- biomaRt::listDatasets(ensembl)
+
+  cols_w_keyword <- grep(keyword, bm_datasets, perl = TRUE, ignore.case = TRUE)
+  rows_w_keyword_list <- lapply(cols_w_keyword, function(x){
+    grep(keyword, bm_datasets[[x]], perl = TRUE, ignore.case = TRUE)
+  })
+  rows_w_keyword <- unique(do.call(c, rows_w_keyword_list))
+  if(length(rows_w_keyword) == 0){
+    stop("Keyword not found.")
+  }
+  return(bm_datasets[rows_w_keyword, ])
 }
 

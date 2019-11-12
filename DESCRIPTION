@@ -47,7 +47,8 @@ Imports:
     RColorBrewer (>= 1.1),
     ComplexHeatmap (>= 2.0),
     vegan (>= 2.5),
-    circlize (>= 0.4)
+    circlize (>= 0.4),
+    biomaRt (>= 2.40)
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.6)
