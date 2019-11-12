@@ -54,7 +54,7 @@ setGeneric("findDEGs", function(x, ...)
 #' Run GSEA
 #'
 #'
-#' @param x A BbcSE object or a DGEList or a DESeqDataSet.
+#' @param x A BbcSE object or a dataframe.
 #' @param de_pkg "edger" or "deseq2". Only used if x is a BbcSE
 #' @param gene_set one of "kegg", "reactome", "H", "C1", "C2", "C3", "C4", "C5",
 #'   "C6", "C7"
@@ -96,4 +96,39 @@ setGeneric("run_gsea", function(x, ...)
 #' @export
 setGeneric("shorten_desc", function(x, max_len)
   standardGeneric("shorten_desc")
+)
+
+###-----------------------------------------------------------------------------
+#' Run hypergeometric test
+#'
+#' Run hypergeometric test
+#'
+#'
+#' @param x A BbcSE object.
+#' @param de_pkg "edger" or "deseq2". Only used if x is a BbcSE
+#' @param gene_set one of "kegg", "reactome", "H", "C1", "C2", "C3", "C4", "C5",
+#'   "C6", "C7"
+#' @param orgDb OrgDB object for your organism
+#' @param organism For compatibility with dowstream tools, the organism is
+#'   specified differently depending on the desired gene set. For KEGG, use the
+#'   three-letter code according to
+#'   http://www.genome.jp/kegg/catalog/org_list.html. For Reactome, possible
+#'   values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘yeast’ and
+#'   ‘zebrafish’. For msigdb, run 'msigdbr::msigdbr_show_species()'.
+#' @param contrast_names character value or vector for the contrast(s) of
+#'   interest. See name(de_results(edger(x))). If left to default "" value then
+#'   all contrasts will be processed.
+#' @param split_by_lfc_dir logical. Whether DE genes should be split into up and
+#'   down-regulated
+#' @param padj_cutoff numeric. Cutoff for adjusted PValue for DE.
+#' @param lfc_cutoff numeric. Cutoff for LFC (absolute value) for DE.
+#' @param ... Passed to enrichKEGG, enrichGO, enrichPathway or enricher. See
+#'   each function for possible arguments.
+#' @return A list of gseaResult objects or one gseaResult object
+#' @seealso \code{\link[clusterProfiler]{enrichKEGG}
+#'   \link[clusterProfiler]{enrichGO} \link[ReactomePA]{enrichPathway}
+#'   \link[clusterProfiler]{enricher}}
+#' @export
+setGeneric("run_gsea", function(x, ...)
+  standardGeneric("run_gsea")
 )

@@ -167,7 +167,8 @@ setMethod("run_gsea", "BbcSE", function(x, de_pkg="edger",
 #' bbcRNA object but not in the DE analysis, then it is inferred to be a lowly
 #' expressed gene. Includes all rowData.
 #'
-#' @param gseaResults A list of ClusterProfiler::gseaResult objects outputted by 'run_gsea'.
+#' @param gseaResults A list of ClusterProfiler::gseaResult objects outputted by
+#'   'run_gsea'.
 #' @param bbcRNA  bbcRNA object
 #' @param de_pkg "edger" or "deseq2"
 #' @return A dataframe of missing genes.
@@ -256,3 +257,153 @@ setMethod("shorten_desc", "gseaResult", function(x, max_len=50) {
 })
 
 ###-----------------------------------------------------------------------------
+
+#' @describeIn run_hypergeometric x is a dataframe with gene name (entrez) as
+#'   col1, log2FC as col2 and adjusted PValue as col3. Function will filter by
+#'   LFC and PValue for DE genes, and optionally will split the DE genes into up
+#'   and down-regulated based on LFC. The gene universe are all the genes in the
+#'   dataframe. Returns a list of enrichResults for up and down-regulaed genes
+#'   or just all the DE genes without regard for direction.
+#'
+#' @importFrom clusterProfiler enrichKEGG enrichGO enricher
+#' @importFrom ReactomePA enrichPathway
+#' @importFrom DOSE setReadable
+#' @importFrom msigdbr msigdbr
+#' @export
+setMethod("run_hypergeometric", "data.frame",
+          function(x, gene_set="reactome", organism, orgDb,
+                   split_by_lfc_dir=TRUE, padj_cutoff=0.05, lfc_cutoff=0, ...) {
+
+  ellipses_forbidden_args <- c("geneList", "keyType", "TERM2GENE", "TERM2NAME")
+  args <- list(...)
+  args_forbidden <- args %in% ellipses_forbidden_args
+  if(any(args_forbidden)) {
+    stop(paste0("args forbidden: ", paste0(unlist(args[args_forbidden]),
+                                           collapse = " ")
+    ))
+  }
+
+  # get the gene universe (all genes in the dataframe)
+  gene_universe <- x[[1]]
+
+  # find absolute value of the user-inputted LFC. Accounts for if user inputs a
+  # negative LFC.
+  lfc_cutoff <- abs(lfc_cutoff)
+
+  # get entrez ids for DE genes, splitting by LFC direction if needed
+  if(isTRUE(split_by_lfc_dir)){
+    up_genes <- x[(x[[3]] < padj_cutoff) & (x[[2]] > lfc_cutoff),
+                  1, drop=TRUE]
+    down_genes <- x[(x[[3]] < padj_cutoff) & (x[[2]] < -lfc_cutoff),
+                    1, drop=TRUE]
+    de_genes <- list(up=up_genes, down=down_genes)
+
+  } else{
+    # filter for lfc using abs(LFC)
+    de_genes <- x[(x[[3]] < padj_cutoff) &
+                    (abs(x[[2]]) > lfc_cutoff), 1, drop=TRUE]
+
+    de_genes <- list(no_dir=de_genes)
+  }
+
+  if (identical("reactome", gene_set)){
+
+    enrich_res <- lapply(de_genes, function(gene_list){
+      ReactomePA::enrichPathway(gene = gene_list,
+                                organism = organism,
+                                universe = gene_universe,
+                                ...)
+    })
+
+
+  } else if (identical("kegg", gene_set)){
+    enrich_res <- lapply(de_genes, function(gene_list){
+      clusterProfiler::enrichKEGG(gene = gene_list,
+                                  organism = organism,
+                                  universe = gene_universe,
+                                  ...)
+    })
+
+  } else if (gene_set %in% c("H", "C1", "C2", "C3", "C4", "C5", "C6", "C7")){
+    msigdbr_cat <- gene_set
+    msigdbr_gene_set <- msigdbr::msigdbr(species = organism,
+                                         category = gene_set)
+
+    # convert to clusterprofiler friendly format
+    msigdbr_clusterprofiler <- msigdbr_gene_set[, c("gs_name", "entrez_gene")] %>%
+      as.data.frame(stringsAsFactors = FALSE)
+
+    enrich_res <- lapply(de_genes, function(gene_list){
+      clusterProfiler::enricher(gene = gene_list,
+                                TERM2GENE = msigdbr_clusterprofiler,
+                                universe = gene_universe,
+                                ...)
+    })
+
+  } else{
+    stop("Invalid value for gene_set parameter. See ?run_hypergeometric.")
+  }
+
+  enrich_res <- lapply(enrich_res, function(y){
+    DOSE::setReadable(enrich_res, OrgDb = orgDb, keyType = "ENTREZID")
+  })
+
+  enrich_res
+})
+
+###-----------------------------------------------------------------------------
+#' @describeIn run_hypergeometric Extract out the gene, LFC and adjusted PValue.
+#'   Run run_hypergeometric for each result object (contrast).
+#' @export
+setMethod("run_hypergeometric", "BbcSE", function(x, de_pkg="edger",
+                                        contrast_names = "", ...) {
+  if(!"entrez_ids" %in% colnames(rowData(x))) {
+    stop("Please run ens2entrez first to get 'entrez_ids' column in rowData")
+  }
+
+  if(identical("edger", de_pkg)){
+    # get all the contrasts
+    edger_results <- de_results(edger(x))[-1] # first element is a DGEGLM object
+
+    if(identical(contrast_names, "")){
+      edger_results_names <- names(edger_results)
+    } else {
+      if(!all(contrast_names %in% names(edger_results))){
+        stop("Not all contrast names found.")
+      }
+      # get requested contrasts
+      edger_results <- de_results(edger(x))[contrast_names]
+      edger_results_names <- contrast_names
+    }
+
+    enrich_results <- lapply(edger_results_names, function(edger_res_name){
+      dge_table <- edgeR::topTags(edger_results[[edger_res_name]],
+                                  n = nrow(dgelist(edger(x)))) %>%
+        as.data.frame(stringsAsFactors = FALSE)
+      dge_table$entrez_ids <- rowData(x)$entrez_ids[rownames(dge_table)]
+
+      # remove genes with no Entrez match (is.na)
+      rows_b4_filt <- nrow(filt_dge_table)
+      filt_dge_table <- filt_dge_table[!is.na(filt_dge_table$entrez_ids), ]
+      diff <- rows_b4_filt - nrow(filt_dge_table)
+      message(paste0(edger_res_name, ": removed ",
+                     rows_b4_filt - nrow(filt_dge_table),
+                     " genes out of ", rows_b4_filt,
+                     " due to no Entrez gene match"))
+
+      message(paste0(edger_res_name, ": total genes remaining is ",
+                     nrow(filt_dge_table)))
+
+      # get entrezgene, LFC and adjusted PValue
+      genes_lfc_and_adjPval <- filt_dge_table[, c("entrez_ids", "logFC", "FDR")]
+
+      # run the data.frame method of 'run_gsea'
+      run_hypergeometric(x = genes_lfc_and_adjPval, ...)
+    })
+
+    names(enrich_results) <- edger_results_names
+
+  }
+
+  return(enrich_results)
+})
