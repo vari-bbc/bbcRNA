@@ -100,8 +100,8 @@ ens2entrez <- function(x, orgdb, BMdataset="") {
 
   if(BMdataset==""){
     message("Using OrgDb.")
-    if(!"ENSEMBL" %in% keytypes(org.Ss.eg.db)){
-      stop("This org.db does not have Ensembl IDs. Use biomart (set useBM=TRUE).")
+    if(!"ENSEMBL" %in% keytypes(orgdb)){
+      stop("This org.db does not have Ensembl IDs. Use biomart (set BMdataset option).")
     }
     # get Ensembl IDs present in the OrgDb
     ens_genes <-  AnnotationDbi::keys(orgdb, keytype="ENSEMBL")
@@ -121,8 +121,6 @@ ens2entrez <- function(x, orgdb, BMdataset="") {
     #names(entrez_ids) <- ens_genes
 
   } else {
-    # bbc_obj <- ens2sym(bbc_obj, org.Ss.eg.db)
-
     # select mart to use
     ensembl <- biomaRt::useMart("ensembl")
 
@@ -143,18 +141,24 @@ ens2entrez <- function(x, orgdb, BMdataset="") {
     ens_2_entrez <- biomaRt::getBM(attributes = c("ensembl_gene_id", "entrezgene_id"), mart = ensembl)
 
     # keep only genes present in BbcSE object
-    ens_2_entrez <- ens_2_entrez[ens_2_entrez$ensembl_gene_id %in% rownames(x)]
+    ens_2_entrez <- ens_2_entrez[ens_2_entrez$ensembl_gene_id %in% rownames(x), ]
 
-    # take the first match if there are multiple matches
-    ens_2_entrez[!duplicated(ens_2_entrez$ensembl_gene_id), ]
+    # take the first match if there are multiple Entrez matches for a particular Ensembl ID
+    ens_2_entrez <- ens_2_entrez[!duplicated(ens_2_entrez$ensembl_gene_id), ]
 
     entrez_ids <- ens_2_entrez$entrezgene_id
     names(entrez_ids) <- ens_2_entrez$ensembl_gene_id
-    #ens_2_symbol <- dplyr::rename(ens_2_symbol, ens_gene = ensembl_gene_id)
   }
+
+  message(paste0(sum(!rownames(x) %in% names(entrez_ids)),
+                 " Ensembl IDs not in the database."))
 
   # remove Entrez genes that match more than one Ensembl gene
   dup_genes <- unique(entrez_ids[duplicated(entrez_ids)])
+
+  message(paste0(sum(entrez_ids %in% dup_genes),
+                 " Ensembl IDs matching the same Entrez ID as another Ensembl ID."))
+
   entrez_ids <- entrez_ids[!entrez_ids %in% dup_genes]
 
   # make sure entrez ids unique

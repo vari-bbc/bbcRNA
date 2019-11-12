@@ -5,6 +5,7 @@ library(enrichplot)
 library(ggplot2)
 library(dplyr)
 library(stringr)
+#library(org.Ss.eg.db) # for testing biomart functionality for ens2entrz and ens2sym
 
 # directory containing external data
 ext_data_dir <- system.file("extdata/tcell", package = "bbcRNA")

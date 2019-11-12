@@ -50,17 +50,41 @@ test_that("ens2sym works", {
   expect_true(all(table(gene_syms_df[bbc_obj2_rowdata_uniquified, "symbols"]) > 1))
 })
 
+
+###-----------------------------------------------------------------------------
+
 test_that("ens2entrez works", {
-  bbc_obj2 <- ens2entrez(bbc_obj, org.Mm.eg.db)
-  bbc_obj2_rowdata <- rowData(bbc_obj2)
-  bbc_obj2_rowdata_isna <- rownames(bbc_obj2_rowdata)[is.na(bbc_obj2_rowdata$entrez_ids)]
-  bbc_obj2_rowdata_notna <- rownames(bbc_obj2_rowdata)[!is.na(bbc_obj2_rowdata$entrez_ids)]
+  test_entrez_names <- function(bbc, ens2ent){
 
-  # Ensembl IDs in the OrgDb
+    bbc_rowdata <- rowData(bbc)
+
+    # test non-na entrez ids correct
+    nonna_genes <- bbc_rowdata[!is.na(bbc_rowdata$entrez_ids), "entrez_ids", drop=FALSE]
+    expect_equivalent(nonna_genes$entrez_ids, ens2ent[rownames(nonna_genes)])
+
+    # test that all non-NA Entrez IDs are unique
+    expect_true(length(unique(nonna_genes)) == length(nonna_genes))
+
+    # test that Entrez IDs with more than one Ensembl match were converted to NAs
+    ens2ent_in_bbc <- ens2ent[names(ens2ent) %in% rownames(bbc)]
+    dup_ens2ent <- ens2ent_in_bbc[duplicated(ens2ent_in_bbc)]
+    ens_genes_w_dup_entrez <- names(ens2ent_in_bbc[ens2ent_in_bbc %in% dup_ens2ent])
+    bbc_rowdata_dup <- bbc_rowdata[ens_genes_w_dup_entrez, "entrez_ids"]
+    expect_true(all(is.na(bbc_rowdata_dup)))
+
+    # test that NAs are either Entrez IDs with matches to more than one ensembl
+    # gene or were absent from the database
+    na_genes <- bbc_rowdata[is.na(bbc_rowdata$entrez_ids), "entrez_ids",
+                                 drop=FALSE]
+    expect_equivalent(nrow(na_genes),
+                      sum(rownames(bbc_rowdata) %in% ens_genes_w_dup_entrez |
+                            !rownames(bbc_rowdata) %in% names(ens2ent_in_bbc)))
+
+    invisible()
+  }
+
+  # OrgDb
   ens_genes <-  AnnotationDbi::keys(org.Mm.eg.db, keytype="ENSEMBL")
-
-  # keep only Ensembl IDs present in the BbcSE object
-  ens_genes <- ens_genes[ens_genes %in% rownames(bbc_obj)]
 
   entrez_ids <- AnnotationDbi::mapIds(org.Mm.eg.db,
                                       keys = ens_genes,
@@ -68,25 +92,25 @@ test_that("ens2entrez works", {
                                       keytype = "ENSEMBL",
                                       multiVals = "first")
 
-  dup_entrez_ids <- entrez_ids[duplicated(entrez_ids)]
-  ens_genes_w_dup_entrez <- names(entrez_ids[entrez_ids %in% dup_entrez_ids])
+  test_entrez_names(ens2entrez(bbc_obj, org.Mm.eg.db), entrez_ids)
 
-  # test non-na entrez ids correct
-  expect_equivalent(bbc_obj2_rowdata[bbc_obj2_rowdata_notna, "entrez_ids"],
-                    entrez_ids[bbc_obj2_rowdata_notna])
+  # BioMart
+  ensembl <- biomaRt::useMart("ensembl")
+  ensembl <- biomaRt::useDataset("mmusculus_gene_ensembl", mart=ensembl)
+  ens_2_entrez <- biomaRt::getBM(attributes = c("ensembl_gene_id", "entrezgene_id"), mart = ensembl)
 
-  # test that Entrez IDs with more than one Ensembl match were converted to NAs
-  expect_true(all(is.na(bbc_obj2_rowdata[ens_genes_w_dup_entrez, "entrez_ids"])))
+  # take the first match if there are multiple Entrez matches for a particular Ensembl ID
+  ens_2_entrez <- ens_2_entrez[!duplicated(ens_2_entrez$ensembl_gene_id), ]
 
-  # test that all Entrez IDs are unique
-  nonna_entrez <- bbc_obj2_rowdata[bbc_obj2_rowdata_notna, "entrez_ids"]
-  expect_true(length(unique(nonna_entrez)) == length(nonna_entrez))
+  entrez_ids_BM <- as.character(ens_2_entrez$entrezgene_id)
+  names(entrez_ids_BM) <- ens_2_entrez$ensembl_gene_id
 
-  # test that Entrez ID with unique Ensembl ID matches that were NA are absent
-  # from org db
-  nondup_na_entrez <- bbc_obj2_rowdata[
-    !rownames(bbc_obj2_rowdata) %in% ens_genes_w_dup_entrez &
-      is.na(bbc_obj2_rowdata$entrez_ids),
-    "entrez_ids", drop=FALSE]
-  expect_true(all(!rownames(nondup_na_entrez) %in% names(entrez_ids)))
+  test_entrez_names(ens2entrez(bbc_obj, BMdataset="mmusculus_gene_ensembl"),
+                    entrez_ids_BM)
+
 })
+
+###-----------------------------------------------------------------------------
+
+
+
