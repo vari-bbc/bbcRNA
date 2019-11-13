@@ -129,6 +129,6 @@ setGeneric("shorten_desc", function(x, max_len)
 #'   \link[clusterProfiler]{enrichGO} \link[ReactomePA]{enrichPathway}
 #'   \link[clusterProfiler]{enricher}}
 #' @export
-setGeneric("run_gsea", function(x, ...)
-  standardGeneric("run_gsea")
+setGeneric("run_hypergeometric", function(x, ...)
+  standardGeneric("run_hypergeometric")
 )

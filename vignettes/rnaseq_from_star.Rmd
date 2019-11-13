@@ -350,7 +350,24 @@ enrichplot::dotplot(shorten_desc(kegg_gsea_results_list[[1]], 30), showCategory=
 #gseaplot(kegg_gsea_results_list[[1]], geneSetID = "mmu05200", by="runningScore")
 ```
 
+# Hypergeometric test -- KEGG
+```{r hyper_kegg}
+kegg_hyper_results_list <- run_hypergeometric(x = bbc_obj,
+                                de_pkg = "edger",
+                                gene_set = "kegg",
+                                orgDb = org.Mm.eg.db,
+                                organism = "mmu")
 
+names(kegg_hyper_results_list)
+```
+
+```{r plot_hyper_kegg}
+res_idx <- 1
+enrichplot::dotplot(kegg_hyper_results_list[[res_idx]], showCategory=10, 
+                    title=paste0("Top gene sets -- ", names(kegg_hyper_results_list)[res_idx]))
+
+#gseaplot(kegg_gsea_results_list[[1]], geneSetID = "mmu05200", by="runningScore")
+```
 
 # Session info
 ```{r}

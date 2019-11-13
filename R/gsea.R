@@ -345,7 +345,7 @@ setMethod("run_hypergeometric", "data.frame",
   }
 
   enrich_res <- lapply(enrich_res, function(y){
-    DOSE::setReadable(enrich_res, OrgDb = orgDb, keyType = "ENTREZID")
+    DOSE::setReadable(y, OrgDb = orgDb, keyType = "ENTREZID")
   })
 
   enrich_res
@@ -356,7 +356,8 @@ setMethod("run_hypergeometric", "data.frame",
 #'   Run run_hypergeometric for each result object (contrast).
 #' @export
 setMethod("run_hypergeometric", "BbcSE", function(x, de_pkg="edger",
-                                        contrast_names = "", ...) {
+                                        contrast_names = "", split_by_lfc_dir=TRUE,
+                                        ...) {
   if(!"entrez_ids" %in% colnames(rowData(x))) {
     stop("Please run ens2entrez first to get 'entrez_ids' column in rowData")
   }
@@ -383,8 +384,8 @@ setMethod("run_hypergeometric", "BbcSE", function(x, de_pkg="edger",
       dge_table$entrez_ids <- rowData(x)$entrez_ids[rownames(dge_table)]
 
       # remove genes with no Entrez match (is.na)
-      rows_b4_filt <- nrow(filt_dge_table)
-      filt_dge_table <- filt_dge_table[!is.na(filt_dge_table$entrez_ids), ]
+      rows_b4_filt <- nrow(dge_table)
+      filt_dge_table <- dge_table[!is.na(dge_table$entrez_ids), ]
       diff <- rows_b4_filt - nrow(filt_dge_table)
       message(paste0(edger_res_name, ": removed ",
                      rows_b4_filt - nrow(filt_dge_table),
@@ -398,10 +399,19 @@ setMethod("run_hypergeometric", "BbcSE", function(x, de_pkg="edger",
       genes_lfc_and_adjPval <- filt_dge_table[, c("entrez_ids", "logFC", "FDR")]
 
       # run the data.frame method of 'run_gsea'
-      run_hypergeometric(x = genes_lfc_and_adjPval, ...)
+      run_hypergeometric(x = genes_lfc_and_adjPval, split_by_lfc_dir=split_by_lfc_dir,
+                         ...)
     })
 
-    names(enrich_results) <- edger_results_names
+    enrich_results <- do.call(c, enrich_results)
+    if(isTRUE(split_by_lfc_dir)){
+      up_and_down_names <- lapply(edger_results_names, function(res_name){
+        c(paste0(res_name,"_UP"), paste0(res_name,"_DWN"))
+      })
+      names(enrich_results) <- do.call(c, up_and_down_names)
+    } else{
+      names(enrich_results) <- edger_results_names
+    }
 
   }
 

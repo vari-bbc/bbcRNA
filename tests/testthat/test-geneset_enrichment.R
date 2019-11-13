@@ -36,3 +36,42 @@ test_that("find_missing_in_gseaResult results consistent with run_gsea messages 
   })
 
 })
+
+test_that("run_hypergeometric retruns correct results", {
+  contrast_DGELRT <- bbc_obj_glmQLFTest@edger@de_results[[2]] # first element is a DGEGLM
+  contrast_DGELRT_toptags <- edgeR::topTags(contrast_DGELRT,
+                                            n = nrow(contrast_DGELRT$table)) %>%
+    as.data.frame(stringsAsFactors=TRUE)
+  all_ens <- rownames(contrast_DGELRT_toptags)
+  all_entrez <- rowData(bbc_obj_glmQLFTest)[all_ens, "entrez_ids", drop=TRUE]
+  all_entrez <- na.omit(all_entrez)
+
+  sig_up_ens <- rownames(contrast_DGELRT_toptags)[contrast_DGELRT_toptags$FDR < 0.05 & contrast_DGELRT_toptags$logFC > 0]
+  sig_up_entrez <- rowData(bbc_obj_glmQLFTest)[sig_up_ens, "entrez_ids", drop=TRUE]
+  sig_up_entrez <- na.omit(sig_up_entrez)
+
+  sig_down_ens <- rownames(contrast_DGELRT_toptags)[contrast_DGELRT_toptags$FDR < 0.05 & contrast_DGELRT_toptags$logFC < 0]
+  sig_down_entrez <- rowData(bbc_obj_glmQLFTest)[sig_down_ens, "entrez_ids", drop=TRUE]
+  sig_down_entrez <- na.omit(sig_down_entrez)
+
+  # the first element of the results of 'run_hypergeometric' here should be the
+  # enrichment results for the up-regulated genes for the first contrast
+  expect_equivalent(run_hypergeometric(bbc_obj_glmQLFTest, gene_set="kegg",
+                                       organism="mmu", orgDb=org.Mm.eg.db)[[1]],
+                    clusterProfiler::enrichKEGG(gene=sig_up_entrez,
+                                                universe=all_entrez,
+                                                organism="mmu"))
+
+  expect_equivalent(run_hypergeometric(bbc_obj_glmQLFTest, gene_set="kegg",
+                                       organism="mmu", orgDb=org.Mm.eg.db)[[2]],
+                    clusterProfiler::enrichKEGG(gene=sig_down_entrez,
+                                                universe=all_entrez,
+                                                organism="mmu"))
+
+  expect_equivalent(run_hypergeometric(bbc_obj_glmQLFTest, gene_set="reactome",
+                                       organism="mouse", orgDb=org.Mm.eg.db)[[1]],
+                    ReactomePA::enrichPathway(gene=sig_up_entrez,
+                                              universe=all_entrez,
+                                              organism="mouse"))
+
+})

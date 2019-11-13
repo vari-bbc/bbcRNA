@@ -7,7 +7,8 @@
 find_missing_in_gseaResult(gseaResults, bbcRNA, de_pkg = "edger")
 }
 \arguments{
-\item{gseaResults}{A list of ClusterProfiler::gseaResult objects outputted by 'run_gsea'.}
+\item{gseaResults}{A list of ClusterProfiler::gseaResult objects outputted by
+'run_gsea'.}
 
 \item{bbcRNA}{bbcRNA object}
 

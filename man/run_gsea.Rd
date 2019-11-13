@@ -16,7 +16,7 @@ run_gsea(x, ...)
   rank_by = "signed-log10pval", contrast_names = "", ...)
 }
 \arguments{
-\item{x}{A BbcSE object or a DGEList or a DESeqDataSet.}
+\item{x}{A BbcSE object or a dataframe.}
 
 \item{...}{Passed to gseKEGG, GSEA or gsePathway. See each function for
 possible arguments.}
