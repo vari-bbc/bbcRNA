@@ -59,5 +59,6 @@ Suggests:
     enrichplot (>= 1.4),
     org.Mm.eg.db (>= 3.8),
     testthat (>= 2.1.0),
-    covr
+    covr,
+    sva (>= 3.32)
 VignetteBuilder: knitr

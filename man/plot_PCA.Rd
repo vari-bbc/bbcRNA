@@ -4,7 +4,7 @@
 \alias{plot_PCA}
 \title{PCA, screeplot and PERMANOVA test}
 \usage{
-plot_PCA(x, norm_cts_type = "edger",
+plot_PCA(x, norm_cts_type = "edger", assay_name = "norm_log_cpm",
   color_by = colnames(colData(x))[[1]],
   shape_by = colnames(colData(x))[[1]], adonis = TRUE,
   adonis_by = colnames(colData(x))[[1]])
@@ -13,6 +13,9 @@ plot_PCA(x, norm_cts_type = "edger",
 \item{x}{A BbcSE object.}
 
 \item{norm_cts_type}{"edger" or "deseq2"}
+
+\item{assay_name}{Name of assay from the 'norm_cts' slot. Option was
+implemented with the idea of being able to plot batch-corrected data.}
 
 \item{color_by}{colData column to color by for PCA plot}
 
@@ -26,8 +29,9 @@ normalized counts as used for PCA.}
 values; in this case, each variable is tested sequentially using adonis().}
 }
 \value{
-A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
-  of output from vegan::adonis()
+A list containing ggplot objects for 1. PCA 2. scree plot 3.
+  prcomp()$x merged with meta data. Handy if visualizations of >PC2 are
+  needed 4. a list of output from vegan::adonis()
 }
 \description{
 Runs PCA on normalized counts. Makes PCA and scree plots. Tests for

@@ -6,6 +6,8 @@
 #'
 #' @param x A BbcSE object.
 #' @param norm_cts_type "edger" or "deseq2"
+#' @param assay_name Name of assay from the 'norm_cts' slot. Option was
+#'   implemented with the idea of being able to plot batch-corrected data.
 #' @param color_by colData column to color by for PCA plot
 #' @param shape_by colData column to shape by for PCA plot
 #' @param adonis logical for whether vegan::adonis should be run. If TRUE,
@@ -13,8 +15,9 @@
 #'   normalized counts as used for PCA.
 #' @param adonis_by colData column to test using PERMANOVA. May be a vector of
 #'   values; in this case, each variable is tested sequentially using adonis().
-#' @return A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
-#'   of output from vegan::adonis()
+#' @return A list containing ggplot objects for 1. PCA 2. scree plot 3.
+#'   prcomp()$x merged with meta data. Handy if visualizations of >PC2 are
+#'   needed 4. a list of output from vegan::adonis()
 #' @seealso \code{\link[vegan]{adonis}}
 #' @import ggplot2
 #' @importFrom stats prcomp
@@ -24,7 +27,7 @@
 #' @importFrom dplyr left_join
 #' @importFrom vegan adonis vegdist
 #' @export
-plot_PCA <- function(x, norm_cts_type = "edger",
+plot_PCA <- function(x, norm_cts_type = "edger", assay_name="norm_log_cpm",
                      color_by = colnames(colData(x))[[1]],
                      shape_by = colnames(colData(x))[[1]],
                      adonis = TRUE,
@@ -49,7 +52,7 @@ plot_PCA <- function(x, norm_cts_type = "edger",
   }
 
   if (norm_cts_type == "edger"){
-    norm_counts <- assay(norm_cts(edger(x)))
+    norm_counts <- assay(norm_cts(edger(x)), assay_name)
     pca <- prcomp(t(norm_counts))
   } else if (norm_cts_type == "deseq2"){
     # not implemented yet
@@ -87,7 +90,7 @@ plot_PCA <- function(x, norm_cts_type = "edger",
     theme(axis.title.y = element_text(vjust=1),
           plot.margin = unit(c(0,0,0,6), "mm"))
 
-  all_pca_output <- list(pca_plot, var_plot)
+  all_pca_output <- list(pca_plot, var_plot, pr_comps)
 
   if (isTRUE(adonis)){
     # calculate Euclidean distance
@@ -120,7 +123,7 @@ plot_PCA <- function(x, norm_cts_type = "edger",
     pca_plot <- pca_plot + labs(caption = pvals_concat)
 
     # assemble output
-    all_pca_output <- list(pca_plot, var_plot, adonis_out)
+    all_pca_output <- list(pca_plot, var_plot, pr_comps, adonis_out)
   }
 
   all_pca_output
@@ -136,6 +139,9 @@ plot_PCA <- function(x, norm_cts_type = "edger",
 #' @param x A BbcSE object
 #' @param genes gene IDs (rownames)
 #' @param de_method "edger" or "deseq2"
+#' @param assay_name Name of assay from the 'norm_cts' slot. Not compatible with
+#'   grouped=TRUE. Option was implemented with the idea of being able to plot
+#'   batch-corrected data.
 #' @param gene_labels a column name from rowData. Must contain unique values
 #' @param coldata_annot character vector of colData colnames for annotating
 #' @param coldata_split character value of colData colname for splitting
@@ -159,6 +165,7 @@ plot_PCA <- function(x, norm_cts_type = "edger",
 plot_heatmap <- function(x,
                          genes = rownames(x),
                          de_method = "edger",
+                         assay_name = "norm_log_cpm",
                          gene_labels = NULL,
                          coldata_annot = NULL,
                          coldata_split = NULL,
@@ -197,7 +204,7 @@ plot_heatmap <- function(x,
         as.matrix()
 
     } else {
-      expr_mat <- assay(norm_cts(curr_bbcedger), "norm_log_cpm")[genes, , drop=FALSE]
+      expr_mat <- assay(norm_cts(curr_bbcedger), assay_name)[genes, , drop=FALSE]
     }
 
     # convert to zscores (gene-wise) if needed
@@ -431,4 +438,80 @@ plot_pval_distrib <- function(x,
     cowplot::theme_cowplot()
 
   return(pval_plot)
+}
+
+
+###-----------------------------------------------------------------------------
+#' Batch correct normalized counts
+#'
+#' Batch correct normalized counts for visualizations or other downstream non-DE
+#' analysis applications.
+#'
+#' @param x A BbcSE object
+#' @param de_method "edger" or "deseq2"
+#' @param new_assay_name Name of the batch-corrected counts stored in new assay
+#'   in 'norm_cts' slot.
+#' @param correction_method "removeBatchEffect" or "combat"
+#' @param ... passed to batch correction function.
+#' @return A BbcSE object
+#' @importFrom limma removeBatchEffect
+#' @examples
+#' \dontrun{
+#' # Default is limma::removeBatchEffect
+#' bbc_obj_batch <- batch_correct_norm_cts(bbc_obj, batch=colData(bbc_obj)$Rep,
+#' design=model.matrix(~Condition, data=colData(bbc_obj)))
+#'
+#' plot_PCA(bbc_obj_batch, assay_name = "batch_corr", adonis=FALSE,
+#' color_by="Time", shape_by="Rep")
+#'
+#' # Combat is also supported
+#' bbc_obj_batch <- batch_correct_norm_cts(bbc_obj, new_assay_name="combat",
+#' batch=colData(bbc_obj)$Rep, correction_method = "combat", mod =
+#' model.matrix(~Condition, data=colData(bbc_obj)))
+#'
+#' plot_PCA(bbc_obj_batch, assay_name = "combat", adonis=FALSE, color_by="Time",
+#' shape_by="Rep")
+#' }
+#' @seealso [limma] removeBatchEffect [sva] ComBat
+#' @export
+batch_correct_norm_cts <- function(x,
+                              de_method = "edger",
+                              correction_method = "removeBatchEffect",
+                              new_assay_name = "batch_corr",
+                              ...) {
+
+  if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
+
+  if (identical("combat", correction_method) &
+      !requireNamespace("sva", quietly = TRUE)) {
+    stop("Package \"sva\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if(identical("edger", de_method)){
+    # should never be triggered but this is a fail-safe that allows colData()
+    # columns to be safely used as batch factors.
+    if(!identical(rownames(colData(x)), colnames(x@edger@norm_cts))){
+      stop("Samples in BbcSE meta data do not match those in 'norm_cts' slot.")
+    }
+
+    emat <- assay(x@edger@norm_cts, "norm_log_cpm")
+
+    if(identical("removeBatchEffect", correction_method)){
+      if(length(list(...)) == 0) stop("See ?limma::removeBatchEffect for arguments to perform batch correction.")
+      assay(x@edger@norm_cts, new_assay_name) <-
+        limma::removeBatchEffect(emat, ...)
+    } else if (identical("combat", correction_method)){
+
+      if(length(list(...)) == 0) stop("See ?sva::ComBat for arguments to perform batch correction.")
+      assay(x@edger@norm_cts, new_assay_name) <- sva::ComBat(dat=emat, ...)
+    }
+    else{
+      stop("Unsupported 'correction_method'.")
+    }
+  } else{
+    stop("Invalid 'de_method'.")
+  }
+
+  return(x)
 }

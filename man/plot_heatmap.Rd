@@ -5,9 +5,10 @@
 \title{Plot heatmap}
 \usage{
 plot_heatmap(x, genes = rownames(x), de_method = "edger",
-  gene_labels = NULL, coldata_annot = NULL, coldata_split = NULL,
-  rowdata_annot = NULL, rowdata_split = NULL, clust_rows = TRUE,
-  clust_cols = TRUE, zscores = FALSE, grouped = FALSE)
+  assay_name = "norm_log_cpm", gene_labels = NULL,
+  coldata_annot = NULL, coldata_split = NULL, rowdata_annot = NULL,
+  rowdata_split = NULL, clust_rows = TRUE, clust_cols = TRUE,
+  zscores = FALSE, grouped = FALSE)
 }
 \arguments{
 \item{x}{A BbcSE object}
@@ -15,6 +16,10 @@ plot_heatmap(x, genes = rownames(x), de_method = "edger",
 \item{genes}{gene IDs (rownames)}
 
 \item{de_method}{"edger" or "deseq2"}
+
+\item{assay_name}{Name of assay from the 'norm_cts' slot. Not compatible with
+grouped=TRUE. Option was implemented with the idea of being able to plot
+batch-corrected data.}
 
 \item{gene_labels}{a column name from rowData. Must contain unique values}
 
