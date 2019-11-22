@@ -68,6 +68,24 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 
   # process files
   counts_list <- lapply(counts_list, function(x){
+    # guess correct strand selection
+    nofeat_cts <- x[x$gene_id=="N_noFeature", , drop=FALSE]
+
+    # heuristic method to guess strand
+    if(nofeat_cts$str_r1 < nofeat_cts$str_r2){
+      strand_guess <- 2
+    } else{
+      strand_guess <- 3
+    }
+    if(nofeat_cts$unstr < (0.5*nofeat_cts[, strand_guess])){
+      strand_guess <- 1
+    }
+    if(strand_guess != column){
+      warning(paste0("Guessed strandedness was ", colnames(x)[1+strand_guess],
+                     " (column ", strand_guess, ").\n"),
+              paste0(capture.output(print(as.data.frame(x[1:6, ]))), collapse = "\n"))
+    }
+
 
     df <- x %>%
       dplyr::filter(!.data$gene_id %in% c("N_unmapped",
