@@ -78,7 +78,7 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
     } else{
       strand_guess <- 3
     }
-    if(nofeat_cts$unstr < (0.5*nofeat_cts[, strand_guess])){
+    if(nofeat_cts$unstr < (0.5*nofeat_cts[, 1+strand_guess])){
       strand_guess <- 1
     }
     if(strand_guess != column){
