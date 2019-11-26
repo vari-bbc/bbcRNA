@@ -515,3 +515,76 @@ batch_correct_norm_cts <- function(x,
 
   return(x)
 }
+
+###-----------------------------------------------------------------------------
+#' Volcano plot
+#'
+#' Plot volcano plots for contrasts in edger or deseq2 slot of BbcSE object
+#'
+#' @param x A BbcSE object
+#' @param de_method "edger" or "deseq2"
+#' @param gene_name "gene_symbol" or "ensembl_id". Corresponds to columns in
+#'   'bbcRNA::get_de_table()' output
+#' @param pval_name "PValue" or "FDR". Corresponds to columns in
+#'  'bbcRNA::get_de_table()' output
+#' @param contrast_names character value or vector for the contrast(s) of
+#'   interest. See name(de_results(edger(x))). If not specified, then all
+#'   contrasts will be processed.
+#' @param pvalCutoff "Cut-off for statistical significance. A horizontal line
+#'   will be drawn at -log10(pCutoff)." See EnhancedVolcano documentation.
+#' @param y_title Y axis label
+#' @param ... Passed to EnhancedVolcano::EnhancedVolcano
+#' @return A list of ggplot objects
+#' @importFrom EnhancedVolcano EnhancedVolcano
+#' @seealso \code{\link[EnhancedVolcano]{EnhancedVolcano}}
+#' @export
+plot_volcano <- function(x,
+                         de_method = "edger",
+                         gene_name = "gene_symbol",
+                         pval_name = "FDR",
+                         pvalCutoff = 0.05,
+                         y_title = paste0("-Log10 (", pval_name, ")"),
+                         contrast_names,
+                         ...) {
+
+  if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
+
+  de_table_list <- get_de_table(x, de_pkg = de_method)
+
+  # make the gene IDs the row names
+  de_table_list <- lapply(de_table_list, function(table){
+    rownames(table) <- table[, gene_name]
+    return(table)
+  })
+
+  if(identical("edger", de_method)){
+
+    if (!missing(contrast_names)){
+      edger_contrast_names <- contrast_names
+      if(!all(edger_contrast_names %in% names(de_table_list))){
+        stop("Check that 'contrast_names' all exist in the BbcSE object.")
+      }
+    } else{
+      edger_contrast_names <- names(de_table_list)
+    }
+
+    volcano_plots <- lapply(edger_contrast_names, function(table){
+      EnhancedVolcano::EnhancedVolcano(toptable=de_table_list[[table]],
+                                       lab=rownames(de_table_list[[table]]),
+                                       x="logFC",
+                                       y=pval_name,
+                                       title = table,
+                                       subtitle = "",
+                                       ylab=y_title,
+                                       ylim = c(0, max(-log10(de_table_list[[table]][,pval_name]), na.rm=TRUE) ),
+                                       subtitleLabSize = 0,
+                                       caption = paste0('Total = ',
+                                                        nrow(de_table_list[[table]]),
+                                                        ' genes'),
+                                       pCutoff=pvalCutoff, ...)
+    })
+
+  }
+
+  return(volcano_plots)
+}

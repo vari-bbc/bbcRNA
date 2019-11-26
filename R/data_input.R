@@ -19,6 +19,7 @@
 #'     removed from gene ID (as indicated by trailing period and integers).
 #' @return A matrix where the column names are the sample names and the row
 #'     names are the gene names
+#' @importFrom utils capture.output
 #' @export
 star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 
@@ -83,7 +84,8 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
     if(strand_guess != column){
       warning(paste0("Guessed strandedness was ", colnames(x)[1+strand_guess],
                      " (column ", strand_guess, ").\n"),
-              paste0(capture.output(print(as.data.frame(x[1:6, ]))), collapse = "\n"))
+              paste0(utils::capture.output(print(as.data.frame(x[1:6, ]))),
+                     collapse = "\n"))
     }
 
 

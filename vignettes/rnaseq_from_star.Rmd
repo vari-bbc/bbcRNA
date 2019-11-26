@@ -244,6 +244,13 @@ bbc_obj <- findDEGs(bbc_obj,
 plot_pval_distrib(bbc_obj)
 ```
 
+# Volcano plot
+```{r}
+# uses EnhancedVolcano package
+plot_volcano(bbc_obj)
+
+```
+
 # Extract the DE results as a dataframe
 ```{r get_de_table}
 de_res <- get_de_table(bbc_obj)
