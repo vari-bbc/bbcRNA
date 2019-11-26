@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot heatmap — plot_heatmap • bbcRNA</title>
+<title>Run hypergeometric test — run_hypergeometric • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +32,9 @@
 
 
 
-<meta property="og:title" content="Plot heatmap — plot_heatmap" />
+<meta property="og:title" content="Run hypergeometric test — run_hypergeometric" />
 
-<meta property="og:description" content="Plot heatmap with option for splitting rows and columns and adding
-annotation." />
+<meta property="og:description" content="Run hypergeometric test" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,94 +110,106 @@ annotation." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot heatmap</h1>
+    <h1>Run hypergeometric test</h1>
     
-    <div class="hidden name"><code>plot_heatmap.Rd</code></div>
+    <div class="hidden name"><code>run_hypergeometric.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot heatmap with option for splitting rows and columns and adding
-annotation.</p>
+    <p>Run hypergeometric test</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_heatmap</span>(<span class='no'>x</span>, <span class='kw'>genes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>x</span>), <span class='kw'>de_method</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
-  <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"norm_log_cpm"</span>, <span class='kw'>gene_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>coldata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coldata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rowdata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rowdata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>clust_rows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>clust_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>zscores</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>grouped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>run_hypergeometric</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S4 method for data.frame</span>
+<span class='fu'>run_hypergeometric</span>(<span class='no'>x</span>, <span class='kw'>gene_set</span> <span class='kw'>=</span> <span class='st'>"reactome"</span>,
+  <span class='no'>organism</span>, <span class='no'>orgDb</span>, <span class='kw'>split_by_lfc_dir</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>padj_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+  <span class='kw'>lfc_cutoff</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='no'>...</span>)
+
+<span class='co'># S4 method for BbcSE</span>
+<span class='fu'>run_hypergeometric</span>(<span class='no'>x</span>, <span class='kw'>de_pkg</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
+  <span class='kw'>contrast_names</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>split_by_lfc_dir</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A BbcSE object</p></td>
+      <td><p>A BbcSE object.</p></td>
     </tr>
     <tr>
-      <th>genes</th>
-      <td><p>gene IDs (rownames)</p></td>
+      <th>...</th>
+      <td><p>Passed to enrichKEGG, enrichGO, enrichPathway or enricher. See
+each function for possible arguments.</p></td>
     </tr>
     <tr>
-      <th>de_method</th>
-      <td><p>"edger" or "deseq2"</p></td>
+      <th>gene_set</th>
+      <td><p>one of "kegg", "reactome", "H", "C1", "C2", "C3", "C4", "C5",
+"C6", "C7"</p></td>
     </tr>
     <tr>
-      <th>assay_name</th>
-      <td><p>Name of assay from the 'norm_cts' slot. Not compatible with
-grouped=TRUE. Option was implemented with the idea of being able to plot
-batch-corrected data.</p></td>
+      <th>organism</th>
+      <td><p>For compatibility with dowstream tools, the organism is
+specified differently depending on the desired gene set. For KEGG, use the
+three-letter code according to
+http://www.genome.jp/kegg/catalog/org_list.html. For Reactome, possible
+values are ‘celegans’, ‘fly’, ‘human’, ‘mouse’, ‘rat’, ‘yeast’ and
+‘zebrafish’. For msigdb, run 'msigdbr::msigdbr_show_species()'.</p></td>
     </tr>
     <tr>
-      <th>gene_labels</th>
-      <td><p>a column name from rowData. Must contain unique values</p></td>
+      <th>orgDb</th>
+      <td><p>OrgDB object for your organism</p></td>
     </tr>
     <tr>
-      <th>coldata_annot</th>
-      <td><p>character vector of colData colnames for annotating</p></td>
+      <th>split_by_lfc_dir</th>
+      <td><p>logical. Whether DE genes should be split into up and
+down-regulated</p></td>
     </tr>
     <tr>
-      <th>coldata_split</th>
-      <td><p>character value of colData colname for splitting</p></td>
+      <th>padj_cutoff</th>
+      <td><p>numeric. Cutoff for adjusted PValue for DE.</p></td>
     </tr>
     <tr>
-      <th>rowdata_annot</th>
-      <td><p>character vector of rowData colnames for annotating</p></td>
+      <th>lfc_cutoff</th>
+      <td><p>numeric. Cutoff for LFC (absolute value) for DE.</p></td>
     </tr>
     <tr>
-      <th>rowdata_split</th>
-      <td><p>character value of rowData colname for splitting</p></td>
+      <th>de_pkg</th>
+      <td><p>"edger" or "deseq2". Only used if x is a BbcSE</p></td>
     </tr>
     <tr>
-      <th>clust_rows</th>
-      <td><p>logical for whether rows should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>clust_cols</th>
-      <td><p>logical for whether columns should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>zscores</th>
-      <td><p>logical indicating whether the expression matrix should be
-converted to Z-scores</p></td>
-    </tr>
-    <tr>
-      <th>grouped</th>
-      <td><p>logical indicating whether the mean expression per group
-should be shown.</p></td>
+      <th>contrast_names</th>
+      <td><p>character value or vector for the contrast(s) of
+interest. See name(de_results(edger(x))). If left to default "" value then
+all contrasts will be processed.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A Heatmap-class list.</p>
+    <p>A list of gseaResult objects or one gseaResult object</p>
+    
+    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+
+    
+<ul>
+<li><p><code>data.frame</code>: x is a dataframe with gene name (entrez) as
+col1, log2FC as col2 and adjusted PValue as col3. Function will filter by
+LFC and PValue for DE genes, and optionally will split the DE genes into up
+and down-regulated based on LFC. The gene universe are all the genes in the
+dataframe. Returns a list of enrichResults for up and down-regulaed genes
+or just all the DE genes without regard for direction.</p></li>
+<li><p><code>BbcSE</code>: Extract out the gene, LFC and adjusted PValue.
+Run run_hypergeometric for each result object (contrast).</p></li>
+</ul>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html'>Heatmap</a></code>
-  <a href='https://jokergoo.github.io/ComplexHeatmap-reference/book/'>ComplexHeatmap
-   book</a></p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/clusterProfiler/man/enrichKEGG.html'>enrichKEGG</a>
+  <a href='https://rdrr.io/pkg/clusterProfiler/man/enrichGO.html'>enrichGO</a> <a href='https://rdrr.io/pkg/ReactomePA/man/enrichPathway.html'>enrichPathway</a>
+  <a href='https://rdrr.io/pkg/clusterProfiler/man/enricher.html'>enricher</a></code></p></div>
     
 
   </div>
@@ -208,6 +219,8 @@ should be shown.</p></td>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#methods-by-class-">Methods (by class)</a></li>
 
       <li><a href="#see-also">See also</a></li>
           </ul>

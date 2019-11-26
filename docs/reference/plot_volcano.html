@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot heatmap — plot_heatmap • bbcRNA</title>
+<title>Volcano plot — plot_volcano • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +32,9 @@
 
 
 
-<meta property="og:title" content="Plot heatmap — plot_heatmap" />
+<meta property="og:title" content="Volcano plot — plot_volcano" />
 
-<meta property="og:description" content="Plot heatmap with option for splitting rows and columns and adding
-annotation." />
+<meta property="og:description" content="Plot volcano plots for contrasts in edger or deseq2 slot of BbcSE object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,23 +110,20 @@ annotation." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot heatmap</h1>
+    <h1>Volcano plot</h1>
     
-    <div class="hidden name"><code>plot_heatmap.Rd</code></div>
+    <div class="hidden name"><code>plot_volcano.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot heatmap with option for splitting rows and columns and adding
-annotation.</p>
+    <p>Plot volcano plots for contrasts in edger or deseq2 slot of BbcSE object</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_heatmap</span>(<span class='no'>x</span>, <span class='kw'>genes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>x</span>), <span class='kw'>de_method</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
-  <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"norm_log_cpm"</span>, <span class='kw'>gene_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>coldata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coldata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rowdata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rowdata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>clust_rows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>clust_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>zscores</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>grouped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_volcano</span>(<span class='no'>x</span>, <span class='kw'>de_method</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='kw'>gene_name</span> <span class='kw'>=</span> <span class='st'>"gene_symbol"</span>,
+  <span class='kw'>pval_name</span> <span class='kw'>=</span> <span class='st'>"FDR"</span>, <span class='kw'>pvalCutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>y_title</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"-Log10 ("</span>,
+  <span class='no'>pval_name</span>, <span class='st'>")"</span>), <span class='no'>contrast_names</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,68 +133,47 @@ annotation.</p>
       <td><p>A BbcSE object</p></td>
     </tr>
     <tr>
-      <th>genes</th>
-      <td><p>gene IDs (rownames)</p></td>
-    </tr>
-    <tr>
       <th>de_method</th>
       <td><p>"edger" or "deseq2"</p></td>
     </tr>
     <tr>
-      <th>assay_name</th>
-      <td><p>Name of assay from the 'norm_cts' slot. Not compatible with
-grouped=TRUE. Option was implemented with the idea of being able to plot
-batch-corrected data.</p></td>
+      <th>gene_name</th>
+      <td><p>"gene_symbol" or "ensembl_id". Corresponds to columns in
+'bbcRNA::get_de_table()' output</p></td>
     </tr>
     <tr>
-      <th>gene_labels</th>
-      <td><p>a column name from rowData. Must contain unique values</p></td>
+      <th>pval_name</th>
+      <td><p>"PValue" or "FDR". Corresponds to columns in
+'bbcRNA::get_de_table()' output</p></td>
     </tr>
     <tr>
-      <th>coldata_annot</th>
-      <td><p>character vector of colData colnames for annotating</p></td>
+      <th>pvalCutoff</th>
+      <td><p>"Cut-off for statistical significance. A horizontal line
+will be drawn at -log10(pCutoff)." See EnhancedVolcano documentation.</p></td>
     </tr>
     <tr>
-      <th>coldata_split</th>
-      <td><p>character value of colData colname for splitting</p></td>
+      <th>y_title</th>
+      <td><p>Y axis label</p></td>
     </tr>
     <tr>
-      <th>rowdata_annot</th>
-      <td><p>character vector of rowData colnames for annotating</p></td>
+      <th>contrast_names</th>
+      <td><p>character value or vector for the contrast(s) of
+interest. See name(de_results(edger(x))). If not specified, then all
+contrasts will be processed.</p></td>
     </tr>
     <tr>
-      <th>rowdata_split</th>
-      <td><p>character value of rowData colname for splitting</p></td>
-    </tr>
-    <tr>
-      <th>clust_rows</th>
-      <td><p>logical for whether rows should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>clust_cols</th>
-      <td><p>logical for whether columns should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>zscores</th>
-      <td><p>logical indicating whether the expression matrix should be
-converted to Z-scores</p></td>
-    </tr>
-    <tr>
-      <th>grouped</th>
-      <td><p>logical indicating whether the mean expression per group
-should be shown.</p></td>
+      <th>...</th>
+      <td><p>Passed to EnhancedVolcano::EnhancedVolcano</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A Heatmap-class list.</p>
+    <p>A list of ggplot objects</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html'>Heatmap</a></code>
-  <a href='https://jokergoo.github.io/ComplexHeatmap-reference/book/'>ComplexHeatmap
-   book</a></p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/EnhancedVolcano/man/EnhancedVolcano.html'>EnhancedVolcano</a></code></p></div>
     
 
   </div>

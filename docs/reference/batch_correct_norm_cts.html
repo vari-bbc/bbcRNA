@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot heatmap — plot_heatmap • bbcRNA</title>
+<title>Batch correct normalized counts — batch_correct_norm_cts • bbcRNA</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -32,10 +32,10 @@
 
 
 
-<meta property="og:title" content="Plot heatmap — plot_heatmap" />
+<meta property="og:title" content="Batch correct normalized counts — batch_correct_norm_cts" />
 
-<meta property="og:description" content="Plot heatmap with option for splitting rows and columns and adding
-annotation." />
+<meta property="og:description" content="Batch correct normalized counts for visualizations or other downstream non-DE
+analysis applications." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,23 +111,21 @@ annotation." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot heatmap</h1>
+    <h1>Batch correct normalized counts</h1>
     
-    <div class="hidden name"><code>plot_heatmap.Rd</code></div>
+    <div class="hidden name"><code>batch_correct_norm_cts.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Plot heatmap with option for splitting rows and columns and adding
-annotation.</p>
+    <p>Batch correct normalized counts for visualizations or other downstream non-DE
+analysis applications.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_heatmap</span>(<span class='no'>x</span>, <span class='kw'>genes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='no'>x</span>), <span class='kw'>de_method</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
-  <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"norm_log_cpm"</span>, <span class='kw'>gene_labels</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>coldata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>coldata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>rowdata_annot</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rowdata_split</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>clust_rows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>clust_cols</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>zscores</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>grouped</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>batch_correct_norm_cts</span>(<span class='no'>x</span>, <span class='kw'>de_method</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
+  <span class='kw'>correction_method</span> <span class='kw'>=</span> <span class='st'>"removeBatchEffect"</span>,
+  <span class='kw'>new_assay_name</span> <span class='kw'>=</span> <span class='st'>"batch_corr"</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,70 +135,50 @@ annotation.</p>
       <td><p>A BbcSE object</p></td>
     </tr>
     <tr>
-      <th>genes</th>
-      <td><p>gene IDs (rownames)</p></td>
-    </tr>
-    <tr>
       <th>de_method</th>
       <td><p>"edger" or "deseq2"</p></td>
     </tr>
     <tr>
-      <th>assay_name</th>
-      <td><p>Name of assay from the 'norm_cts' slot. Not compatible with
-grouped=TRUE. Option was implemented with the idea of being able to plot
-batch-corrected data.</p></td>
+      <th>correction_method</th>
+      <td><p>"removeBatchEffect" or "combat"</p></td>
     </tr>
     <tr>
-      <th>gene_labels</th>
-      <td><p>a column name from rowData. Must contain unique values</p></td>
+      <th>new_assay_name</th>
+      <td><p>Name of the batch-corrected counts stored in new assay
+in 'norm_cts' slot.</p></td>
     </tr>
     <tr>
-      <th>coldata_annot</th>
-      <td><p>character vector of colData colnames for annotating</p></td>
-    </tr>
-    <tr>
-      <th>coldata_split</th>
-      <td><p>character value of colData colname for splitting</p></td>
-    </tr>
-    <tr>
-      <th>rowdata_annot</th>
-      <td><p>character vector of rowData colnames for annotating</p></td>
-    </tr>
-    <tr>
-      <th>rowdata_split</th>
-      <td><p>character value of rowData colname for splitting</p></td>
-    </tr>
-    <tr>
-      <th>clust_rows</th>
-      <td><p>logical for whether rows should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>clust_cols</th>
-      <td><p>logical for whether columns should be clustered</p></td>
-    </tr>
-    <tr>
-      <th>zscores</th>
-      <td><p>logical indicating whether the expression matrix should be
-converted to Z-scores</p></td>
-    </tr>
-    <tr>
-      <th>grouped</th>
-      <td><p>logical indicating whether the mean expression per group
-should be shown.</p></td>
+      <th>...</th>
+      <td><p>passed to batch correction function.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A Heatmap-class list.</p>
+    <p>A BbcSE object</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/ComplexHeatmap/man/Heatmap.html'>Heatmap</a></code>
-  <a href='https://jokergoo.github.io/ComplexHeatmap-reference/book/'>ComplexHeatmap
-   book</a></p></div>
+    <div class='dont-index'><p>[limma] removeBatchEffect [sva] ComBat</p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='co'># Default is limma::removeBatchEffect</span>
+<span class='no'>bbc_obj_batch</span> <span class='kw'>&lt;-</span> <span class='fu'>batch_correct_norm_cts</span>(<span class='no'>bbc_obj</span>, <span class='kw'>batch</span><span class='kw'>=</span><span class='fu'>colData</span>(<span class='no'>bbc_obj</span>)$<span class='no'>Rep</span>,
+<span class='kw'>design</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(~<span class='no'>Condition</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='fu'>colData</span>(<span class='no'>bbc_obj</span>)))
+
+<span class='fu'><a href='plot_PCA.html'>plot_PCA</a></span>(<span class='no'>bbc_obj_batch</span>, <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"batch_corr"</span>, <span class='kw'>adonis</span><span class='kw'>=</span><span class='fl'>FALSE</span>,
+<span class='kw'>color_by</span><span class='kw'>=</span><span class='st'>"Time"</span>, <span class='kw'>shape_by</span><span class='kw'>=</span><span class='st'>"Rep"</span>)
+
+<span class='co'># Combat is also supported</span>
+<span class='no'>bbc_obj_batch</span> <span class='kw'>&lt;-</span> <span class='fu'>batch_correct_norm_cts</span>(<span class='no'>bbc_obj</span>, <span class='kw'>new_assay_name</span><span class='kw'>=</span><span class='st'>"combat"</span>,
+<span class='kw'>batch</span><span class='kw'>=</span><span class='fu'>colData</span>(<span class='no'>bbc_obj</span>)$<span class='no'>Rep</span>, <span class='kw'>correction_method</span> <span class='kw'>=</span> <span class='st'>"combat"</span>, <span class='kw'>mod</span> <span class='kw'>=</span>
+<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(~<span class='no'>Condition</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='fu'>colData</span>(<span class='no'>bbc_obj</span>)))
+
+<span class='fu'><a href='plot_PCA.html'>plot_PCA</a></span>(<span class='no'>bbc_obj_batch</span>, <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"combat"</span>, <span class='kw'>adonis</span><span class='kw'>=</span><span class='fl'>FALSE</span>, <span class='kw'>color_by</span><span class='kw'>=</span><span class='st'>"Time"</span>,
+<span class='kw'>shape_by</span><span class='kw'>=</span><span class='st'>"Rep"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -210,7 +188,9 @@ should be shown.</p></td>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

@@ -125,7 +125,7 @@ Euclidean distances.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_PCA</span>(<span class='no'>x</span>, <span class='kw'>norm_cts_type</span> <span class='kw'>=</span> <span class='st'>"edger"</span>,
+    <pre class="usage"><span class='fu'>plot_PCA</span>(<span class='no'>x</span>, <span class='kw'>norm_cts_type</span> <span class='kw'>=</span> <span class='st'>"edger"</span>, <span class='kw'>assay_name</span> <span class='kw'>=</span> <span class='st'>"norm_log_cpm"</span>,
   <span class='kw'>color_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]],
   <span class='kw'>shape_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]], <span class='kw'>adonis</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>adonis_by</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span>(<span class='fu'>colData</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='fl'>1</span>]])</pre>
@@ -140,6 +140,11 @@ Euclidean distances.</p>
     <tr>
       <th>norm_cts_type</th>
       <td><p>"edger" or "deseq2"</p></td>
+    </tr>
+    <tr>
+      <th>assay_name</th>
+      <td><p>Name of assay from the 'norm_cts' slot. Option was
+implemented with the idea of being able to plot batch-corrected data.</p></td>
     </tr>
     <tr>
       <th>color_by</th>
@@ -164,8 +169,9 @@ values; in this case, each variable is tested sequentially using adonis().</p></
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list containing ggplot objects for 1. PCA 2. scree plot 3. a list
-  of output from vegan::adonis()</p>
+    <p>A list containing ggplot objects for 1. PCA 2. scree plot 3.
+  prcomp()$x merged with meta data. Handy if visualizations of &gt;PC2 are
+  needed 4. a list of output from vegan::adonis()</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
