@@ -583,6 +583,7 @@ plot_volcano <- function(x,
                                                         ' genes'),
                                        pCutoff=pvalCutoff, ...)
     })
+    names(volcano_plots) <- edger_contrast_names
 
   }
 
