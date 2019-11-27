@@ -6,7 +6,7 @@ aln_metrics <- function(x, withDimnames=TRUE) {
   if(!is(x, "BbcSE")) stop("x not BbcSE object")
 
   out <- x@aln_metrics
-  if (withDimnames) {
+  if (withDimnames &  !identical(out, matrix(0,0,0))) {
     rownames(out) <- colnames(x)
   }
   out

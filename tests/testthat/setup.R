@@ -36,6 +36,9 @@ col_meta$genotype <- factor(col_meta$genotype, levels=c("WT", "mut"))
 bbc_obj <- BbcSE(counts = counts_mat, aln_metrics = aln_metrics,
                  colData = col_meta[colnames(counts_mat), ])
 
+bbc_obj_no_aln_metrics <- BbcSE(counts = counts_mat,
+                                colData = col_meta[colnames(counts_mat), ])
+
 # filter lowly expressed genes, calculate norm factors, make DGEList
 bbc_obj_dgelist <- makeDGEList(bbc_obj, group="genotype")
 

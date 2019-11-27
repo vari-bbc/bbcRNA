@@ -19,6 +19,7 @@ test_that("aln_metrics getter works", {
   expect_identical(
     aln_metrics(bbc_obj, withDimnames=FALSE)[, colnames(aln_metrics)],
     aln_metrics)
+  expect_error(aln_metrics(bbc_obj_no_aln_metrics), NA)
 })
 
 test_that("aln_metrics setter works", {
