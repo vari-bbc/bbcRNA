@@ -128,7 +128,9 @@ setMethod("[", "BbcSE", function(x, i, j, drop=TRUE) {
       )
     }
     j <- as.vector(j)
-    aln_metrics <- aln_metrics[j, , drop=FALSE]
+    if(!identical(aln_metrics, matrix(0,0,0))){
+      aln_metrics <- aln_metrics[j, , drop=FALSE]
+    }
   }
 
   out <- callNextMethod()

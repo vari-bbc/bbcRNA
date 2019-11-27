@@ -12,6 +12,10 @@ test_that("BbcSE constructors return valid BbcSE objects.", {
 test_that("Subsetting BbcSE return valid BbcSE objects.", {
   expect_true(validObject(bbc_obj[1:10,]))
   expect_true(validObject(bbc_obj[,1:2]))
+  expect_true(validObject(bbc_obj_no_aln_metrics[1:10,]))
+  expect_true(validObject(bbc_obj_no_aln_metrics[,1:2]))
+  expect_error(bbc_obj_no_aln_metrics[1:3, ], NA)
+
 })
 
 test_that("aln_metrics getter works", {
