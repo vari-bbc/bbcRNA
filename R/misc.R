@@ -153,7 +153,7 @@ plot_PCA <- function(x, norm_cts_type = "edger", assay_name="norm_log_cpm",
 #'   should be shown.
 #' @param zscores logical indicating whether the expression matrix should be
 #'   converted to Z-scores
-#' @return A Heatmap-class list.
+#' @return A Heatmap-class object.
 #' @seealso \code{\link[ComplexHeatmap]{Heatmap}}
 #'   \href{https://jokergoo.github.io/ComplexHeatmap-reference/book/}{ComplexHeatmap
 #'    book}
