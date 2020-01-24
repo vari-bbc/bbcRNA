@@ -46,5 +46,5 @@ shape_by="Rep")
 }
 }
 \seealso{
-[limma] removeBatchEffect [sva] ComBat
+\code{\link[limma]{removeBatchEffect} \link[sva]{ComBat}}
 }

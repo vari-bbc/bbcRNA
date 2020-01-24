@@ -475,7 +475,7 @@ plot_pval_distrib <- function(x,
 #' plot_PCA(bbc_obj_batch, assay_name = "combat", adonis=FALSE, color_by="Time",
 #' shape_by="Rep")
 #' }
-#' @seealso [limma] removeBatchEffect [sva] ComBat
+#' @seealso \code{\link[limma]{removeBatchEffect} \link[sva]{ComBat}}
 #' @export
 batch_correct_norm_cts <- function(x,
                               de_method = "edger",

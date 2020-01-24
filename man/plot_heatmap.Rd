@@ -42,7 +42,7 @@ converted to Z-scores}
 should be shown.}
 }
 \value{
-A Heatmap-class list.
+A Heatmap-class object.
 }
 \description{
 Plot heatmap with option for splitting rows and columns and adding
