@@ -196,7 +196,10 @@ plot_heatmap <- function(x,
     # get the expression matrix
     if(isTRUE(grouped)){
       if(!is.null(coldata_annot) | !is.null(coldata_split)) {
-       stop("column data options not compatible with grouped=TRUE")
+        stop("Column data options not supported when grouped=TRUE")
+      }
+      if(assay_name != "norm_log_cpm") {
+        stop("Only default 'assay_name' supported for grouped=TRUE")
       }
       expr_mat <- rowData(norm_cts(curr_bbcedger))[genes, , drop=FALSE] %>%
         as.data.frame(stringsAsFactors=FALSE) %>%
