@@ -8,7 +8,9 @@ plot_heatmap(x, genes = rownames(x), de_method = "edger",
   assay_name = "norm_log_cpm", gene_labels = NULL,
   coldata_annot = NULL, coldata_split = NULL, rowdata_annot = NULL,
   rowdata_split = NULL, clust_rows = TRUE, clust_cols = TRUE,
-  zscores = FALSE, grouped = FALSE)
+  clustering_distance_rows = "euclidean",
+  clustering_distance_columns = "euclidean", zscores = FALSE,
+  grouped = FALSE)
 }
 \arguments{
 \item{x}{A BbcSE object}
@@ -34,6 +36,10 @@ batch-corrected data.}
 \item{clust_rows}{logical for whether rows should be clustered}
 
 \item{clust_cols}{logical for whether columns should be clustered}
+
+\item{clustering_distance_rows}{see 'clustering_distance_rows' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}}
+
+\item{clustering_distance_columns}{see 'clustering_distance_columns' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}}
 
 \item{zscores}{logical indicating whether the expression matrix should be
 converted to Z-scores}

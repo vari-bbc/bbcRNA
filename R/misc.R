@@ -149,8 +149,8 @@ plot_PCA <- function(x, norm_cts_type = "edger", assay_name="norm_log_cpm",
 #' @param rowdata_split character value of rowData colname for splitting
 #' @param clust_rows logical for whether rows should be clustered
 #' @param clust_cols logical for whether columns should be clustered
-#' @param clustering_distance_rows see 'clustering_distance_rows' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}
-#' @param clustering_distance_columns see 'clustering_distance_columns' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}
+#' @param clustering_distance_rows see 'clustering_distance_rows' in \code{\link[ComplexHeatmap]{Heatmap}}
+#' @param clustering_distance_columns see 'clustering_distance_columns' in \code{\link[ComplexHeatmap]{Heatmap}}
 #' @param grouped logical indicating whether the mean expression per group
 #'   should be shown.
 #' @param zscores logical indicating whether the expression matrix should be
