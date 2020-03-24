@@ -149,6 +149,8 @@ plot_PCA <- function(x, norm_cts_type = "edger", assay_name="norm_log_cpm",
 #' @param rowdata_split character value of rowData colname for splitting
 #' @param clust_rows logical for whether rows should be clustered
 #' @param clust_cols logical for whether columns should be clustered
+#' @param clustering_distance_rows see 'clustering_distance_rows' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}
+#' @param clustering_distance_cols see 'clustering_distance_cols' in \code{\link[ComplexHeatmap]{ComplexHeatmap::Heatmap}}
 #' @param grouped logical indicating whether the mean expression per group
 #'   should be shown.
 #' @param zscores logical indicating whether the expression matrix should be
@@ -173,6 +175,8 @@ plot_heatmap <- function(x,
                          rowdata_split = NULL,
                          clust_rows = TRUE,
                          clust_cols = TRUE,
+                         clustering_distance_rows = "euclidean",
+                         clustering_distance_cols = "euclidean",
                          zscores = FALSE,
                          grouped = FALSE) {
   if(!is(x, "BbcSE")) stop("x is not a BbcSE object")
@@ -358,8 +362,10 @@ plot_heatmap <- function(x,
                                        cluster_column_slices = FALSE,
                                        cluster_rows = clust_rows,
                                        cluster_columns = clust_cols,
-                                       column_split = coldata_split,
+                                       clustering_distance_rows = clustering_distance_rows,
+                                       clustering_distance_columns = clustering_distance_columns,
                                        row_split = rowdata_split,
+                                       column_split = coldata_split,
                                        top_annotation = coldata_annot,
                                        right_annotation = rowdata_annot,
                                        row_title_rot = 0,
