@@ -1,7 +1,7 @@
 Package: bbcRNA
 Type: Package
 Title: Bulk RNA-seq workflow for VAI BBC
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person(given = "Kin", family = "Lau", role = c("aut", "cre"), 
     email = "kin.lau@vai.org"),
     person(given = "Dean", family = "Pettinga", role = c("aut"), 
@@ -50,7 +50,8 @@ Imports:
     circlize (>= 0.4),
     biomaRt (>= 2.40),
     EnhancedVolcano (>= 1.2.0),
-    utils (>= 3.6.0)
+    utils (>= 3.6.0),
+    testthat (>= 2.1.0)
 RoxygenNote: 7.1.0
 Depends: 
     R (>= 3.6)
@@ -60,7 +61,6 @@ Suggests:
     devtools (>= 2.1),
     enrichplot (>= 1.4),
     org.Mm.eg.db (>= 3.8),
-    testthat (>= 2.1.0),
     covr,
     sva (>= 3.32)
 VignetteBuilder: knitr

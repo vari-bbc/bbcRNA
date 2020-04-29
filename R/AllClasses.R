@@ -10,7 +10,7 @@
                         de_results = "list",
                         norm_cts = "SummarizedExperiment"),
                       prototype = prototype(
-                        dgelist = edgeR::DGEList(),
+                        dgelist = suppressWarnings(edgeR::DGEList()),
                         de_results = list(),
                         norm_cts = SummarizedExperiment()))
 

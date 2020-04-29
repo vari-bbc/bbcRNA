@@ -5,7 +5,7 @@
 \title{Constructor for BbcEdgeR}
 \usage{
 BbcEdgeR(
-  dgelist = edgeR::DGEList(),
+  dgelist = NULL,
   de_results = list(),
   norm_cts = SummarizedExperiment()
 )

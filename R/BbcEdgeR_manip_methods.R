@@ -11,10 +11,15 @@
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom edgeR DGEList
-BbcEdgeR <- function(dgelist = edgeR::DGEList(),
+#' @importFrom testthat expect_warning
+BbcEdgeR <- function(dgelist = NULL,
                      de_results = list(),
                      norm_cts = SummarizedExperiment())
 {
+  if (is.null(dgelist)){
+    testthat::expect_warning(dgelist <- edgeR::DGEList(),
+                             "no non-missing arguments to min; returning Inf")
+  }
 
   bbcedger_obj <- .BbcEdgeR( dgelist = dgelist,
                              de_results = de_results,
