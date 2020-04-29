@@ -29,7 +29,7 @@ edger <- function(x) {
 #' Make a DGEList object based on assay(object, "counts").
 #'
 #' @param x A BbcSE object.
-#' @param group Name of a column from colData()
+#' @param group Name of a column from colData(). See ?edgeR::DGEList.
 #' @param rm_low_genes logical indicating whether low count genes should be
 #'   removed. Implements edgeR::filterByExpr. Filters DGEList only.
 #' @param min_count numeric. Used only if rm_low_genes=TRUE. Sets min.count for

@@ -4,9 +4,13 @@
 \alias{batch_correct_norm_cts}
 \title{Batch correct normalized counts}
 \usage{
-batch_correct_norm_cts(x, de_method = "edger",
+batch_correct_norm_cts(
+  x,
+  de_method = "edger",
   correction_method = "removeBatchEffect",
-  new_assay_name = "batch_corr", ...)
+  new_assay_name = "batch_corr",
+  ...
+)
 }
 \arguments{
 \item{x}{A BbcSE object}

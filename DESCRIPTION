@@ -51,7 +51,7 @@ Imports:
     biomaRt (>= 2.40),
     EnhancedVolcano (>= 1.2.0),
     utils (>= 3.6.0)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Depends: 
     R (>= 3.6)
 Suggests: 

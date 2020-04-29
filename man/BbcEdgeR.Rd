@@ -4,8 +4,11 @@
 \alias{BbcEdgeR}
 \title{Constructor for BbcEdgeR}
 \usage{
-BbcEdgeR(dgelist = edgeR::DGEList(), de_results = list(),
-  norm_cts = SummarizedExperiment())
+BbcEdgeR(
+  dgelist = edgeR::DGEList(),
+  de_results = list(),
+  norm_cts = SummarizedExperiment()
+)
 }
 \arguments{
 \item{dgelist}{A DGEList}

@@ -4,9 +4,12 @@
 \alias{BbcSE}
 \title{Constructor for BbcSE}
 \usage{
-BbcSE(counts = matrix(0, 0, 0), granges = rep(GRanges(seqnames =
-  "foobar", ranges = 0:0), nrow(counts)), aln_metrics = matrix(0, 0, 0),
-  ...)
+BbcSE(
+  counts = matrix(0, 0, 0),
+  granges = rep(GRanges(seqnames = "foobar", ranges = 0:0), nrow(counts)),
+  aln_metrics = matrix(0, 0, 0),
+  ...
+)
 }
 \arguments{
 \item{counts}{A count matrix with sample names as column names and gene names

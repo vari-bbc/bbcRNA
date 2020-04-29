@@ -4,10 +4,15 @@
 \alias{plot_PCA}
 \title{PCA, screeplot and PERMANOVA test}
 \usage{
-plot_PCA(x, norm_cts_type = "edger", assay_name = "norm_log_cpm",
+plot_PCA(
+  x,
+  norm_cts_type = "edger",
+  assay_name = "norm_log_cpm",
   color_by = colnames(colData(x))[[1]],
-  shape_by = colnames(colData(x))[[1]], adonis = TRUE,
-  adonis_by = colnames(colData(x))[[1]])
+  shape_by = colnames(colData(x))[[1]],
+  adonis = TRUE,
+  adonis_by = colnames(colData(x))[[1]]
+)
 }
 \arguments{
 \item{x}{A BbcSE object.}

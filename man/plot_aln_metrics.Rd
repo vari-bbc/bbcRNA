@@ -4,8 +4,7 @@
 \alias{plot_aln_metrics}
 \title{Plot alignment metrics}
 \usage{
-plot_aln_metrics(x, type = "uniq_map_rate", fill_by = "sample",
-  facet_by = "")
+plot_aln_metrics(x, type = "uniq_map_rate", fill_by = "sample", facet_by = "")
 }
 \arguments{
 \item{x}{A BbcSE object.}

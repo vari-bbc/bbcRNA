@@ -7,6 +7,20 @@ test_that("run_gsea runs without errors for various ranking metrics", {
                         orgDb=org.Mm.eg.db), NA)
 })
 
+test_that("run_gsea runs with the same seed each time (deterministic results)", {
+  num_gseas <- 10
+  gseas <- lapply(1:num_gseas, function(x){
+    run_gsea(bbc_obj_glmQLFTest, gene_set="H",
+             organism="Mus musculus", rank_by="signed-log10pval",
+             orgDb=org.Mm.eg.db)
+  })
+  for (i in 2:num_gseas){
+    expect_equivalent(gseas[[1]], gseas[[i]])
+  }
+
+})
+
+
 test_that("find_missing_in_gseaResult results consistent with run_gsea messages in terms of genes removed", {
 
   gsea_results_list <- run_gsea(bbc_obj_glmQLFTest, gene_set="H",

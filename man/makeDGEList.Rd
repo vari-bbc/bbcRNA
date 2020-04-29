@@ -4,13 +4,18 @@
 \alias{makeDGEList}
 \title{Make a DGEList object.}
 \usage{
-makeDGEList(x, group = NULL, rm_low_genes = TRUE, calc_norm = TRUE,
-  min_count = 10)
+makeDGEList(
+  x,
+  group = NULL,
+  rm_low_genes = TRUE,
+  calc_norm = TRUE,
+  min_count = 10
+)
 }
 \arguments{
 \item{x}{A BbcSE object.}
 
-\item{group}{Name of a column from colData()}
+\item{group}{Name of a column from colData(). See ?edgeR::DGEList.}
 
 \item{rm_low_genes}{logical indicating whether low count genes should be
 removed. Implements edgeR::filterByExpr. Filters DGEList only.}

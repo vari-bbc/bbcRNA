@@ -4,9 +4,16 @@
 \alias{plot_volcano}
 \title{Volcano plot}
 \usage{
-plot_volcano(x, de_method = "edger", gene_name = "gene_symbol",
-  pval_name = "FDR", pvalCutoff = 0.05, y_title = paste0("-Log10 (",
-  pval_name, ")"), contrast_names, ...)
+plot_volcano(
+  x,
+  de_method = "edger",
+  gene_name = "gene_symbol",
+  pval_name = "FDR",
+  pvalCutoff = 0.05,
+  y_title = paste0("-Log10 (", pval_name, ")"),
+  contrast_names,
+  ...
+)
 }
 \arguments{
 \item{x}{A BbcSE object}
