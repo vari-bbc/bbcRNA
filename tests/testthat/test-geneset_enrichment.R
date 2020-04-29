@@ -7,15 +7,16 @@ test_that("run_gsea runs without errors for various ranking metrics", {
                         orgDb=org.Mm.eg.db), NA)
 })
 
-test_that("run_gsea runs with the same seed each time (deterministic results)", {
+test_that("run_gsea produces deterministic results if same seed is set and same input data used.", {
   num_gseas <- 10
   gseas <- lapply(1:num_gseas, function(x){
+    set.seed(1000)
     run_gsea(bbc_obj_glmQLFTest, gene_set="H",
              organism="Mus musculus", rank_by="signed-log10pval",
              orgDb=org.Mm.eg.db)
   })
   for (i in 2:num_gseas){
-    expect_equivalent(gseas[[1]], gseas[[i]])
+    expect_equivalent(as.data.frame(gseas[[1]][[1]]), as.data.frame(gseas[[i]][[1]]))
   }
 
 })
