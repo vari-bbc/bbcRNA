@@ -13,7 +13,7 @@ Authors@R: c(person(given = "Kin", family = "Lau", role = c("aut", "cre"),
 Description: This package provides functions and a class (bbcRNA) to perform 
     standard bulk RNA-seq analyses.
 URL: https://vari-bbc.github.io/bbcRNA/index.html
-License: GPL-2
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 biocViews:
