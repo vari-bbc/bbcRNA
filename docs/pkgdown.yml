@@ -1,6 +1,7 @@
 pandoc: 2.7.3
-pkgdown: 1.4.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   rnaseq_from_star: rnaseq_from_star.html
+last_built: 2020-11-03T03:30Z
 
