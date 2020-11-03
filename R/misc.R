@@ -71,7 +71,7 @@ plot_PCA <- function(x, norm_cts_type = "edger", assay_name="norm_log_cpm",
   names(prop_var) = c('sd', 'prop', 'cum')
   prop_var$num = 1:nrow(prop_var)
 
-  pca_plot <- ggplot(pr_comps, aes_string(x="PC1", y="PC2")) + #
+  pca_plot <- ggplot(pr_comps, aes_string(x="PC1", y="PC2", label="sample")) +
     geom_point(size=3, aes_string(color=color_by, pch=shape_by)) +
     xlab(paste0("PC1 (", prop_var[prop_var$num == 1, "prop"]*100, "%)")) +
     ylab(paste0("PC2 (", prop_var[prop_var$num == 2, "prop"]*100, "%)")) +
