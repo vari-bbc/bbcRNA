@@ -173,6 +173,9 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
 #' @param rgx A character scalar representing a regex used to parse out the
 #'     sample name from the name of the Log.final.out files.
 #' @return A dataframe.
+#' @importFrom dplyr mutate across
+#' @importFrom tibble column_to_rownames
+#' @importFrom tidyselect ends_with
 #' @export
 read_star_aln_metrics <- function(dir, rgx){
 
@@ -213,7 +216,7 @@ read_star_aln_metrics <- function(dir, rgx){
 
                                keep_metrics <- stringr::str_extract(
                                  keep_rows[[1]],
-                                 "(?<=\\\t)\\d+$")
+                                 "(?<=\\t)\\d+$")
 
                                names(keep_metrics) <- names(metrics_of_interest)
 
@@ -229,6 +232,7 @@ read_star_aln_metrics <- function(dir, rgx){
   aln_metrics_mat <- do.call(rbind, aln_metrics_list)
 
   aln_metrics_mat <- aln_metrics_mat %>%
+    dplyr::mutate(dplyr::across(tidyselect::ends_with("_reads"), as.numeric)) %>%
     tibble::column_to_rownames(var="sample")
 
   aln_metrics_mat <- data.matrix(aln_metrics_mat)
