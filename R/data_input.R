@@ -134,10 +134,10 @@ star_to_mat <- function(dir, rgx, column, rm_ens_vers = TRUE){
   stopifnot(length(split_by_genes_nrows_uniq) == 1 &
               identical(split_by_genes_nrows_uniq, length(count_files)))
 
-  # spread to form count matrix
-  count_mat <- tidyr::spread(data = counts_rbind,
-                             key = .data$sample,
-                             value = !!counts_col_name) %>%
+  # pivot_wider to form count matrix
+  count_mat <-tidyr::pivot_wider(data = counts_rbind,
+                                 names_from = .data$sample,
+                                 values_from = !!counts_col_name) %>%
     tibble::column_to_rownames(var = "gene_id")
 
   # check # of genes unchanged
